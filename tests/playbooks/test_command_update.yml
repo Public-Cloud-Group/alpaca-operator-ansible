@@ -1,0 +1,52 @@
+- name: Configure ALPACA Operator commands                          # Name of the Playbook
+  hosts: test                                                       # hostname or group defined in the corresponding inventory
+  gather_facts: false
+
+  tasks:
+    - name: Ensure a specific command is configured
+      pcg.alpaca_operator.alpaca_command:
+        system:
+          systemName: "ansible01"                                   # Optional if systemId is used
+        command:
+          name: "BKP: DB log sync 1"                                # Required: command description (acts as identifier in combination with the agentName or agentId)
+          # state: present                                            # present | absent
+          agentName: "ansible_testing_agent_01"                     # Optional if agentId is used
+          # processCentralId: 8990048                                 # Optional if processId is used
+          parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+          # schedule:
+          #   period: every_5min
+          #   time: "11:11:11"
+          #   cronExpression: ""
+          #   daysOfWeek:
+          #     - monday
+          #     - sunday
+          # parametersNeeded: false
+          # disabled: true
+          # critical: true
+          # history:
+          #   documentAllRuns: false
+          #   retention: 100
+          # autoDeploy: false
+          # timeout:
+          #   type: default
+          #   value: 10
+          # escalation:
+          #   mailEnabled: true
+          #   smsEnabled: true
+          #   mailAddress: "monitoring@pcg.io"
+          #   smsAddress: "0123456789"
+          #   minFailureCount: 1
+          #   triggers:
+          #     everyChange: true
+          #     toRed: false
+          #     toYellow: false
+          #     toGreen: true
+
+        # --- API connection configuration ---
+        apiConnection:
+          host: "{{ inventory_hostname }}"                          # Defined in the corresponding inventory
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"            # Defined in the corresponding inventory
+          port: "{{ ALPACA_Operator_API_Port }}"                    # Defined in the corresponding inventory
+          username: "{{ ALPACA_Operator_API_Username }}"            # Defined in the corresponding inventory
+          password: "{{ ALPACA_Operator_API_Password }}"            # Defined in the corresponding inventory
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"    # Defined in the corresponding inventory

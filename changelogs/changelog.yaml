@@ -1,0 +1,29 @@
+---
+releases:
+  - version: "1.0.0"
+    release_date: "2025-06-30"
+    changes:
+      release_summary: |
+        Initial release of the pcg.alpaca_operator Ansible Collection.
+        This version introduces modules to manage the ALPACA Operator configuration via its REST API.
+
+      major_changes:
+        - Initial implementation.
+
+      added:
+        - alpaca_group: Create, rename, or delete ALPACA Operator groups.
+        - alpaca_system: Create, update, rename, or delete systems, including agent and variable assignments.
+        - Shared module_utils:
+          - alpaca_api.py: Handles authentication and HTTP communication with the ALPACA REST API.
+        - Full documentation and example playbooks.
+        - Support for Ansible 2.16+ and Python 2.7+/3.x.
+
+      deprecated: []
+
+      removed: []
+
+      security_fixes: []
+
+      bugfixes: []
+
+      known_issues: []

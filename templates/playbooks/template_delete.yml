@@ -1,0 +1,76 @@
+- name: Test Alpaca Groups Module against Test Hosts
+  hosts: alpaca
+  gather_facts: false
+
+  tasks:
+
+    - name: Delete a specific command
+      pcg.alpaca_operator.alpaca_command:
+        # --- System identification (either systemName or systemId is required) ---
+        system:
+          # systemName: "My System"                                 # Optional if systemId is used
+          # systemId: 1                                             # Optional if systemName is used
+        command:
+          name: "BKP: DB log sync 3"                                # Required: Command description (acts as identifier in combination with the agentName or agentId)
+          # --- Agent assignment (either agentName or agentId is required) ---
+          # agentName: "ansible_testing_agent_03"                   # Optional if agentId is used
+          # agentId: 123                                            # Optional if agentName is used
+          state: absent
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: Delete ALL commands in a system
+      pcg.alpaca_operator.alpaca_command_set:
+        # --- System identification (either systemName or systemId is required) ---
+        system:
+          # systemName: "My System"                                 # Optional if systemId is used
+          # systemId: 1                                             # Optional if systemName is used
+        commands: []
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: Delete a system
+      pcg.alpaca_operator.alpaca_system:
+        name: "My System"                                           # Required: System name
+        state: absent
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: Delete a group
+      pcg.alpaca_operator.alpaca_group:
+        name: "My Group"                                            # Required: Agent name
+        state: absent
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: Delete an agent
+      pcg.alpaca_operator.alpaca_agent:
+        name: "My Agent"                                            # Required: Agent name
+        state: absent
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"

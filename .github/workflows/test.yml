@@ -1,0 +1,174 @@
+#
+# Description:
+#   This GitHub Actions workflow tests the compatibility of the pcg.alpaca_operator Ansible Collection
+#   across a matrix of Python and Ansible versions. It builds the collection, installs it into the
+#   correct path, runs sanity tests using `ansible-test`, and classifies each result as either tested,
+#   failed, or unsupported. The results are compiled into a support matrix and uploaded as an artifact.
+#
+name: CI Test Matrix
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ansible-version: "2.12"
+            python-version: "3.8"
+          - ansible-version: "2.12"
+            python-version: "3.9"
+          - ansible-version: "2.12"
+            python-version: "3.10"
+          - ansible-version: "2.13"
+            python-version: "3.8"
+          - ansible-version: "2.13"
+            python-version: "3.9"
+          - ansible-version: "2.13"
+            python-version: "3.10"
+          - ansible-version: "2.14"
+            python-version: "3.9"
+          - ansible-version: "2.14"
+            python-version: "3.10"
+          - ansible-version: "2.14"
+            python-version: "3.11"
+          - ansible-version: "2.15"
+            python-version: "3.9"
+          - ansible-version: "2.15"
+            python-version: "3.10"
+          - ansible-version: "2.15"
+            python-version: "3.11"
+          - ansible-version: "2.16"
+            python-version: "3.10"
+          - ansible-version: "2.16"
+            python-version: "3.11"
+          - ansible-version: "2.16"
+            python-version: "3.12"
+          - ansible-version: "2.17"
+            python-version: "3.10"
+          - ansible-version: "2.17"
+            python-version: "3.11"
+          - ansible-version: "2.17"
+            python-version: "3.12"
+
+    name: Test ${{ matrix.python-version }} / Ansible ${{ matrix.ansible-version }}
+    env:
+      HOME: /home/runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Ansible sanity dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y shellcheck
+          python -m pip install --upgrade pip setuptools wheel
+
+      - name: Install Ansible Core ${{ matrix.ansible-version }}
+        run: |
+          pip install "ansible-core==${{ matrix.ansible-version }}.*" || echo "unsupported" > unsupported.flag
+
+      - name: Install test requirements
+        run: |
+          pip install -r requirements.txt || true
+          pip install yamllint flake8
+
+      - name: Build Ansible Collection
+        run: |
+          ansible-galaxy collection build
+
+      - name: List built archive
+        run: ls -lh *.tar.gz
+
+      - name: Install Ansible Collection
+        run: |
+          ansible-galaxy collection install pcg-alpaca_operator-*.tar.gz --force --collections-path ~/.ansible/collections
+
+      - name: Run ansible-test (sanity only)
+        working-directory: ${{ env.HOME }}/.ansible/collections/ansible_collections/pcg/alpaca_operator
+        run: |
+          ansible-test sanity --python ${{ matrix.python-version }} --color --docker || echo "failed" > failed.flag
+
+
+      - name: Write result
+        if: always()
+        run: |
+          STATUS="failed"
+          if [ -f ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/failed.flag ]; then
+            STATUS="failed"
+          elif [ -f ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/unsupported.flag ]; then
+            STATUS="unsupported"
+          else
+            STATUS="tested"
+          fi
+          echo "${{ matrix.python-version }};${{ matrix.ansible-version }};${STATUS}" >> results.csv
+        shell: bash
+
+      - name: Upload test result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-${{ matrix.python-version }}-${{ matrix.ansible-version }}
+          path: results.csv
+
+      - name: Fail if Ansible sanity failed
+        if: always()
+        run: |
+          if [ -f ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/failed.flag ]; then
+            echo "::error file=ansible-test::Sanity tests failed"
+            exit 1
+          elif [ -f ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/unsupported.flag ]; then
+            echo "::error file=ansible-test::Sanity tests failed"
+            exit 1
+          fi
+
+  summarize:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: results
+
+      - name: Combine CSVs
+        run: |
+          cat results/**/*.csv > combined.csv
+
+      - name: Install Python dependencies
+        run: pip install pandas
+
+      - name: Generate support matrix
+        run: |
+          python3 .github/scripts/generate-support-matrix.py combined.csv > support_matrix.md
+
+      - name: Upload support matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: support-matrix
+          path: support_matrix.md
+
+      - name: Update README.md with latest support matrix
+        run: |
+          python3 .github/scripts/update-readme.py
+
+      - name: Commit updated README.md
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add README.md
+          git commit -m "Update support matrix [ci skip]" || echo "No changes to commit"
+          git push

@@ -1,0 +1,182 @@
+- name: Configure full ALPACA Operator "stack" on target hosts      # Name of the Playbook
+  hosts: local                                                      # Hostname or group defined in the corresponding inventory
+  gather_facts: false
+
+  vars:
+    group_name: "ansible_testing_group_01"
+    agent_name_1: "ansible_testing_agent_01"
+    agent_name_2: "ansible_testing_agent_02"
+    system_name: "ansible01"
+
+  tasks:
+    - name: "1. Ensure ALPACA group {{ group_name }} exists"
+      pcg.alpaca_operator.alpaca_group:
+        name: "{{ group_name }}"
+        state: present
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: "2. Ensure ALPACA agent {{ agent_name_1 }} exists"
+      pcg.alpaca_operator.alpaca_agent:
+        name: "{{ agent_name_1 }}"
+        description: "PCG Ansible Test Agent {{ agent_name_1 }}"
+        ipAddress: "10.1.1.1"
+        location: "virtual"
+        escalation:
+          failuresBeforeReport: 1
+          mailEnabled: false
+          mailAddress: "monitoring@pcg.io"
+          smsEnabled: true
+          smsAddress: "0123456789"
+        state: present
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: "3. Ensure ALPACA agent {{ agent_name_2 }} exists"
+      pcg.alpaca_operator.alpaca_agent:
+        name: "{{ agent_name_2 }}"
+        description: "PCG Ansible Test Agent {{ agent_name_2 }}"
+        ipAddress: "10.1.1.2"
+        location: "virtual"
+        escalation:
+          failuresBeforeReport: 2
+          mailEnabled: true
+          mailAddress: "monitoring@pcg.io"
+          smsEnabled: false
+          smsAddress: "0123456789"
+        state: present
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: "4. Ensure ALPACA system {{ system_name }} exists"
+      pcg.alpaca_operator.alpaca_system:
+        name: "{{ system_name }}"
+        description: "PCG Ansible Test {{ system_name }}"
+        magicNumber: 59
+        checksDisabled: false
+        groupName: "{{ group_name }}"
+        rfcConnection:
+          type: instance
+          host: "{{ system_name }}-host"
+          instanceNumber: 42
+          sid: "ABC"
+          logonGroup: "{{ system_name }}-lgroup"
+          username: "rfc_myUser"
+          password: "rfc_myPasswd"
+          client: "123"
+          sapRouterString: "rfc_SAPRouter"
+          sncEnabled: false
+        agents:
+          - name: "{{ agent_name_1 }}"
+          - name: "{{ agent_name_2 }}"
+        variables:
+          - name: "<BKP_DATA_CLEANUP_INT2>"
+            value: "55"
+          - name: "<BKP_DATA_DEST1>"
+            value: "42"
+          - name: "<BKP_DATA_CLEANUP_INT>"
+            value: "12"
+        state: present
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: "5. Ensure a command set is deployed for {{ system_name }}"
+      pcg.alpaca_operator.alpaca_command_set:
+        system:
+          systemName: "{{ system_name }}"
+        commands:
+          - name: "BKP: DB log sync 1"
+            agentName: "{{ agent_name_1 }}"
+            processCentralId: 8990048
+            parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+            schedule:
+              period: every_5min
+              time: "11:11:11"
+              cronExpression: ""
+              daysOfWeek:
+                - monday
+                - sunday
+            parametersNeeded: false
+            disabled: true
+            critical: true
+            history:
+              documentAllRuns: false
+              retention: 100
+            autoDeploy: false
+            timeout:
+              type: default
+              value: 10
+            escalation:
+              mailEnabled: true
+              smsEnabled: true
+              mailAddress: "monitoring@pcg.io"
+              smsAddress: "0123456789"
+              minFailureCount: 1
+              triggers:
+                everyChange: true
+                toRed: false
+                toYellow: false
+                toGreen: true
+
+          - name: "BKP: DB log sync 2"
+            agentName: "{{ agent_name_2 }}"
+            processCentralId: 8000039
+            parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+            schedule:
+              period: manually
+              time: "12:12:12"
+              cronExpression: ""
+              daysOfWeek:
+                - monday
+                - wednesday
+                - friday
+                - sunday
+            parametersNeeded: false
+            disabled: true
+            critical: true
+            history:
+              documentAllRuns: false
+              retention: 200
+            autoDeploy: false
+            timeout:
+              type: custom
+              value: 20
+            escalation:
+              mailEnabled: true
+              smsEnabled: true
+              mailAddress: "monitoring@pcg.io"
+              smsAddress: "0123456789"
+              minFailureCount: 1
+              triggers:
+                everyChange: true
+                toRed: false
+                toYellow: false
+                toGreen: true
+
+        apiConnection:
+          host: "{{ inventory_hostname }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"

@@ -1,0 +1,35 @@
+- name: Manage ALPACA Operator agent                                # Name of the Playbook
+  hosts: local                                                      # hostname or group defined in the corresponding inventory
+  gather_facts: false
+
+  tasks:
+    - name: Ensure ALPACA agent is present and properly configured
+      pcg.alpaca_operator.alpaca_agent:
+        name: "agent01"                                             # Required: existing or new agent name
+        # new_name: "agent-renamed"                                 # Optional: rename the agent
+
+        # --- Desired state ---
+        state: present                                              # present | absent
+
+        # --- Agent metadata ---
+        description: "Test agent used for backups"                  # Required: unique description
+        ipAddress: "192.168.1.100"                                  # Required: IP address of the agent
+        location: "virtual"                                         # Optional: virtual | local1 | local2 | remote
+        scriptGroupId: 0                                            # Optional: script group reference
+
+        # --- Escalation settings (optional) ---
+        escalation:
+          failuresBeforeReport: 3                                   # How many failures before notification
+          mailEnabled: true
+          mailAddress: "monitoring@pcg.io"
+          smsEnabled: true
+          smsAddress: "0123456789"
+
+        # --- API connection configuration ---
+        apiConnection:
+          host: "{{ inventory_hostname }}"                          # Defined in the corresponding inventory
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"            # Defined in the corresponding inventory
+          port: "{{ ALPACA_Operator_API_Port }}"                    # Defined in the corresponding inventory
+          username: "{{ ALPACA_Operator_API_Username }}"            # Defined in the corresponding inventory
+          password: "{{ ALPACA_Operator_API_Password }}"            # Defined in the corresponding inventory
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"    # Defined in the corresponding inventory
