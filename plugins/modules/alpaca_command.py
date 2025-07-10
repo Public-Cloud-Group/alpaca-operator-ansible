@@ -154,24 +154,24 @@ options:
                         type: int
                         required: false
             autoDeploy:
-                description: "<ToDo: Add a description>"
+                description: "Whether to automatically deploy the command"
                 version_added: '1.0.0'
                 required: false
                 type: bool
             timeout:
-                description: "<ToDo: Add a description>"
+                description: "Timeout configuration for command execution"
                 version_added: '1.0.0'
                 required: false
                 type: dict
                 suboptions:
                     type:
-                        description: "<ToDo: Add a description>"
+                        description: "Type of timeout (none, default, or custom)"
                         version_added: '1.0.0'
                         type: str
                         required: false
                         choices: [none, default, custom]
                     value:
-                        description: "<ToDo: Add a description>"
+                        description: "Timeout value in seconds (for custom type)"
                         version_added: '1.0.0'
                         type: int
                         required: false

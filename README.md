@@ -8,7 +8,7 @@ This Ansible Collection provides modules to manage **ALPACA Operator** via its R
 
 <!-- license:start -->
 
-<!-- License --!>
+This project is licensed under the GNU General Public License v3.0 or later. See the [LICENSE](LICENSE) file for details.
 
 <!-- license:end -->
 
@@ -40,7 +40,7 @@ Additionally, a shared utility (`_alpaca_api.py`) is available under `module_uti
 
 - Python >= 3.8
 - Ansible >= 2.12
-- ALPACA Operator >= 5.5.1
+- ALPACA Operator >= 5.6.0
 
 ### Support Matrix
 
