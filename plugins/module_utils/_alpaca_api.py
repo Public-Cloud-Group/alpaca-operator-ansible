@@ -2,6 +2,7 @@
 
 # Copyright: Contributors to the Ansible project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# <!-- License --!>
 
 # This module is for internal use only within the pcg.alpaca_operator collection.
 # Python versions supported: 2.7+

@@ -23,7 +23,7 @@ for py in py_versions:
     for ans in ansible_versions:
         match = df[(df['python'] == py) & (df['ansible'] == ans)]
         if match.empty:
-            row.append(" ")
+            row.append("⬜")  # not tested
         else:
             status = match.iloc[0]['status']
             symbol = {"tested": "✅", "failed": "❌", "unsupported": "⚠️"}.get(str(status).strip(), "❓")

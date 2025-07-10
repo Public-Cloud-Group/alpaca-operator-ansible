@@ -3,6 +3,7 @@
 
 # Copyright: Contributors to the Ansible project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# <!-- License --!>
 
 from __future__ import (absolute_import, division, print_function)
 
@@ -444,7 +445,7 @@ def main():
     # Validate SID against pattern
     try:
         import re
-        rfc_sid = module.params.get('rfcConnection', {}).get('sid')
+        rfc_sid = module.params.get('rfcConnection', {}).get('sid') if module.params.get('rfcConnection') else None
         if rfc_sid and not re.fullmatch(r'^[A-Z]{3}$', rfc_sid):
             module.fail_json(msg="Invalid value for 'sid'. Must be exactly 3 uppercase letters (A-Z).")
     except ImportError:

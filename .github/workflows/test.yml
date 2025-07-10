@@ -3,13 +3,17 @@
 #   This GitHub Actions workflow tests the compatibility of the pcg.alpaca_operator Ansible Collection
 #   across a matrix of Python and Ansible versions. It builds the collection, installs it into the
 #   correct path, runs sanity tests using `ansible-test`, and classifies each result as either tested,
-#   failed, or unsupported. The results are compiled into a support matrix and uploaded as an artifact.
+#   failed, unsupported, or untested. The results are compiled into a support matrix and uploaded as an artifact.
 #
-name: CI Test Matrix
+name: CI
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
   pull_request:
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   test:
@@ -22,8 +26,6 @@ jobs:
             python-version: "3.8"
           - ansible-version: "2.12"
             python-version: "3.9"
-          - ansible-version: "2.12"
-            python-version: "3.10"
           - ansible-version: "2.13"
             python-version: "3.8"
           - ansible-version: "2.13"

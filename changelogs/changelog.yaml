@@ -1,7 +1,7 @@
 ---
 releases:
   - version: "1.0.0"
-    release_date: "2025-06-30"
+    release_date: "2025-07-30"
     changes:
       release_summary: |
         Initial release of the pcg.alpaca_operator Ansible Collection.
@@ -16,7 +16,7 @@ releases:
         - Shared module_utils:
           - alpaca_api.py: Handles authentication and HTTP communication with the ALPACA REST API.
         - Full documentation and example playbooks.
-        - Support for Ansible 2.16+ and Python 2.7+/3.x.
+        - Support for Ansible 2.12+ and Python 3.8+.
 
       deprecated: []
 

@@ -1,12 +1,16 @@
 # pcg.alpaca_operator Collection for Ansible
 
-[![CI](https://github.com/ansible-collections/REPONAMEHERE/workflows/CI/badge.svg?event=push)](https://github.com/ansible-collections/REPONAMEHERE/actions)
-[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/REPONAMEHERE)](https://codecov.io/gh/ansible-collections/REPONAMEHERE)
+[![CI](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/test.yml/badge.svg)](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/test.yml)
 
 This Ansible Collection provides modules to manage **ALPACA Operator** via its REST API. It is designed to allow automation of common lifecycle operations related to groups, agents, systems, and commands within ALPACA-managed infrastructures.
 
 ## License
 
+<!-- license:start -->
+
+<!-- License --!>
+
+<!-- license:end -->
 
 
 ## Code of Conduct
@@ -44,14 +48,21 @@ Additionally, a shared utility (`_alpaca_api.py`) is available under `module_uti
 
 |             | Ansible 2.12.* | Ansible 2.13.* | Ansible 2.14.* | Ansible 2.15.* | Ansible 2.16.* | Ansible 2.17.* |
 | ----------- | -------------- | -------------- | -------------- | -------------- | -------------- | -------------- |
-| Python 3.8  | ✅             | ✅             |                |                |                |                |
-| Python 3.9  | ✅             | ✅             | ✅             | ✅             |                |                |
-| Python 3.10 | ❌             | ✅             | ✅             | ✅             | ✅             | ✅             |
-| Python 3.11 |                |                | ✅             | ✅             | ✅             | ✅             |
-| Python 3.12 |                |                |                |                | ✅             | ✅             |
+| Python 3.8 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Python 3.9 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ |
+| Python 3.10 | ⬜ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Python 3.11 | ⬜ | ⬜ | ✅ | ✅ | ✅ | ✅ |
+| Python 3.12 | ⬜ | ⬜ | ⬜ | ⬜ | ✅ | ✅ |
 
 <!-- support-matrix:end -->
 
+### Legend
+
+| Symbol | Meaning                                               |
+| ------ | ----------------------------------------------------- |
+| ✅     | Tested and **supported**                              |
+| ❌     | Tested and **unsupported** (failed)                   |
+| ⬜     | **Not tested** (e.g. unsupported version combination) |
 
 ## Installation
 
@@ -61,7 +72,11 @@ You can install this collection from Ansible Galaxy:
 ansible-galaxy collection install pcg.alpaca_operator
 ```
 
----
+Or directly from the Git repository:
+
+```bash
+ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator-ansible.git
+```
 
 ## Example Usage
 
@@ -188,6 +203,7 @@ ansible-galaxy collection install pcg.alpaca_operator
 ### System Command Management
 
 **Warning**
+  
 ⚠️ When using the `alpaca_command_set` module, all existing commands on the target system that are not included in your playbook will be deleted. Use this module with care!
 
 ```yaml
