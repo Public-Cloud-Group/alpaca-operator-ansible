@@ -6,35 +6,27 @@
     processed_commands: "{{ processed_commands | default([]) + [processed_command] }}"
   vars:
     row: "{{ item }}"
-    sla_level: "{{ row[csv_processor.column_mapping.sla_level] }}"
+    sla_level: "{{ row[5] }}"  # system_sla column
     sla_config: "{{ sla_definitions[sla_level] }}"
     
-    # Process parameters with variable mapping
-    raw_parameters: "{{ row[csv_processor.column_mapping.parameters] | default('') }}"
-    processed_parameters: "{{ raw_parameters | regex_replace('<([^>]+)>', '{{ variable_mappings[\\1].environments[processing_options.environment] | default(variable_mappings[\\1].default) }}') }}"
-    
-    # Process schedule
-    schedule_name: "{{ row[csv_processor.column_mapping.schedule] | default('manual') }}"
-    schedule_config: "{{ schedule_templates[schedule_name] | default(schedule_templates['manual']) }}"
-    
-    # Build processed command
+    # Build processed command based on CSV structure
     processed_command:
       system:
-        systemName: "{{ row[csv_processor.column_mapping.system_name] }}"
+        systemName: "{{ row[0] }}"  # primary_system
       command:
-        name: "{{ row[csv_processor.column_mapping.command_name] }}"
+        name: "{{ 'Backup_' + row[0] + '_' + row[3] }}"  # primary_system + system_type
         state: "present"
-        agentName: "{{ row[csv_processor.column_mapping.agent_name] }}"
-        parameters: "{{ processed_parameters }}"
+        agentName: "{{ row[8] }}"  # system_vdns
+        parameters: "-p {{ row[3] }} -s {{ row[0] }} -l {{ row[5] }} -d {{ row[4] }} -r {{ row[9] }} -b {{ row[10] }} -t {{ row[11] }} -h {{ row[1] }}"
         parametersNeeded: false
-        disabled: "{{ not (row[csv_processor.column_mapping.enabled] | default('true') | bool) }}"
-        critical: "{{ row[csv_processor.column_mapping.critical] | default('false') | bool }}"
+        disabled: false
+        critical: true
         autoDeploy: false
         schedule:
-          period: "{{ schedule_config.period }}"
-          time: "{{ schedule_config.time }}"
-          cronExpression: "{{ schedule_config.cron_expression }}"
-          daysOfWeek: "{{ schedule_config.days_of_week }}"
+          period: "{{ sla_config.schedule_defaults.period }}"
+          time: "{{ sla_config.schedule_defaults.time }}"
+          cronExpression: ""
+          daysOfWeek: "{{ sla_config.schedule_defaults.days_of_week }}"
         history:
           documentAllRuns: false
           retention: "{{ sla_config.retention.local_log_ret * 86400 }}"
@@ -58,17 +50,17 @@
           description: "{{ sla_config.description }}"
       apiConnection: "{{ alpaca_api }}"
   loop: "{{ validated_csv_data }}"
-  when: csv_processor.skip_header | default(true)
 
 - name: Create processing summary
   set_fact:
     processing_summary:
       total_commands: "{{ processed_commands | length }}"
       sla_distribution:
-        sla_1: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', '1') | list | length }}"
-        sla_2: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', '2') | list | length }}"
-        sla_3: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', '3') | list | length }}"
-      systems: "{{ processed_commands | map(attribute='command.system.systemName') | unique | list }}"
+        sla_1: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA1') | list | length }}"
+        sla_2: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA2') | list | length }}"
+        sla_3: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA3') | list | length }}"
+        sla_4: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA4') | list | length }}"
+      systems: "{{ processed_commands | map(attribute='system.systemName') | unique | list }}"
       agents: "{{ processed_commands | map(attribute='command.agentName') | unique | list }}"
 
 - name: Display processing summary
@@ -80,6 +72,7 @@
         * SLA 1: {{ processing_summary.sla_distribution.sla_1 }}
         * SLA 2: {{ processing_summary.sla_distribution.sla_2 }}
         * SLA 3: {{ processing_summary.sla_distribution.sla_3 }}
+        * SLA 4: {{ processing_summary.sla_distribution.sla_4 }}
       - Systems: {{ processing_summary.systems | length }}
       - Agents: {{ processing_summary.agents | length }}
-      - Environment: {{ processing_options.environment }} 
+      - Processing Mode: {{ 'Direct creation' if processing_options.create_commands else 'Playbook generation' }} 

@@ -7,20 +7,21 @@
   gather_facts: false
 
   vars:
-    # Override default CSV file
-    csv_processor:
-      input_file: "swm_prod.csv"
-      output_dir: "{{ playbook_dir }}/output"
-      delimiter: ","
-      encoding: "utf-8"
-      skip_header: true
+    # Override default CSV file (possible to do so here)
+    # csv_processor:
+    #   input_file: "{{ role_path }}/files/swm_prod.csv"
+    #   output_dir: "{{ playbook_dir }}/output"
+    #   delimiter: ";"
+    #   encoding: "utf-8"
+    #   skip_header: true
 
-    # Set processing environment
+    # Set processing environment (possible to override defaults here)
     processing_options:
       create_commands: false  # Generate playbooks instead of creating commands directly
-      validate_data: true
+      validate_data: false
+      process_csv_data: false
       environment: "prod"
-      log_level: "info"
+      log_level: "debug"
 
     # ALPACA API Configuration (will be overridden by inventory)
     alpaca_api:
@@ -32,9 +33,9 @@
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs | default(true) }}"
 
   tasks:
-    - name: Include CSV processor role
+    - name: Include swm_backup role
       include_role:
-        name: csv_processor
+        name: swm_backup
 
     - name: Display processing results
       debug:

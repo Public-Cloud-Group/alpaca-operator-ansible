@@ -1,39 +1,39 @@
 # CSV Processor Role
 
-Eine Ansible Role zur Verarbeitung von CSV-Dateien und Generierung von ALPACA Operator Commands basierend auf definierten SLA-Levels und Variable-Mappings.
+An Ansible role for processing CSV files and generating ALPACA Operator commands based on defined SLA levels and variable mappings.
 
 ## Features
 
-- **CSV-Verarbeitung**: Automatische Verarbeitung von CSV-Dateien mit konfigurierbaren Spalten
-- **SLA-Definitionen**: Drei vordefinierte SLA-Levels (SLA1-3) mit unterschiedlichen Retention-, Timeout- und Escalation-Einstellungen
-- **Variable-Mapping**: Environment-spezifische Werte für Command-Parameter (z.B. `<BKP_LOG_SRC>`)
-- **Schedule-Templates**: Vordefinierte Schedule-Templates (hourly, daily, every_5min, etc.)
-- **Playbook-Generierung**: Automatische Generierung verschiedener Playbook-Typen
-- **Validierung**: Umfassende Validierung von CSV-Daten und Konfigurationen
+- **CSV Processing**: Automatic processing of CSV files with configurable columns
+- **SLA Definitions**: Three predefined SLA levels (SLA1-3) with different retention, timeout, and escalation settings
+- **Variable Mapping**: SLA-dependent values for command parameters (e.g., `<BKP_LOG_SRC>`)
+- **Schedule Templates**: Predefined schedule templates (hourly, daily, every_5min, etc.)
+- **Playbook Generation**: Automatic generation of various playbook types
+- **Validation**: Comprehensive validation of CSV data and configurations
 
-## SLA Definitionen
+## SLA Definitions
 
 ### SLA 1 - Basic SLA
-- Retention: 7 Tage lokale Dateien, 30 Tage Blob-Logs
-- Timeout: 300 Sekunden (Standard)
-- Escalation: Email bei Fehlern, 2 Fehler bis Escalation
-- Schedule: Stündlich, Montag-Freitag
+- Retention: 7 days local files, 30 days blob logs
+- Timeout: 300 seconds (standard)
+- Escalation: Email on errors, 2 failures until escalation
+- Schedule: Hourly, Monday-Friday
 
 ### SLA 2 - Enhanced SLA
-- Retention: 14 Tage lokale Dateien, 90 Tage Blob-Logs
-- Timeout: 600 Sekunden (Custom)
-- Escalation: Email + SMS, 1 Fehler bis Escalation
-- Schedule: Alle 5 Minuten, 7 Tage/Woche
+- Retention: 14 days local files, 90 days blob logs
+- Timeout: 600 seconds (custom)
+- Escalation: Email + SMS, 1 failure until escalation
+- Schedule: Every 5 minutes, 7 days/week
 
 ### SLA 3 - Premium SLA
-- Retention: 30 Tage lokale Dateien, 365 Tage Blob-Logs
-- Timeout: 1800 Sekunden (Custom)
-- Escalation: Email + SMS, 1 Fehler bis Escalation
-- Schedule: Jede Minute, 7 Tage/Woche
+- Retention: 30 days local files, 365 days blob logs
+- Timeout: 1800 seconds (custom)
+- Escalation: Email + SMS, 1 failure until escalation
+- Schedule: Every minute, 7 days/week
 
 ## Variable Mappings
 
-Die Role unterstützt folgende Variable-Mappings:
+The role supports the following variable mappings:
 
 - `<BKP_LOG_SRC>` - Backup Log Source
 - `<BKP_LOG_DEST1>` - Primary Backup Destination
@@ -42,75 +42,75 @@ Die Role unterstützt folgende Variable-Mappings:
 - `<BKP_LOG_CLEANUP_INT2>` - Cleanup Interval 2
 - `<DB_HOST>` - Database Host
 
-Jede Variable kann environment-spezifische Werte haben (prod, test, dev).
+Variable values are determined by the SLA level assigned to each command.
 
 ## Schedule Templates
 
-- `manual` - Manuelle Ausführung
-- `hourly` - Stündlich
-- `daily` - Täglich um 02:00
-- `business_hours` - Stündlich, Montag-Freitag
-- `weekend` - Täglich um 06:00, Wochenende
-- `every_5min` - Alle 5 Minuten
-- `every_minute` - Jede Minute
+- `manual` - Manual execution
+- `hourly` - Hourly
+- `daily` - Daily at 02:00
+- `business_hours` - Hourly, Monday-Friday
+- `weekend` - Daily at 06:00, weekends
+- `every_5min` - Every 5 minutes
+- `every_minute` - Every minute
 
-## Verwendung
+## Usage
 
-### 1. Role einbinden
+### 1. Include Role
 
 ```yaml
 - name: Process CSV and generate ALPACA Commands
   hosts: local
   gather_facts: false
-  
+
   tasks:
     - name: Include CSV processor role
       include_role:
         name: csv_processor
 ```
 
-### 2. Konfiguration anpassen
+### 2. Adjust Configuration
 
 ```yaml
 vars:
   csv_processor:
     input_file: "swm_prod.csv"
     output_dir: "{{ playbook_dir }}/output"
-  
+
   processing_options:
-    create_commands: false  # Playbooks generieren
+    create_commands: false  # Generate playbooks
     environment: "prod"
 ```
 
-### 3. CSV-Datei erstellen
+### 3. Create CSV File
 
 ```csv
 SystemName,AgentName,CommandName,SLA,Parameters,Schedule,Enabled,Critical
 "Production Server","backup_agent_01","BKP: DB log sync","2","-p GLTarch -s <BKP_LOG_SRC>","hourly","true","false"
 ```
 
-## Generierte Dateien
+## Generated Files
 
-Die Role generiert folgende Dateien im Output-Verzeichnis:
+The role generates the following files in the output directory:
 
-- **Individual Command Playbooks**: Ein Playbook pro Command
-- **Consolidated Playbook**: Alle Commands in einem Playbook
-- **SLA-specific Playbooks**: Separate Playbooks für jeden SLA-Level
-- **System-specific Playbooks**: Separate Playbooks für jedes System
-- **Inventory Template**: Ansible Inventory mit API-Konfiguration
-- **Variables File**: Alle Konfigurationen und Mappings
-- **README**: Dokumentation der generierten Dateien
+- **Individual Command Playbooks**: One playbook per command
+- **Consolidated Playbook**: All commands in one playbook
+- **SLA-specific Playbooks**: Separate playbooks for each SLA level
+- **System-specific Playbooks**: Separate playbooks for each system
+- **Inventory Template**: Ansible inventory with API configuration
+- **Variables File**: All configurations and mappings
+- **README**: Documentation of generated files
 
-## Beispiel
+## Example
 
-Siehe `example_playbook.yml` und `files/swm_prod.csv` für ein vollständiges Beispiel.
+See `example_playbook.yml` and `files/swm_prod.csv` for a complete example.
 
-## Anforderungen
+## Requirements
 
 - Ansible 2.12+
 - ALPACA Operator Collection (`pcg.alpaca_operator`)
-- CSV-Datei mit erforderlichen Spalten
+- CSV file with required columns
 
-## Lizenz
+## License
 
-GPL-3.0-or-later 
+GPL-3.0-or-later

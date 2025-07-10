@@ -1,7 +1,6 @@
 ---
 # SLA {{ item }} Commands Playbook
 # Generated from CSV: {{ csv_processor.input_file }}
-# Environment: {{ processing_options.environment }}
 # SLA Level: {{ item }} - {{ sla_definitions[item].name }}
 
 - name: Configure ALPACA Commands with SLA {{ item }}
@@ -63,12 +62,11 @@
       loop: "{{ sla_commands }}"
       loop_control:
         loop_var: command_item
-        label: "{{ command_item.command.name }}"
 
 # SLA {{ item }} Summary:
 # - SLA Name: {{ sla_definitions[item].name }}
 # - SLA Description: {{ sla_definitions[item].description }}
 # - Total Commands: {{ sla_commands | length }}
-# - Systems: {{ sla_commands | map(attribute='command.system.systemName') | unique | list | length }}
+# - Systems: {{ sla_commands | map(attribute='system.systemName') | unique | list | length }}
 # - Agents: {{ sla_commands | map(attribute='command.agentName') | unique | list | length }}
-# Generated: {{ ansible_date_time.iso8601 }}
+# Generated: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}

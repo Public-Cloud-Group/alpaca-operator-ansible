@@ -22,9 +22,9 @@
     dest: "{{ csv_processor.output_dir }}/sla_{{ item }}_commands.yml"
     mode: '0644'
   loop:
-    - "1"
-    - "2"
-    - "3"
+    - "SLA1"
+    - "SLA2"
+    - "SLA3"
 
 - name: Generate system-specific playbooks
   template:

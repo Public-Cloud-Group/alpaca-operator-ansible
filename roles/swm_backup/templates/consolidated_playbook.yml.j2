@@ -1,7 +1,6 @@
 ---
 # Consolidated ALPACA Commands Playbook
 # Generated from CSV: {{ csv_processor.input_file }}
-# Environment: {{ processing_options.environment }}
 # Total Commands: {{ processed_commands | length }}
 
 - name: Configure ALPACA Commands from CSV
@@ -9,64 +8,64 @@
   gather_facts: false
 
   tasks:
-    - name: Configure ALPACA Commands
+{% for command in processed_commands %}
+    - name: Configure ALPACA Command - {{ command.command.name }}
       pcg.alpaca_operator.alpaca_command:
         system:
-          systemName: "{{ item.system.systemName }}"
+          systemName: "{{ command.system.systemName }}"
 
         command:
-          name: "{{ item.command.name }}"
-          state: "{{ item.command.state }}"
-          agentName: "{{ item.command.agentName }}"
-          parameters: "{{ item.command.parameters }}"
-          parametersNeeded: "{{ item.command.parametersNeeded }}"
-          disabled: "{{ item.command.disabled }}"
-          critical: "{{ item.command.critical }}"
-          autoDeploy: "{{ item.command.autoDeploy }}"
+          name: "{{ command.command.name }}"
+          state: "{{ command.command.state }}"
+          agentName: "{{ command.command.agentName }}"
+          parameters: "{{ command.command.parameters }}"
+          parametersNeeded: "{{ command.command.parametersNeeded }}"
+          disabled: "{{ command.command.disabled }}"
+          critical: "{{ command.command.critical }}"
+          autoDeploy: "{{ command.command.autoDeploy }}"
 
           schedule:
-            period: "{{ item.command.schedule.period }}"
-            time: "{{ item.command.schedule.time }}"
-            cronExpression: "{{ item.command.schedule.cronExpression }}"
-            daysOfWeek: "{{ item.command.schedule.daysOfWeek }}"
+            period: "{{ command.command.schedule.period }}"
+            time: "{{ command.command.schedule.time }}"
+            cronExpression: "{{ command.command.schedule.cronExpression }}"
+            daysOfWeek: "{{ command.command.schedule.daysOfWeek }}"
 
           history:
-            documentAllRuns: "{{ item.command.history.documentAllRuns }}"
-            retention: "{{ item.command.history.retention }}"
+            documentAllRuns: "{{ command.command.history.documentAllRuns }}"
+            retention: "{{ command.command.history.retention }}"
 
           timeout:
-            type: "{{ item.command.timeout.type }}"
-            value: "{{ item.command.timeout.value }}"
+            type: "{{ command.command.timeout.type }}"
+            value: "{{ command.command.timeout.value }}"
 
           escalation:
-            mailEnabled: "{{ item.command.escalation.mailEnabled }}"
-            smsEnabled: "{{ item.command.escalation.smsEnabled }}"
-            mailAddress: "{{ item.command.escalation.mailAddress }}"
-            smsAddress: "{{ item.command.escalation.smsAddress }}"
-            minFailureCount: "{{ item.command.escalation.minFailureCount }}"
+            mailEnabled: "{{ command.command.escalation.mailEnabled }}"
+            smsEnabled: "{{ command.command.escalation.smsEnabled }}"
+            mailAddress: "{{ command.command.escalation.mailAddress }}"
+            smsAddress: "{{ command.command.escalation.smsAddress }}"
+            minFailureCount: "{{ command.command.escalation.minFailureCount }}"
             triggers:
-              everyChange: "{{ item.command.escalation.triggers.everyChange }}"
-              toRed: "{{ item.command.escalation.triggers.toRed }}"
-              toYellow: "{{ item.command.escalation.triggers.toYellow }}"
-              toGreen: "{{ item.command.escalation.triggers.toGreen }}"
+              everyChange: "{{ command.command.escalation.triggers.everyChange }}"
+              toRed: "{{ command.command.escalation.triggers.toRed }}"
+              toYellow: "{{ command.command.escalation.triggers.toYellow }}"
+              toGreen: "{{ command.command.escalation.triggers.toGreen }}"
 
         apiConnection:
-          host: "{{ item.apiConnection.host }}"
-          protocol: "{{ item.apiConnection.protocol }}"
-          port: "{{ item.apiConnection.port }}"
-          username: "{{ item.apiConnection.username }}"
-          password: "{{ item.apiConnection.password }}"
-          tls_verify: "{{ item.apiConnection.tls_verify }}"
-      loop: "{{ processed_commands }}"
-      loop_control:
-        label: "{{ item.command.name }}"
+          host: "{{ command.apiConnection.host }}"
+          protocol: "{{ command.apiConnection.protocol }}"
+          port: "{{ command.apiConnection.port }}"
+          username: "{{ command.apiConnection.username }}"
+          password: "{{ command.apiConnection.password }}"
+          tls_verify: "{{ command.apiConnection.tls_verify }}"
+
+{% endfor %}
 
 # Summary:
 # - Total Commands: {{ processed_commands | length }}
 # - SLA Distribution:
-#   * SLA 1: {{ processed_commands | selectattr('command.sla_info.level', 'equalto', '1') | list | length }}
-#   * SLA 2: {{ processed_commands | selectattr('command.sla_info.level', 'equalto', '2') | list | length }}
-#   * SLA 3: {{ processed_commands | selectattr('command.sla_info.level', 'equalto', '3') | list | length }}
-# - Systems: {{ processed_commands | map(attribute='command.system.systemName') | unique | list | length }}
+#   * SLA 1: {{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA1') | list | length }}
+#   * SLA 2: {{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA2') | list | length }}
+#   * SLA 3: {{ processed_commands | selectattr('command.sla_info.level', 'equalto', 'SLA3') | list | length }}
+# - Systems: {{ processed_commands | map(attribute='system.systemName') | unique | list | length }}
 # - Agents: {{ processed_commands | map(attribute='command.agentName') | unique | list | length }}
-# Generated: {{ ansible_date_time.iso8601 }}
+# Generated: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}

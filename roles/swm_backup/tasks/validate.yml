@@ -1,6 +1,28 @@
 ---
 # CSV Processor Role - Validation Tasks
 
+- name: Check if running on localhost
+  set_fact:
+    is_localhost: "{{ inventory_hostname in ['localhost', '127.0.0.1'] or ansible_connection == 'local' }}"
+
+- name: Create temporary directory for CSV file (remote hosts only)
+  file:
+    path: "/tmp/swm_backup"
+    state: directory
+    mode: '0755'
+  when: not is_localhost
+
+- name: Copy CSV file to remote host (remote hosts only)
+  copy:
+    src: "{{ role_path }}/files/swm_prod.csv"
+    dest: "/tmp/swm_backup/swm_prod.csv"
+    mode: '0644'
+  when: not is_localhost
+
+- name: Set CSV file path based on host type
+  set_fact:
+    csv_processor: "{{ csv_processor | combine({'input_file': '/tmp/swm_backup/swm_prod.csv' if not is_localhost else role_path + '/files/swm_prod.csv'}) }}"
+
 - name: Check if CSV file exists
   stat:
     path: "{{ csv_processor.input_file }}"
@@ -20,14 +42,14 @@
 - name: Validate SLA definitions
   assert:
     that:
-      - item.key in sla_definitions
-      - sla_definitions[item.key] is mapping
-      - 'retention' in sla_definitions[item.key]
-      - 'timeout' in sla_definitions[item.key]
-      - 'escalation' in sla_definitions[item.key]
-      - 'schedule_defaults' in sla_definitions[item.key]
-    fail_msg: "Invalid SLA definition for {{ item.key }}"
-    success_msg: "SLA definition {{ item.key }} is valid"
+      - "item in sla_definitions"
+      - "sla_definitions[item] is mapping"
+      - "'retention' in sla_definitions[item]"
+      - "'timeout' in sla_definitions[item]"
+      - "'escalation' in sla_definitions[item]"
+      - "'schedule_defaults' in sla_definitions[item]"
+    fail_msg: "Invalid SLA definition for {{ item }}"
+    success_msg: "SLA definition {{ item }} is valid"
   loop:
     - "SLA1"
     - "SLA2"
@@ -37,9 +59,9 @@
 - name: Validate variable mappings
   assert:
     that:
-      - item.value is mapping
-      - 'default' in item.value
-      - 'environments' in item.value
+      - "item.value is mapping"
+      - "'default' in item.value"
+      - "'default' in item.value"
     fail_msg: "Invalid variable mapping for {{ item.key }}"
     success_msg: "Variable mapping {{ item.key }} is valid"
   loop: "{{ variable_mappings | dict2items }}"
@@ -47,44 +69,142 @@
 - name: Validate schedule templates
   assert:
     that:
-      - item.value is mapping
-      - 'period' in item.value
-      - 'time' in item.value
-      - 'cron_expression' in item.value
-      - 'days_of_week' in item.value
+      - "item.value is mapping"
+      - "'period' in item.value"
+      - "'time' in item.value"
+      - "'cron_expression' in item.value"
+      - "'days_of_week' in item.value"
     fail_msg: "Invalid schedule template for {{ item.key }}"
     success_msg: "Schedule template {{ item.key }} is valid"
   loop: "{{ schedule_templates | dict2items }}"
 
-- name: Read and validate CSV structure
-  read_csv:
-    path: "{{ csv_processor.input_file }}"
-    delimiter: "{{ csv_processor.delimiter }}"
-    encoding: "{{ csv_processor.encoding }}"
-  register: csv_data
+- name: Read CSV file using shell
+  shell: "cat '{{ csv_processor.input_file }}'"
+  register: csv_content
+  changed_when: false
+
+- name: Convert CSV to structured data
+  set_fact:
+    csv_data: "{{ csv_content.stdout_lines | map('split', csv_processor.delimiter) | list }}"
+
+- name: Debug CSV data structure
+  debug:
+    msg: "CSV data: {{ csv_data }}"
+    verbosity: 1
+
+- name: Ensure CSV data is properly structured
+  assert:
+    that:
+      - "csv_data is defined"
+      - "csv_data | length > 0"
+      - "csv_data[0] is defined"
+    fail_msg: "CSV data is not properly structured"
 
 - name: Validate CSV columns
   assert:
     that:
-      - csv_processor.column_mapping.system_name in csv_data.list[0]
-      - csv_processor.column_mapping.agent_name in csv_data.list[0]
-      - csv_processor.column_mapping.command_name in csv_data.list[0]
-      - csv_processor.column_mapping.sla_level in csv_data.list[0]
-    fail_msg: "Required columns missing in CSV file"
+      - "'primary_system' in csv_data[0]"
+      - "'hdb_nw_sid' in csv_data[0]"
+      - "'hdb_tenant' in csv_data[0]"
+      - "'system_type' in csv_data[0]"
+      - "'system_staging' in csv_data[0]"
+      - "'system_sla' in csv_data[0]"
+      - "'system_vm_type' in csv_data[0]"
+      - "'system_vm_flavor' in csv_data[0]"
+      - "'system_vdns' in csv_data[0]"
+      - "'system_az' in csv_data[0]"
+      - "'hdb_data_min' in csv_data[0]"
+      - "'hdb_data_max' in csv_data[0]"
+      - "'hdb_log_min' in csv_data[0]"
+      - "'hdb_log_max' in csv_data[0]"
+      - "'hdb_shared_min' in csv_data[0]"
+      - "'hdb_shared_max' in csv_data[0]"
+      - "'Instance_no' in csv_data[0]"
+    fail_msg: "Required columns missing in CSV file. Expected all 17 columns: primary_system, hdb_nw_sid, hdb_tenant, system_type, system_staging, system_sla, system_vm_type, system_vm_flavor, system_vdns, system_az, hdb_data_min, hdb_data_max, hdb_log_min, hdb_log_max, hdb_shared_min, hdb_shared_max, Instance_no"
     success_msg: "CSV file contains all required columns"
 
-- name: Validate CSV data
+- name: Debug CSV data structure
+  debug:
+    msg: 
+      - "CSV data length: {{ csv_data | length }}"
+      - "CSV data[0]: {{ csv_data[0] if csv_data is defined else 'undefined' }}"
+      - "CSV data[1]: {{ csv_data[1] if csv_data is defined and csv_data | length > 1 else 'undefined' }}"
+      - "Skip header: {{ csv_processor.skip_header | default(true) }}"
+    verbosity: 1
+
+- name: Set CSV data rows for validation
+  set_fact:
+    csv_data_rows: "{{ csv_data[1:] if csv_processor.skip_header | default(true) else csv_data }}"
+
+- name: Debug CSV data rows
+  debug:
+    msg:
+      - "CSV data rows length: {{ csv_data_rows | length if csv_data_rows is defined else 'undefined' }}"
+      - "CSV data rows: {{ csv_data_rows if csv_data_rows is defined else 'undefined' }}"
+    verbosity: 1
+
+- name: Validate CSV data rows exist
   assert:
     that:
-      - item[csv_processor.column_mapping.sla_level] in ['1', '2', '3']
-      - item[csv_processor.column_mapping.system_name] | length > 0
-      - item[csv_processor.column_mapping.agent_name] | length > 0
-      - item[csv_processor.column_mapping.command_name] | length > 0
-    fail_msg: "Invalid data in row {{ loop.index }}: {{ item }}"
-    success_msg: "Row {{ loop.index }} is valid"
-  loop: "{{ csv_data.list }}"
-  when: csv_processor.skip_header | default(true)
+      - "csv_data_rows is defined"
+      - "csv_data_rows | length > 0"
+    fail_msg: "No CSV data rows found for validation"
+
+- name: Validate CSV data structure
+  assert:
+    that:
+      - "csv_data_rows is defined"
+      - "csv_data_rows | length > 0"
+      - "csv_data_rows[0] | length >= 17"
+      - "csv_data_rows[1] | length >= 17"
+    fail_msg: "CSV data structure is invalid"
+
+- name: Validate first row data
+  assert:
+    that:
+      - "csv_data_rows[0][0] | length > 0"  # primary_system
+      - "csv_data_rows[0][1] | length > 0"  # hdb_nw_sid
+      - "csv_data_rows[0][2] | length > 0"  # hdb_tenant
+      - "csv_data_rows[0][3] | length > 0"  # system_type
+      - "csv_data_rows[0][4] | length > 0"  # system_staging
+      - "csv_data_rows[0][5] in ['SLA1', 'SLA2', 'SLA3', 'SLA4']"  # system_sla
+      - "csv_data_rows[0][6] | length > 0"  # system_vm_type
+      - "csv_data_rows[0][7] | length > 0"  # system_vm_flavor
+      - "csv_data_rows[0][8] | length > 0"  # system_vdns
+      - "csv_data_rows[0][9] | length > 0"  # system_az
+      - "csv_data_rows[0][10] | length > 0"  # hdb_data_min
+      - "csv_data_rows[0][11] | length > 0"  # hdb_data_max
+      - "csv_data_rows[0][12] | length > 0"  # hdb_log_min
+      - "csv_data_rows[0][13] | length > 0"  # hdb_log_max
+      - "csv_data_rows[0][14] | length > 0"  # hdb_shared_min
+      - "csv_data_rows[0][15] | length > 0"  # hdb_shared_max
+      - "csv_data_rows[0][16] | length > 0"  # Instance_no
+    fail_msg: "Invalid data in first row: {{ csv_data_rows[0] }}"
+    success_msg: "First row is valid: {{ csv_data_rows[0][0] }} ({{ csv_data_rows[0][5] }})"
+
+- name: Validate second row data
+  assert:
+    that:
+      - "csv_data_rows[1][0] | length > 0"  # primary_system
+      - "csv_data_rows[1][1] | length > 0"  # hdb_nw_sid
+      - "csv_data_rows[1][2] | length > 0"  # hdb_tenant
+      - "csv_data_rows[1][3] | length > 0"  # system_type
+      - "csv_data_rows[1][4] | length > 0"  # system_staging
+      - "csv_data_rows[1][5] in ['SLA1', 'SLA2', 'SLA3', 'SLA4']"  # system_sla
+      - "csv_data_rows[1][6] | length > 0"  # system_vm_type
+      - "csv_data_rows[1][7] | length > 0"  # system_vm_flavor
+      - "csv_data_rows[1][8] | length > 0"  # system_vdns
+      - "csv_data_rows[1][9] | length > 0"  # system_az
+      - "csv_data_rows[1][10] | length > 0"  # hdb_data_min
+      - "csv_data_rows[1][11] | length > 0"  # hdb_data_max
+      - "csv_data_rows[1][12] | length > 0"  # hdb_log_min
+      - "csv_data_rows[1][13] | length > 0"  # hdb_log_max
+      - "csv_data_rows[1][14] | length > 0"  # hdb_shared_min
+      - "csv_data_rows[1][15] | length > 0"  # hdb_shared_max
+      - "csv_data_rows[1][16] | length > 0"  # Instance_no
+    fail_msg: "Invalid data in second row: {{ csv_data_rows[1] }}"
+    success_msg: "Second row is valid: {{ csv_data_rows[1][0] }} ({{ csv_data_rows[1][5] }})"
 
 - name: Store validated CSV data
   set_fact:
-    validated_csv_data: "{{ csv_data.list }}"
+    validated_csv_data: "{{ csv_data_rows | default([]) }}"

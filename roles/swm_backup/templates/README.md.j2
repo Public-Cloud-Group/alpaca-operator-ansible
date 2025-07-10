@@ -1,75 +1,75 @@
 # ALPACA Operator CSV Processor
 
-## Übersicht
+## Overview
 
-Diese Ansible Role verarbeitet CSV-Dateien und generiert ALPACA Operator Commands basierend auf definierten SLA-Levels (SLA1-4) und Variable-Mappings.
+This Ansible role processes CSV files and generates ALPACA Operator commands based on defined SLA levels (SLA1-4) and variable mappings.
 
-## Generierte Dateien
+## Generated Files
 
 ### Playbooks
-- **Individual Command Playbooks**: Ein separates Playbook für jeden Command
-- **Consolidated Playbook**: Ein Playbook mit allen Commands (`consolidated_commands.yml`)
-- **SLA-specific Playbooks**: Separate Playbooks für jeden SLA-Level
+- **Individual Command Playbooks**: A separate playbook for each command
+- **Consolidated Playbook**: One playbook with all commands (`consolidated_commands.yml`)
+- **SLA-specific Playbooks**: Separate playbooks for each SLA level
   - `sla_1_commands.yml` - Basic SLA
   - `sla_2_commands.yml` - Enhanced SLA
   - `sla_3_commands.yml` - Premium SLA
-- **System-specific Playbooks**: Separate Playbooks für jedes System
+- **System-specific Playbooks**: Separate playbooks for each system
 
-### Konfigurationsdateien
+### Configuration Files
 - `inventory.ini` - Ansible Inventory Template
-- `variables.yml` - Alle Variablen und Konfigurationen
-- `README.md` - Diese Dokumentation
+- `variables.yml` - All variables and configurations
+- `README.md` - This documentation
 
 ## CSV Format
 
-Die CSV-Datei muss folgende Spalten enthalten:
+The CSV file must contain the following columns:
 
-| Spalte | Beschreibung | Beispiel |
-|--------|--------------|----------|
-| SystemName | Name des Systems | "Production Server" |
-| AgentName | Name des Agents | "backup_agent_01" |
-| CommandName | Name des Commands | "BKP: DB log sync" |
-| SLA | SLA-Level (1, 2, oder 3) | "2" |
-| Parameters | Command-Parameter | "-p GLTarch -s <BKP_LOG_SRC>" |
-| Schedule | Schedule-Template | "hourly" |
-| Enabled | Aktiviert (true/false) | "true" |
-| Critical | Kritisch (true/false) | "false" |
+| Column | Description | Example |
+|--------|-------------|---------|
+| SystemName | Name of the system | "Production Server" |
+| AgentName | Name of the agent | "backup_agent_01" |
+| CommandName | Name of the command | "BKP: DB log sync" |
+| SLA | SLA level (1, 2, or 3) | "2" |
+| Parameters | Command parameters | "-p GLTarch -s <BKP_LOG_SRC>" |
+| Schedule | Schedule template | "hourly" |
+| Enabled | Enabled (true/false) | "true" |
+| Critical | Critical (true/false) | "false" |
 
-### Beispiel CSV
+### Example CSV
 ```csv
 SystemName,AgentName,CommandName,SLA,Parameters,Schedule,Enabled,Critical
 "Production Server","backup_agent_01","BKP: DB log sync","2","-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1>","hourly","true","false"
 "Test Server","test_agent_01","BKP: Test backup","1","-p test -s <BKP_LOG_SRC>","daily","true","false"
 ```
 
-## SLA Definitionen
+## SLA Definitions
 
 ### SLA 1 - Basic SLA
-- **Beschreibung**: Standard SLA für grundlegende Anforderungen
-- **Retention**: 7 Tage lokale Dateien, 30 Tage Blob-Logs
-- **Timeout**: 300 Sekunden (Standard)
-- **Escalation**: Email bei Fehlern, 2 Fehler bis Escalation
-- **Schedule**: Stündlich, Montag-Freitag
+- **Description**: Standard SLA for basic requirements
+- **Retention**: 7 days local files, 30 days blob logs
+- **Timeout**: 300 seconds (standard)
+- **Escalation**: Email on errors, 2 failures until escalation
+- **Schedule**: Hourly, Monday-Friday
 
 ### SLA 2 - Enhanced SLA
-- **Beschreibung**: Erweiterte SLA für kritische Systeme
-- **Retention**: 14 Tage lokale Dateien, 90 Tage Blob-Logs
-- **Timeout**: 600 Sekunden (Custom)
-- **Escalation**: Email + SMS, 1 Fehler bis Escalation
-- **Schedule**: Alle 5 Minuten, 7 Tage/Woche
+- **Description**: Enhanced SLA for critical systems
+- **Retention**: 14 days local files, 90 days blob logs
+- **Timeout**: 600 seconds (custom)
+- **Escalation**: Email + SMS, 1 failure until escalation
+- **Schedule**: Every 5 minutes, 7 days/week
 
 ### SLA 3 - Premium SLA
-- **Beschreibung**: Premium SLA für hochkritische Systeme
-- **Retention**: 30 Tage lokale Dateien, 365 Tage Blob-Logs
-- **Timeout**: 1800 Sekunden (Custom)
-- **Escalation**: Email + SMS, 1 Fehler bis Escalation
-- **Schedule**: Jede Minute, 7 Tage/Woche
+- **Description**: Premium SLA for highly critical systems
+- **Retention**: 30 days local files, 365 days blob logs
+- **Timeout**: 1800 seconds (custom)
+- **Escalation**: Email + SMS, 1 failure until escalation
+- **Schedule**: Every minute, 7 days/week
 
 ## Variable Mappings
 
-Die Role unterstützt Variable-Mappings für Command-Parameter:
+The role supports variable mappings for command parameters:
 
-### Verfügbare Variablen
+### Available Variables
 - `<BKP_LOG_SRC>` - Backup Log Source
 - `<BKP_LOG_DEST1>` - Primary Backup Destination
 - `<BKP_LOG_DEST2>` - Secondary Backup Destination
@@ -77,48 +77,45 @@ Die Role unterstützt Variable-Mappings für Command-Parameter:
 - `<BKP_LOG_CLEANUP_INT2>` - Cleanup Interval 2
 - `<DB_HOST>` - Database Host
 
-### Environment-spezifische Werte
-Jede Variable kann environment-spezifische Werte haben:
-- `prod` - Produktionsumgebung
-- `test` - Testumgebung
-- `dev` - Entwicklungsumgebung
+### SLA-dependent Values
+Variable values are determined by the SLA level assigned to each command.
 
 ## Schedule Templates
 
-### Verfügbare Templates
-- `manual` - Manuelle Ausführung
-- `hourly` - Stündlich
-- `daily` - Täglich um 02:00
-- `business_hours` - Stündlich, Montag-Freitag
-- `weekend` - Täglich um 06:00, Wochenende
-- `every_5min` - Alle 5 Minuten
-- `every_minute` - Jede Minute
+### Available Templates
+- `manual` - Manual execution
+- `hourly` - Hourly
+- `daily` - Daily at 02:00
+- `business_hours` - Hourly, Monday-Friday
+- `weekend` - Daily at 06:00, weekends
+- `every_5min` - Every 5 minutes
+- `every_minute` - Every minute
 
-## Verwendung
+## Usage
 
-### 1. CSV-Datei vorbereiten
-Erstellen Sie eine CSV-Datei mit den erforderlichen Spalten.
+### 1. Prepare CSV File
+Create a CSV file with the required columns.
 
-### 2. Role ausführen
+### 2. Execute Role
 ```bash
 ansible-playbook -i inventory.ini playbook.yml
 ```
 
-### 3. Generierte Playbooks verwenden
+### 3. Use Generated Playbooks
 ```bash
-# Alle Commands auf einmal
+# All commands at once
 ansible-playbook -i inventory.ini consolidated_commands.yml
 
-# Nur SLA 2 Commands
+# Only SLA 2 commands
 ansible-playbook -i inventory.ini sla_2_commands.yml
 
-# Nur bestimmtes System
+# Only specific system
 ansible-playbook -i inventory.ini system_Production_Server_commands.yml
 ```
 
-## Konfiguration
+## Configuration
 
-### Hauptkonfiguration
+### Main Configuration
 ```yaml
 csv_processor:
   input_file: "swm_prod.csv"
@@ -128,13 +125,12 @@ csv_processor:
   skip_header: true
 
 processing_options:
-  create_commands: false  # false = Playbooks generieren, true = Commands direkt erstellen
+  create_commands: false  # false = generate playbooks, true = create commands directly
   validate_data: true
-  environment: "prod"
   log_level: "info"
 ```
 
-### ALPACA API Konfiguration
+### ALPACA API Configuration
 ```yaml
 alpaca_api:
   host: "{{ inventory_hostname }}"
@@ -145,7 +141,7 @@ alpaca_api:
   tls_verify: true
 ```
 
-## Verarbeitungsstatistik
+## Processing Statistics
 
 - **Total Commands**: {{ processing_summary.total_commands }}
 - **SLA Distribution**:
@@ -154,6 +150,6 @@ alpaca_api:
   - SLA 3: {{ processing_summary.sla_distribution.sla_3 }}
 - **Systems**: {{ processing_summary.systems | length }}
 - **Agents**: {{ processing_summary.agents | length }}
-- **Environment**: {{ processing_options.environment }}
+- **Processing Mode**: {{ 'Direct creation' if processing_options.create_commands else 'Playbook generation' }}
 
-## Generiert am: {{ ansible_date_time.iso8601 }}
+## Generated on: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}

@@ -4,7 +4,7 @@
 # CSV File Configuration
 csv_processor:
   # Input CSV file path
-  input_file: "swm_prod.csv"
+  input_file: "{{ role_path }}/files/swm_prod.csv"
 
   # Output directory for processed files
   output_dir: "{{ playbook_dir }}/output"
@@ -42,7 +42,7 @@ csv_processor:
 sla_definitions:
   "SLA1":
     name: "Production"
-    description: "Hochverfügbare Produktionssysteme"
+    description: "High-availability production systems"
     retention:
       local_file_ret: 7
       local_snap_ret: 3
@@ -71,7 +71,7 @@ sla_definitions:
 
   "SLA2":
     name: "Staging"
-    description: "Staging / Vorproduktion"
+    description: "Staging / Pre-production"
     retention:
       local_file_ret: 14
       local_snap_ret: 7
@@ -101,7 +101,7 @@ sla_definitions:
 
   "SLA3":
     name: "Development"
-    description: "Entwicklungsumgebung"
+    description: "Development environment"
     retention:
       local_file_ret: 30
       local_snap_ret: 14
@@ -131,7 +131,7 @@ sla_definitions:
 
   "SLA4":
     name: "Backup"
-    description: "Backup- / Restore-Systeme"
+    description: "Backup / Restore systems"
     retention:
       local_file_ret: 30
       local_snap_ret: 14
@@ -164,48 +164,24 @@ variable_mappings:
   # Backup Log Source mappings
   BKP_LOG_SRC:
     default: "/var/log/backup"
-    environments:
-      prod: "/var/log/backup/prod"
-      test: "/var/log/backup/test"
-      dev: "/var/log/backup/dev"
 
   # Backup Log Destination mappings
   BKP_LOG_DEST1:
     default: "/backup/logs/primary"
-    environments:
-      prod: "/backup/logs/prod/primary"
-      test: "/backup/logs/test/primary"
-      dev: "/backup/logs/dev/primary"
 
   BKP_LOG_DEST2:
     default: "/backup/logs/secondary"
-    environments:
-      prod: "/backup/logs/prod/secondary"
-      test: "/backup/logs/test/secondary"
-      dev: "/backup/logs/dev/secondary"
 
   # Backup Log Cleanup intervals
   BKP_LOG_CLEANUP_INT:
     default: "7"
-    environments:
-      prod: "30"
-      test: "14"
-      dev: "7"
 
   BKP_LOG_CLEANUP_INT2:
     default: "30"
-    environments:
-      prod: "90"
-      test: "60"
-      dev: "30"
 
   # Database Host mappings
   DB_HOST:
     default: "localhost"
-    environments:
-      prod: "db-prod.pcg.io"
-      test: "db-test.pcg.io"
-      dev: "db-dev.pcg.io"
 
 # Schedule Templates
 schedule_templates:
@@ -268,8 +244,8 @@ processing_options:
   # Whether to validate CSV data before processing
   validate_data: true
 
-  # Environment for variable mapping
-  environment: "prod"
+  # Whether to process CSV data
+  process_csv_data: true
 
   # Log level for processing
   log_level: "info"

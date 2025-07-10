@@ -1,7 +1,6 @@
 ---
 # ALPACA Operator Variables
 # Generated from CSV: {{ csv_processor.input_file }}
-# Environment: {{ processing_options.environment }}
 
 # CSV Processing Configuration
 csv_processor:
@@ -59,10 +58,6 @@ variable_mappings:
 {% for var_name, var_config in variable_mappings.items() %}
   {{ var_name }}:
     default: "{{ var_config.default }}"
-    environments:
-{% for env_name, env_value in var_config.environments.items() %}
-      {{ env_name }}: "{{ env_value }}"
-{% endfor %}
 {% endfor %}
 
 # Schedule Templates
@@ -88,7 +83,6 @@ alpaca_api:
 processing_options:
   create_commands: false
   validate_data: true
-  environment: "{{ processing_environment }}"
   log_level: "info"
 
-# Generated: {{ ansible_date_time.iso8601 }}
+# Generated: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}

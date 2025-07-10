@@ -2,7 +2,6 @@
 # Generated Command Playbook for {{ item.command.name }}
 # Generated from CSV: {{ csv_processor.input_file }}
 # SLA Level: {{ item.command.sla_info.level }} - {{ item.command.sla_info.name }}
-# Environment: {{ processing_options.environment }}
 
 - name: Configure ALPACA Command - {{ item.command.name }}
   hosts: local
@@ -62,4 +61,4 @@
 # Level: {{ item.command.sla_info.level }}
 # Name: {{ item.command.sla_info.name }}
 # Description: {{ item.command.sla_info.description }}
-# Generated: {{ ansible_date_time.iso8601 }}
+# Generated: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}

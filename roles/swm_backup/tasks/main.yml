@@ -1,12 +1,17 @@
 ---
 # CSV Processor Role - Main Tasks
 
+- name: Gather facts for timestamp generation
+  setup:
+    gather_subset: date_time
+
 - name: Include CSV processor tasks
   include_tasks: validate.yml
   when: csv_processor.validate_data | default(true)
 
 - name: Include CSV processor tasks
   include_tasks: process_csv.yml
+  when: csv_processor.process_csv_data | default(true)
 
 - name: Include CSV processor tasks
   include_tasks: generate_playbooks.yml

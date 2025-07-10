@@ -1,7 +1,6 @@
 ---
 # System {{ item }} Commands Playbook
 # Generated from CSV: {{ csv_processor.input_file }}
-# Environment: {{ processing_options.environment }}
 # System: {{ item }}
 
 - name: Configure ALPACA Commands for System {{ item }}
@@ -9,7 +8,7 @@
   gather_facts: false
 
   vars:
-    system_commands: "{{ processed_commands | selectattr('command.system.systemName', 'equalto', item) | list }}"
+    system_commands: "{{ processed_commands | selectattr('system.systemName', 'equalto', item) | list }}"
 
   tasks:
     - name: Configure ALPACA Commands for System {{ item }}
@@ -68,8 +67,8 @@
 # System {{ item }} Summary:
 # - Total Commands: {{ system_commands | length }}
 # - SLA Distribution:
-#   * SLA 1: {{ system_commands | selectattr('command.sla_info.level', 'equalto', '1') | list | length }}
-#   * SLA 2: {{ system_commands | selectattr('command.sla_info.level', 'equalto', '2') | list | length }}
-#   * SLA 3: {{ system_commands | selectattr('command.sla_info.level', 'equalto', '3') | list | length }}
+#   * SLA 1: {{ system_commands | selectattr('command.sla_info.level', 'equalto', 'SLA1') | list | length }}
+#   * SLA 2: {{ system_commands | selectattr('command.sla_info.level', 'equalto', 'SLA2') | list | length }}
+#   * SLA 3: {{ system_commands | selectattr('command.sla_info.level', 'equalto', 'SLA3') | list | length }}
 # - Agents: {{ system_commands | map(attribute='command.agentName') | unique | list | length }}
-# Generated: {{ ansible_date_time.iso8601 }}
+# Generated: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}
