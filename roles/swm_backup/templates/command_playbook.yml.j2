@@ -1,0 +1,65 @@
+---
+# Generated Command Playbook for {{ item.command.name }}
+# Generated from CSV: {{ csv_processor.input_file }}
+# SLA Level: {{ item.command.sla_info.level }} - {{ item.command.sla_info.name }}
+# Environment: {{ processing_options.environment }}
+
+- name: Configure ALPACA Command - {{ item.command.name }}
+  hosts: local
+  gather_facts: false
+
+  tasks:
+    - name: Ensure command "{{ item.command.name }}" is configured
+      pcg.alpaca_operator.alpaca_command:
+        system:
+          systemName: "{{ item.system.systemName }}"
+
+        command:
+          name: "{{ item.command.name }}"
+          state: "{{ item.command.state }}"
+          agentName: "{{ item.command.agentName }}"
+          parameters: "{{ item.command.parameters }}"
+          parametersNeeded: "{{ item.command.parametersNeeded }}"
+          disabled: "{{ item.command.disabled }}"
+          critical: "{{ item.command.critical }}"
+          autoDeploy: "{{ item.command.autoDeploy }}"
+
+          schedule:
+            period: "{{ item.command.schedule.period }}"
+            time: "{{ item.command.schedule.time }}"
+            cronExpression: "{{ item.command.schedule.cronExpression }}"
+            daysOfWeek: "{{ item.command.schedule.daysOfWeek }}"
+
+          history:
+            documentAllRuns: "{{ item.command.history.documentAllRuns }}"
+            retention: "{{ item.command.history.retention }}"
+
+          timeout:
+            type: "{{ item.command.timeout.type }}"
+            value: "{{ item.command.timeout.value }}"
+
+          escalation:
+            mailEnabled: "{{ item.command.escalation.mailEnabled }}"
+            smsEnabled: "{{ item.command.escalation.smsEnabled }}"
+            mailAddress: "{{ item.command.escalation.mailAddress }}"
+            smsAddress: "{{ item.command.escalation.smsAddress }}"
+            minFailureCount: "{{ item.command.escalation.minFailureCount }}"
+            triggers:
+              everyChange: "{{ item.command.escalation.triggers.everyChange }}"
+              toRed: "{{ item.command.escalation.triggers.toRed }}"
+              toYellow: "{{ item.command.escalation.triggers.toYellow }}"
+              toGreen: "{{ item.command.escalation.triggers.toGreen }}"
+
+        apiConnection:
+          host: "{{ item.apiConnection.host }}"
+          protocol: "{{ item.apiConnection.protocol }}"
+          port: "{{ item.apiConnection.port }}"
+          username: "{{ item.apiConnection.username }}"
+          password: "{{ item.apiConnection.password }}"
+          tls_verify: "{{ item.apiConnection.tls_verify }}"
+
+# SLA Information:
+# Level: {{ item.command.sla_info.level }}
+# Name: {{ item.command.sla_info.name }}
+# Description: {{ item.command.sla_info.description }}
+# Generated: {{ ansible_date_time.iso8601 }}

@@ -1,0 +1,85 @@
+---
+# CSV Processor Role - CSV Processing Tasks
+
+- name: Process CSV data and apply SLA definitions
+  set_fact:
+    processed_commands: "{{ processed_commands | default([]) + [processed_command] }}"
+  vars:
+    row: "{{ item }}"
+    sla_level: "{{ row[csv_processor.column_mapping.sla_level] }}"
+    sla_config: "{{ sla_definitions[sla_level] }}"
+    
+    # Process parameters with variable mapping
+    raw_parameters: "{{ row[csv_processor.column_mapping.parameters] | default('') }}"
+    processed_parameters: "{{ raw_parameters | regex_replace('<([^>]+)>', '{{ variable_mappings[\\1].environments[processing_options.environment] | default(variable_mappings[\\1].default) }}') }}"
+    
+    # Process schedule
+    schedule_name: "{{ row[csv_processor.column_mapping.schedule] | default('manual') }}"
+    schedule_config: "{{ schedule_templates[schedule_name] | default(schedule_templates['manual']) }}"
+    
+    # Build processed command
+    processed_command:
+      system:
+        systemName: "{{ row[csv_processor.column_mapping.system_name] }}"
+      command:
+        name: "{{ row[csv_processor.column_mapping.command_name] }}"
+        state: "present"
+        agentName: "{{ row[csv_processor.column_mapping.agent_name] }}"
+        parameters: "{{ processed_parameters }}"
+        parametersNeeded: false
+        disabled: "{{ not (row[csv_processor.column_mapping.enabled] | default('true') | bool) }}"
+        critical: "{{ row[csv_processor.column_mapping.critical] | default('false') | bool }}"
+        autoDeploy: false
+        schedule:
+          period: "{{ schedule_config.period }}"
+          time: "{{ schedule_config.time }}"
+          cronExpression: "{{ schedule_config.cron_expression }}"
+          daysOfWeek: "{{ schedule_config.days_of_week }}"
+        history:
+          documentAllRuns: false
+          retention: "{{ sla_config.retention.local_log_ret * 86400 }}"
+        timeout:
+          type: "{{ sla_config.timeout.type }}"
+          value: "{{ sla_config.timeout.value }}"
+        escalation:
+          mailEnabled: "{{ sla_config.escalation.mail_enabled }}"
+          smsEnabled: "{{ sla_config.escalation.sms_enabled }}"
+          mailAddress: "{{ sla_config.escalation.mail_address }}"
+          smsAddress: "{{ sla_config.escalation.sms_address | default('') }}"
+          minFailureCount: "{{ sla_config.escalation.min_failure_count }}"
+          triggers:
+            everyChange: "{{ sla_config.escalation.triggers.every_change }}"
+            toRed: "{{ sla_config.escalation.triggers.to_red }}"
+            toYellow: "{{ sla_config.escalation.triggers.to_yellow }}"
+            toGreen: "{{ sla_config.escalation.triggers.to_green }}"
+        sla_info:
+          level: "{{ sla_level }}"
+          name: "{{ sla_config.name }}"
+          description: "{{ sla_config.description }}"
+      apiConnection: "{{ alpaca_api }}"
+  loop: "{{ validated_csv_data }}"
+  when: csv_processor.skip_header | default(true)
+
+- name: Create processing summary
+  set_fact:
+    processing_summary:
+      total_commands: "{{ processed_commands | length }}"
+      sla_distribution:
+        sla_1: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', '1') | list | length }}"
+        sla_2: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', '2') | list | length }}"
+        sla_3: "{{ processed_commands | selectattr('command.sla_info.level', 'equalto', '3') | list | length }}"
+      systems: "{{ processed_commands | map(attribute='command.system.systemName') | unique | list }}"
+      agents: "{{ processed_commands | map(attribute='command.agentName') | unique | list }}"
+
+- name: Display processing summary
+  debug:
+    msg: |
+      CSV Processing Summary:
+      - Total Commands: {{ processing_summary.total_commands }}
+      - SLA Distribution:
+        * SLA 1: {{ processing_summary.sla_distribution.sla_1 }}
+        * SLA 2: {{ processing_summary.sla_distribution.sla_2 }}
+        * SLA 3: {{ processing_summary.sla_distribution.sla_3 }}
+      - Systems: {{ processing_summary.systems | length }}
+      - Agents: {{ processing_summary.agents | length }}
+      - Environment: {{ processing_options.environment }} 

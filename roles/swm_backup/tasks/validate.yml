@@ -1,0 +1,90 @@
+---
+# CSV Processor Role - Validation Tasks
+
+- name: Check if CSV file exists
+  stat:
+    path: "{{ csv_processor.input_file }}"
+  register: csv_file_stat
+
+- name: Fail if CSV file does not exist
+  fail:
+    msg: "CSV file {{ csv_processor.input_file }} does not exist"
+  when: not csv_file_stat.stat.exists
+
+- name: Create output directory
+  file:
+    path: "{{ csv_processor.output_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Validate SLA definitions
+  assert:
+    that:
+      - item.key in sla_definitions
+      - sla_definitions[item.key] is mapping
+      - 'retention' in sla_definitions[item.key]
+      - 'timeout' in sla_definitions[item.key]
+      - 'escalation' in sla_definitions[item.key]
+      - 'schedule_defaults' in sla_definitions[item.key]
+    fail_msg: "Invalid SLA definition for {{ item.key }}"
+    success_msg: "SLA definition {{ item.key }} is valid"
+  loop:
+    - "SLA1"
+    - "SLA2"
+    - "SLA3"
+    - "SLA4"
+
+- name: Validate variable mappings
+  assert:
+    that:
+      - item.value is mapping
+      - 'default' in item.value
+      - 'environments' in item.value
+    fail_msg: "Invalid variable mapping for {{ item.key }}"
+    success_msg: "Variable mapping {{ item.key }} is valid"
+  loop: "{{ variable_mappings | dict2items }}"
+
+- name: Validate schedule templates
+  assert:
+    that:
+      - item.value is mapping
+      - 'period' in item.value
+      - 'time' in item.value
+      - 'cron_expression' in item.value
+      - 'days_of_week' in item.value
+    fail_msg: "Invalid schedule template for {{ item.key }}"
+    success_msg: "Schedule template {{ item.key }} is valid"
+  loop: "{{ schedule_templates | dict2items }}"
+
+- name: Read and validate CSV structure
+  read_csv:
+    path: "{{ csv_processor.input_file }}"
+    delimiter: "{{ csv_processor.delimiter }}"
+    encoding: "{{ csv_processor.encoding }}"
+  register: csv_data
+
+- name: Validate CSV columns
+  assert:
+    that:
+      - csv_processor.column_mapping.system_name in csv_data.list[0]
+      - csv_processor.column_mapping.agent_name in csv_data.list[0]
+      - csv_processor.column_mapping.command_name in csv_data.list[0]
+      - csv_processor.column_mapping.sla_level in csv_data.list[0]
+    fail_msg: "Required columns missing in CSV file"
+    success_msg: "CSV file contains all required columns"
+
+- name: Validate CSV data
+  assert:
+    that:
+      - item[csv_processor.column_mapping.sla_level] in ['1', '2', '3']
+      - item[csv_processor.column_mapping.system_name] | length > 0
+      - item[csv_processor.column_mapping.agent_name] | length > 0
+      - item[csv_processor.column_mapping.command_name] | length > 0
+    fail_msg: "Invalid data in row {{ loop.index }}: {{ item }}"
+    success_msg: "Row {{ loop.index }} is valid"
+  loop: "{{ csv_data.list }}"
+  when: csv_processor.skip_header | default(true)
+
+- name: Store validated CSV data
+  set_fact:
+    validated_csv_data: "{{ csv_data.list }}"

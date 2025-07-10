@@ -1,0 +1,17 @@
+---
+# CSV Processor Role - Main Tasks
+
+- name: Include CSV processor tasks
+  include_tasks: validate.yml
+  when: csv_processor.validate_data | default(true)
+
+- name: Include CSV processor tasks
+  include_tasks: process_csv.yml
+
+- name: Include CSV processor tasks
+  include_tasks: generate_playbooks.yml
+  when: not csv_processor.create_commands | default(false)
+
+- name: Include CSV processor tasks
+  include_tasks: create_commands.yml
+  when: csv_processor.create_commands | default(false)

@@ -1,0 +1,32 @@
+---
+# CSV Processor Role - Direct Command Creation Tasks
+
+- name: Create ALPACA commands
+  pcg.alpaca_operator.alpaca_command:
+    system: "{{ item.system }}"
+    command: "{{ item.command }}"
+    apiConnection: "{{ item.apiConnection }}"
+  loop: "{{ processed_commands }}"
+  loop_control:
+    label: "{{ item.command.name }}"
+  register: command_results
+
+- name: Display command creation results
+  debug:
+    msg: |
+      Command Creation Results:
+      - Total processed: {{ command_results | length }}
+      - Successful: {{ command_results | selectattr('changed', 'equalto', true) | list | length }}
+      - Failed: {{ command_results | selectattr('failed', 'equalto', true) | list | length }}
+      - Skipped: {{ command_results | selectattr('skipped', 'equalto', true) | list | length }}
+
+- name: Save command creation results
+  copy:
+    content: "{{ command_results | to_nice_yaml }}"
+    dest: "{{ csv_processor.output_dir }}/command_creation_results_{{ ansible_date_time.iso8601 | regex_replace('[^0-9]', '') }}.yml"
+
+- name: Display failed commands
+  debug:
+    msg: "Failed to create command: {{ item.item.command.name }} - {{ item.msg }}"
+  loop: "{{ command_results | selectattr('failed', 'equalto', true) }}"
+  when: command_results | selectattr('failed', 'equalto', true) | list | length > 0
