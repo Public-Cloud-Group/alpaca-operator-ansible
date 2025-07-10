@@ -18,3 +18,4 @@ plugins/modules/alpaca_system.py pep8:E501                                      
 tests/start-container.sh shebang!skip                                               # -> Will be removed after publishing
 .github/scripts/generate-support-matrix.py shebang!skip                             # -> Internal use only
 .github/scripts/update-readme.py shebang!skip                                       # -> Internal use only
+.tmp/*!skip                                                                         # -> Internal use only
