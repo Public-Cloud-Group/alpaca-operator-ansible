@@ -1,0 +1,26 @@
+---
+# Generate Variables File
+
+- name: Generate variables file
+  ansible.builtin.template:
+    src: "{{ template_config.variables_template }}"
+    dest: "{{ output_config.output_dir }}/{{ output_config.variables_file }}"
+    mode: '0644'
+  vars:
+    csv_data: "{{ csv_data }}"
+    sla_definitions: "{{ sla_definitions }}"
+    alpaca_api: "{{ alpaca_api }}"
+  register: variables_file_result
+
+- name: Display variables file generation result
+  ansible.builtin.debug:
+    msg: |
+      Variables File Generation:
+      - File: {{ output_config.output_dir }}/{{ output_config.variables_file }}
+      - Status: {{ 'Generated' if variables_file_result.changed else 'Already exists' }}
+      - Variables included: {{ csv_data | length }} systems
+
+- name: Fail if variables file generation failed
+  ansible.builtin.fail:
+    msg: "Failed to generate variables file. Error: {{ variables_file_result.msg | default('Unknown error') }}"
+  when: variables_file_result.failed | default(false) 

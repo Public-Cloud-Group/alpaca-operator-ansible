@@ -1,0 +1,63 @@
+# ALPACA Operator Inventory
+# Generated from CSV data - Total Systems: {{ csv_data | length }}
+# Generated at: {{ ansible_date_time.iso8601 }}
+
+[alpaca_operator]
+{{ alpaca_api.host }}
+
+[alpaca_operator:vars]
+# ALPACA API Configuration
+ALPACA_Operator_API_Protocol={{ alpaca_api.protocol }}
+ALPACA_Operator_API_Port={{ alpaca_api.port }}
+ALPACA_Operator_API_Username={{ alpaca_api.username }}
+ALPACA_Operator_API_Password={{ alpaca_api.password }}
+ALPACA_Operator_API_Validate_Certs={{ alpaca_api.tls_verify | lower }}
+
+# Connection settings
+ansible_connection=local
+ansible_python_interpreter=/usr/bin/python3
+
+# Generated Systems
+{% for row in csv_data %}
+# {{ row.system_name }} ({{ row.system_sla }}) - {{ row.system_type }} - {{ row.hdb_nw_sid }} - {{ row.system_az }}
+{% endfor %}
+
+# SLA Groups
+{% set sla1_systems = csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list %}
+{% if sla1_systems | length > 0 %}
+[sla1_production]
+{% for row in sla1_systems %}
+{{ alpaca_api.host }}  # {{ row.system_name }} - {{ row.system_type }}
+{% endfor %}
+{% endif %}
+
+{% set sla2_systems = csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list %}
+{% if sla2_systems | length > 0 %}
+[sla2_staging]
+{% for row in sla2_systems %}
+{{ alpaca_api.host }}  # {{ row.system_name }} - {{ row.system_type }}
+{% endfor %}
+{% endif %}
+
+{% set sla3_systems = csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list %}
+{% if sla3_systems | length > 0 %}
+[sla3_development]
+{% for row in sla3_systems %}
+{{ alpaca_api.host }}  # {{ row.system_name }} - {{ row.system_type }}
+{% endfor %}
+{% endif %}
+
+{% set sla4_systems = csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list %}
+{% if sla4_systems | length > 0 %}
+[sla4_backup]
+{% for row in sla4_systems %}
+{{ alpaca_api.host }}  # {{ row.system_name }} - {{ row.system_type }}
+{% endfor %}
+{% endif %}
+
+# Summary
+# Total Systems: {{ csv_data | length }}
+# SLA1 (Production): {{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list | length }}
+# SLA2 (Staging): {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length }}
+# SLA3 (Development): {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length }}
+# SLA4 (Backup): {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length }} 

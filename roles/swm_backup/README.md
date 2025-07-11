@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `swm_backup_new` role is an Ansible role designed to create SLA-based ALPACA Operator commands from CSV data. It reads system information from a CSV file, maps the data to appropriate fields, and automatically creates backup commands in the ALPACA Operator based on predefined SLA configurations.
+The `swm_backup` role is an Ansible role designed to create SLA-based ALPACA Operator commands from CSV data. It reads system information from a CSV file, maps the data to appropriate fields, and automatically creates backup commands in the ALPACA Operator based on predefined SLA configurations.
 
 ## Key Features
 
@@ -140,7 +140,7 @@ is_remote_execution: "{{ inventory_hostname != 'localhost' and inventory_hostnam
   hosts: alpaca_servers
   gather_facts: true  # Required for remote host CSV file copying
   roles:
-    - swm_backup_new
+    - swm_backup
   vars:
     ALPACA_Operator_API_Username: "admin"
     ALPACA_Operator_API_Password: "your_password"  # Use vault in production
@@ -153,7 +153,7 @@ is_remote_execution: "{{ inventory_hostname != 'localhost' and inventory_hostnam
   hosts: alpaca_servers
   gather_facts: true  # Required for remote host CSV file copying
   roles:
-    - role: swm_backup_new
+    - role: swm_backup
       vars:
         sla_definitions:
           "SLA1":
@@ -172,7 +172,7 @@ is_remote_execution: "{{ inventory_hostname != 'localhost' and inventory_hostnam
   hosts: alpaca_servers
   gather_facts: true  # Required for remote host CSV file copying
   roles:
-    - role: swm_backup_new
+    - role: swm_backup
       vars:
         processing_options:
           create_commands: false
@@ -194,7 +194,7 @@ The role performs the following tasks:
 ## File Structure
 
 ```
-roles/swm_backup_new/
+roles/swm_backup/
 ├── defaults/
 │   └── main.yml          # Default variables and SLA definitions
 ├── files/

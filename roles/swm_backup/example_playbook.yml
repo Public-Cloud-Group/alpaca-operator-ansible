@@ -159,18 +159,18 @@
 
     - name: Display completion message
       ansible.builtin.debug:
-        msg: |
-          SWM Backup Role execution completed successfully!
-
-          Summary:
-          - CSV file processed: {{ csv_source_file | default('N/A') }}
-          - Total systems: {{ csv_data | length if csv_data is defined else 0 }}
-          - Commands created: {{ commands_created | default(0) }}
-
-          SLA Distribution:
-          - SLA1 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list | length if csv_data is defined else 0 }}
-          - SLA2 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length if csv_data is defined else 0 }}
-          - SLA3 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length if csv_data is defined else 0 }}
-          - SLA4 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length if csv_data is defined else 0 }}
-
-          Note: To use custom SLA definitions, uncomment and modify the 'vars' section in the role task above.
+        msg:
+          - "SWM Backup Role execution completed successfully!"
+          - ""
+          - "Summary:"
+          - "- CSV file processed: {{ csv_source_file | default('N/A') }}"
+          - "- Total systems: {{ csv_data | length if csv_data is defined else 0 }}"
+          - "- Commands created: {{ commands_created | default(0) }}"
+          - ""
+          - "SLA Distribution:"
+          - "- SLA1 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list | length if csv_data is defined else 0 }}"
+          - "- SLA2 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length if csv_data is defined else 0 }}"
+          - "- SLA3 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length if csv_data is defined else 0 }}"
+          - "- SLA4 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length if csv_data is defined else 0 }}"
+          - ""
+          - "Note: To use custom SLA definitions, uncomment and modify the 'vars' section in the role task above."

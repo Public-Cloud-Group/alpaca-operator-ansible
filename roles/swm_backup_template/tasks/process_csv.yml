@@ -1,0 +1,72 @@
+---
+# Process CSV Data for Template Generation
+
+- name: Read CSV file content
+  ansible.builtin.slurp:
+    src: "{{ csv_processor.input_file }}"
+  register: csv_content
+
+- name: Parse CSV data
+  ansible.builtin.set_fact:
+    csv_raw_lines: "{{ (csv_content.content | b64decode).split('\n') | select('match', '^.+$') | list }}"
+
+- name: Skip header row if configured
+  ansible.builtin.set_fact:
+    csv_data_lines: "{{ csv_raw_lines[1:] if csv_processor.skip_header else csv_raw_lines }}"
+
+- name: Process CSV rows into structured data
+  ansible.builtin.set_fact:
+    csv_data: "{{ csv_data | default([]) + [csv_row_data] }}"
+  vars:
+    csv_row_data:
+      primary_system: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.primary_system] | trim }}"
+      hdb_nw_sid: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_nw_sid] | trim }}"
+      hdb_tenant: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_tenant] | trim }}"
+      system_type: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_type] | trim }}"
+      system_staging: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_staging] | trim }}"
+      system_sla: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_sla] | trim }}"
+      system_vm_type: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_vm_type] | trim }}"
+      system_vm_flavor: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_vm_flavor] | trim }}"
+      system_vdns: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_vdns] | trim }}"
+      system_az: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_az] | trim }}"
+      hdb_data_min: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_data_min] | trim }}"
+      hdb_data_max: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_data_max] | trim }}"
+      hdb_log_min: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_log_min] | trim }}"
+      hdb_log_max: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_log_max] | trim }}"
+      hdb_shared_min: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_shared_min] | trim }}"
+      hdb_shared_max: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_shared_max] | trim }}"
+      Instance_no: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.Instance_no] | trim }}"
+      # Mapped fields for ALPACA command module
+      system_name: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.hdb_nw_sid] | trim }}"
+      agent_name: "{{ csv_row.split(csv_processor.delimiter)[csv_columns.system_vdns] | trim }}"
+  loop: "{{ csv_data_lines }}"
+  loop_control:
+    loop_var: csv_row
+  when: csv_row | length > 0
+
+- name: Display parsed CSV data summary
+  ansible.builtin.debug:
+    msg: |
+      CSV Data Processing Complete:
+      - Total rows: {{ csv_data | length }}
+      - Sample row: {{ csv_data[0] if csv_data | length > 0 else 'No data' }}
+    verbosity: 1
+
+- name: Group data by SLA
+  ansible.builtin.set_fact:
+    sla_grouped_data:
+      SLA1: "{{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list }}"
+      SLA2: "{{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list }}"
+      SLA3: "{{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list }}"
+      SLA4: "{{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list }}"
+  when: csv_data is defined
+
+- name: Display SLA grouping summary
+  ansible.builtin.debug:
+    msg: |
+      SLA Grouping Summary:
+      - SLA1 ({{ sla_definitions.SLA1.name }}): {{ sla_grouped_data.SLA1 | length }} systems
+      - SLA2 ({{ sla_definitions.SLA2.name }}): {{ sla_grouped_data.SLA2 | length }} systems
+      - SLA3 ({{ sla_definitions.SLA3.name }}): {{ sla_grouped_data.SLA3 | length }} systems
+      - SLA4 ({{ sla_definitions.SLA4.name }}): {{ sla_grouped_data.SLA4 | length }} systems
+  when: sla_grouped_data is defined 

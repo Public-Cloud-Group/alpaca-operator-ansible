@@ -1,0 +1,73 @@
+---
+# ALPACA Command Playbook for {{ csv_row.system_name }}
+# Generated from CSV data - SLA: {{ csv_row.system_sla }}
+# System Type: {{ csv_row.system_type }} | HDB SID: {{ csv_row.hdb_nw_sid }} | AZ: {{ csv_row.system_az }}
+
+- name: Create ALPACA Command for {{ csv_row.system_name }}
+  hosts: {{ alpaca_api.host }}
+  gather_facts: false
+  
+  vars:
+    # ALPACA API Configuration
+    ALPACA_Operator_API_Protocol: "{{ alpaca_api.protocol }}"
+    ALPACA_Operator_API_Port: {{ alpaca_api.port }}
+    ALPACA_Operator_API_Username: "{{ alpaca_api.username }}"
+    ALPACA_Operator_API_Password: "{{ alpaca_api.password }}"
+    ALPACA_Operator_API_Validate_Certs: {{ alpaca_api.tls_verify | lower }}
+
+  tasks:
+    - name: Create {{ command_name }}
+      pcg.alpaca_operator.alpaca_command:
+        system:
+          systemName: "{{ csv_row.system_name }}"
+        command:
+          name: "{{ command_name }}"
+          state: present
+          agentName: "{{ csv_row.agent_name }}"
+          processId: {{ sla_config.command_defaults.processId }}
+          parameters: "{{ sla_config.command_defaults.parameters | replace('__SYSTEM_TYPE__', csv_row.system_type) | replace('__HDB_NW_SID__', csv_row.hdb_nw_sid) | replace('__SYSTEM_AZ__', csv_row.system_az) }}"
+          parametersNeeded: {{ sla_config.command_defaults.parametersNeeded | lower }}
+          disabled: {{ sla_config.command_defaults.disabled | lower }}
+          critical: {{ sla_config.command_defaults.critical | lower }}
+          autoDeploy: {{ sla_config.command_defaults.autoDeploy | lower }}
+          schedule:
+            period: "{{ sla_config.command_defaults.schedule.period }}"
+            time: "{{ sla_config.command_defaults.schedule.time }}"
+            cronExpression: "{{ sla_config.command_defaults.schedule.cronExpression }}"
+            daysOfWeek: {{ sla_config.command_defaults.schedule.daysOfWeek | to_json }}
+          history:
+            documentAllRuns: {{ sla_config.command_defaults.history.documentAllRuns | lower }}
+            retention: {{ sla_config.command_defaults.history.retention }}
+          timeout:
+            type: "{{ sla_config.command_defaults.timeout.type }}"
+            value: {{ sla_config.command_defaults.timeout.value }}
+          escalation:
+            mailEnabled: {{ sla_config.command_defaults.escalation.mailEnabled | lower }}
+            smsEnabled: {{ sla_config.command_defaults.escalation.smsEnabled | lower }}
+            mailAddress: "{{ sla_config.command_defaults.escalation.mailAddress }}"
+            smsAddress: "{{ sla_config.command_defaults.escalation.smsAddress }}"
+            minFailureCount: {{ sla_config.command_defaults.escalation.minFailureCount }}
+            triggers:
+              everyChange: {{ sla_config.command_defaults.escalation.triggers.everyChange | lower }}
+              toRed: {{ sla_config.command_defaults.escalation.triggers.toRed | lower }}
+              toYellow: {{ sla_config.command_defaults.escalation.triggers.toYellow | lower }}
+              toGreen: {{ sla_config.command_defaults.escalation.triggers.toGreen | lower }}
+        apiConnection:
+          host: "{{ alpaca_api.host }}"
+          protocol: "{{ alpaca_api.protocol }}"
+          port: {{ alpaca_api.port }}
+          username: "{{ alpaca_api.username }}"
+          password: "{{ alpaca_api.password }}"
+          tls_verify: {{ alpaca_api.tls_verify | lower }}
+
+    - name: Display command creation result
+      ansible.builtin.debug:
+        msg: |
+          Command Creation Result for {{ csv_row.system_name }}:
+          - Command Name: {{ command_name }}
+          - System: {{ csv_row.system_name }}
+          - Agent: {{ csv_row.agent_name }}
+          - SLA: {{ csv_row.system_sla }} ({{ sla_config.name }})
+          - Status: {{ 'Created' if result.changed else 'Already exists' }}
+      vars:
+        result: "{{ ansible_facts.get('alpaca_command_result', {}) }}" 

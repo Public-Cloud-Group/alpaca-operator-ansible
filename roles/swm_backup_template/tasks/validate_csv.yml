@@ -1,0 +1,62 @@
+---
+# Validate CSV Data for Template Generation
+
+- name: Validate CSV data structure
+  ansible.builtin.assert:
+    that:
+      - csv_data is defined
+      - csv_data | length > 0
+    fail_msg: "No CSV data found or CSV file is empty"
+    success_msg: "CSV data structure is valid"
+
+- name: Validate required fields for each row
+  ansible.builtin.assert:
+    that:
+      - item.system_name is defined
+      - item.system_name | length > 0
+      - item.agent_name is defined
+      - item.agent_name | length > 0
+      - item.system_sla is defined
+      - item.system_sla | length > 0
+      - item.system_type is defined
+      - item.system_type | length > 0
+      - item.hdb_nw_sid is defined
+      - item.hdb_nw_sid | length > 0
+      - item.system_az is defined
+      - item.system_az | length > 0
+    fail_msg: "Required fields missing in row: {{ item }}"
+    success_msg: "Row validation passed for system: {{ item.system_name }}"
+  loop: "{{ csv_data }}"
+  loop_control:
+    label: "{{ item.system_name }}"
+
+- name: Validate SLA values
+  ansible.builtin.assert:
+    that:
+      - item.system_sla in ['SLA1', 'SLA2', 'SLA3', 'SLA4']
+    fail_msg: "Invalid SLA value '{{ item.system_sla }}' for system '{{ item.system_name }}'. Must be one of: SLA1, SLA2, SLA3, SLA4"
+    success_msg: "SLA validation passed for system: {{ item.system_name }}"
+  loop: "{{ csv_data }}"
+  loop_control:
+    label: "{{ item.system_name }}"
+
+- name: Check for duplicate system names
+  ansible.builtin.set_fact:
+    duplicate_systems: "{{ csv_data | groupby('system_name') | selectattr('1', 'length', 'gt', 1) | map(attribute='0') | list }}"
+
+- name: Fail if duplicate systems found
+  ansible.builtin.fail:
+    msg: "Duplicate system names found: {{ duplicate_systems }}"
+  when: duplicate_systems | length > 0
+
+- name: Display validation summary
+  ansible.builtin.debug:
+    msg: |
+      CSV Validation Summary:
+      - Total rows validated: {{ csv_data | length }}
+      - Unique systems: {{ csv_data | map(attribute='system_name') | unique | list | length }}
+      - SLA1 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list | length }}
+      - SLA2 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length }}
+      - SLA3 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length }}
+      - SLA4 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length }}
+      - Validation: PASSED 
