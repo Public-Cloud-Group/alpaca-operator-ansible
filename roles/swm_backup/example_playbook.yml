@@ -1,8 +1,8 @@
 ---
-# Example Playbook for SWM Backup New Role
+# Example Playbook for SWM Backup Role
 # This playbook demonstrates how to use the role with different configurations
 
-- name: SWM Backup New Role - Complete Example
+- name: SWM Backup Role - Complete Example
   hosts: local
   gather_facts: true  # Required for remote host CSV file copying
   vars:
@@ -15,9 +15,9 @@
 
   tasks:
     # Basic usage with default SLA definitions
-    - name: Execute SWM Backup New Role with default settings
+    - name: Execute SWM Backup Role with default settings
       include_role:
-        name: swm_backup_new
+        name: swm_backup
       # Uncomment and modify the vars section below for advanced usage
       # vars:
       #   # Custom SLA definitions example
@@ -160,7 +160,7 @@
     - name: Display completion message
       ansible.builtin.debug:
         msg: |
-          SWM Backup New Role execution completed successfully!
+          SWM Backup Role execution completed successfully!
 
           Summary:
           - CSV file processed: {{ csv_source_file | default('N/A') }}
