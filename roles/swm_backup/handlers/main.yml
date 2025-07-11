@@ -1,7 +1,0 @@
----
-# CSV Processor Role - Handlers
-
-- name: restart csv processing
-  debug:
-    msg: "CSV processing completed - no restart required"
-  listen: "csv processing"

@@ -1,15 +1,12 @@
 ---
-# CSV Processor Role Defaults
+# SWM Backup New Role Defaults
 
 # CSV File Configuration
 csv_processor:
   # Input CSV file path
   input_file: "{{ role_path }}/files/swm_prod.csv"
 
-  # Output directory for processed files
-  output_dir: "{{ playbook_dir }}/output"
-
-  # CSV delimiter (default: comma)
+  # CSV delimiter
   delimiter: ";"
 
   # CSV encoding
@@ -18,234 +15,176 @@ csv_processor:
   # Whether to skip header row
   skip_header: true
 
-  # Column mapping for CSV processing
-  column_mapping:
-    primary_system: "primary_system"
-    hdb_nw_sid: "hdb_nw_sid"
-    hdb_tenant: "hdb_tenant"
-    system_type: "system_type"
-    system_staging: "system_staging"
-    system_sla: "system_sla"
-    system_vm_type: "system_vm_type"
-    system_vm_flavor: "system_vm_flavor"
-    system_vdns: "system_vdns"
-    system_az: "system_az"
-    hdb_data_min: "hdb_data_min"
-    hdb_data_max: "hdb_data_max"
-    hdb_log_min: "hdb_log_min"
-    hdb_log_max: "hdb_log_max"
-    hdb_shared_min: "hdb_shared_min"
-    hdb_shared_max: "hdb_shared_max"
-    Instance_no: "Instance_no"
+# CSV Column Mapping
+# Based on the CSV structure: primary_system;hdb_nw_sid;hdb_tenant;system_type;system_staging;system_sla;system_vm_type;system_vm_flavor;system_vdns;system_az;hdb_data_min;hdb_data_max;hdb_log_min;hdb_log_max;hdb_shared_min;hdb_shared_max;Instance_no
+csv_columns:
+  primary_system: 0     # Column index for primary_system
+  hdb_nw_sid: 1         # Column index for hdb_nw_sid (maps to SystemName)
+  hdb_tenant: 2         # Column index for hdb_tenant
+  system_type: 3        # Column index for system_type
+  system_staging: 4     # Column index for system_staging
+  system_sla: 5         # Column index for system_sla (SLA1, SLA2, SLA3)
+  system_vm_type: 6     # Column index for system_vm_type
+  system_vm_flavor: 7   # Column index for system_vm_flavor
+  system_vdns: 8        # Column index for system_vdns (maps to AgentName)
+  system_az: 9          # Column index for system_az
+  hdb_data_min: 10      # Column index for hdb_data_min
+  hdb_data_max: 11      # Column index for hdb_data_max
+  hdb_log_min: 12       # Column index for hdb_log_min
+  hdb_log_max: 13       # Column index for hdb_log_max
+  hdb_shared_min: 14    # Column index for hdb_shared_min
+  hdb_shared_max: 15    # Column index for hdb_shared_max
+  Instance_no: 16       # Column index for Instance_no
 
-# SLA Definitions (SLA1-4)
+# SLA Definitions (SLA1-SLA4)
 sla_definitions:
   "SLA1":
     name: "Production"
     description: "High-availability production systems"
-    retention:
-      local_file_ret: 7
-      local_snap_ret: 3
-      local_log_ret: 14
-      blob_log_ret: 30
-      blob_file_ret: 90
-      blob_file_ret_monthly: 12
-      blob_file_ret_yearly: 3
-    timeout:
-      type: "default"
-      value: 300
-    escalation:
-      mail_enabled: true
-      sms_enabled: false
-      mail_address: "monitoring@pcg.io"
-      min_failure_count: 2
-      triggers:
-        every_change: false
-        to_red: true
-        to_yellow: false
-        to_green: false
-    schedule_defaults:
-      period: "hourly"
-      time: "00:00:00"
-      days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    command_defaults:
+      processId: 801  # Default process ID for SLA1 commands
+      parameters: "-p prod -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: true
+      schedule:
+        period: "hourly"
+        time: "00:00:00"
+        cronExpression: ""
+        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+      history:
+        documentAllRuns: true
+        retention: 604800  # 7 days in seconds
+      timeout:
+        type: "default"
+        value: 300
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "prod-monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 2
+        triggers:
+          everyChange: false
+          toRed: true
+          toYellow: false
+          toGreen: false
 
   "SLA2":
     name: "Staging"
-    description: "Staging / Pre-production"
-    retention:
-      local_file_ret: 14
-      local_snap_ret: 7
-      local_log_ret: 30
-      blob_log_ret: 90
-      blob_file_ret: 180
-      blob_file_ret_monthly: 24
-      blob_file_ret_yearly: 5
-    timeout:
-      type: "custom"
-      value: 600
-    escalation:
-      mail_enabled: true
-      sms_enabled: true
-      mail_address: "critical-monitoring@pcg.io"
-      sms_address: "0123456789"
-      min_failure_count: 1
-      triggers:
-        every_change: true
-        to_red: true
-        to_yellow: true
-        to_green: false
-    schedule_defaults:
-      period: "every_5min"
-      time: "00:00:00"
-      days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    description: "Staging / Pre-production systems"
+    command_defaults:
+      processId: 802  # Default process ID for SLA2 commands
+      parameters: "-p staging -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: true
+      schedule:
+        period: "every_5min"
+        time: "00:00:00"
+        cronExpression: ""
+        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+      history:
+        documentAllRuns: true
+        retention: 1209600  # 14 days in seconds
+      timeout:
+        type: "custom"
+        value: 600
+      escalation:
+        mailEnabled: true
+        smsEnabled: true
+        mailAddress: "staging-monitoring@pcg.io"
+        smsAddress: "0123456789"
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: true
+          toGreen: false
 
   "SLA3":
     name: "Development"
     description: "Development environment"
-    retention:
-      local_file_ret: 30
-      local_snap_ret: 14
-      local_log_ret: 90
-      blob_log_ret: 365
-      blob_file_ret: 730
-      blob_file_ret_monthly: 60
-      blob_file_ret_yearly: 10
-    timeout:
-      type: "custom"
-      value: 1800
-    escalation:
-      mail_enabled: true
-      sms_enabled: true
-      mail_address: "premium-monitoring@pcg.io"
-      sms_address: "0123456789"
-      min_failure_count: 1
-      triggers:
-        every_change: true
-        to_red: true
-        to_yellow: true
-        to_green: true
-    schedule_defaults:
-      period: "every_minute"
-      time: "00:00:00"
-      days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    command_defaults:
+      processId: 803  # Default process ID for SLA3 commands
+      parameters: "-p dev -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
+      parametersNeeded: false
+      disabled: false
+      critical: false
+      autoDeploy: false
+      schedule:
+        period: "daily"
+        time: "02:00:00"
+        cronExpression: ""
+        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      history:
+        documentAllRuns: false
+        retention: 259200  # 3 days in seconds
+      timeout:
+        type: "custom"
+        value: 1800
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "dev-monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 3
+        triggers:
+          everyChange: false
+          toRed: true
+          toYellow: false
+          toGreen: false
 
   "SLA4":
     name: "Backup"
-    description: "Backup / Restore systems"
-    retention:
-      local_file_ret: 30
-      local_snap_ret: 14
-      local_log_ret: 90
-      blob_log_ret: 365
-      blob_file_ret: 730
-      blob_file_ret_monthly: 60
-      blob_file_ret_yearly: 10
-    timeout:
-      type: "custom"
-      value: 1800
-    escalation:
-      mail_enabled: true
-      sms_enabled: true
-      mail_address: "premium-monitoring@pcg.io"
-      sms_address: "0123456789"
-      min_failure_count: 1
-      triggers:
-        every_change: true
-        to_red: true
-        to_yellow: true
-        to_green: true
-    schedule_defaults:
-      period: "every_minute"
-      time: "00:00:00"
-      days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    description: "Backup environment"
+    command_defaults:
+      processId: 804  # Default process ID for SLA4 commands
+      parameters: "-p backup -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
+      parametersNeeded: false
+      disabled: false
+      critical: false
+      autoDeploy: false
+      schedule:
+        period: "daily"
+        time: "02:00:00"
+        cronExpression: ""
+        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      history:
+        documentAllRuns: false
+        retention: 259200  # 3 days in seconds
+      timeout:
+        type: "custom"
+        value: 1800
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "dev-monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 3
+        triggers:
+          everyChange: false
+          toRed: true
+          toYellow: false
+          toGreen: false
 
-# Variable Value Mappings for Command Parameters
-variable_mappings:
-  # Backup Log Source mappings
-  BKP_LOG_SRC:
-    default: "/var/log/backup"
-
-  # Backup Log Destination mappings
-  BKP_LOG_DEST1:
-    default: "/backup/logs/primary"
-
-  BKP_LOG_DEST2:
-    default: "/backup/logs/secondary"
-
-  # Backup Log Cleanup intervals
-  BKP_LOG_CLEANUP_INT:
-    default: "7"
-
-  BKP_LOG_CLEANUP_INT2:
-    default: "30"
-
-  # Database Host mappings
-  DB_HOST:
-    default: "localhost"
-
-# Schedule Templates
-schedule_templates:
-  manual:
-    period: "manually"
-    time: "00:00:00"
-    cron_expression: ""
-    days_of_week: []
-
-  hourly:
-    period: "hourly"
-    time: "00:00:00"
-    cron_expression: ""
-    days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-
-  daily:
-    period: "one_per_day"
-    time: "02:00:00"
-    cron_expression: ""
-    days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-
-  business_hours:
-    period: "hourly"
-    time: "00:00:00"
-    cron_expression: ""
-    days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday"]
-
-  weekend:
-    period: "one_per_day"
-    time: "06:00:00"
-    cron_expression: ""
-    days_of_week: ["saturday", "sunday"]
-
-  every_5min:
-    period: "every_5min"
-    time: "00:00:00"
-    cron_expression: ""
-    days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-
-  every_minute:
-    period: "every_minute"
-    time: "00:00:00"
-    cron_expression: ""
-    days_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-
-# ALPACA API Configuration
-alpaca_api:
-  host: "{{ inventory_hostname }}"
-  protocol: "{{ ALPACA_Operator_API_Protocol | default('https') }}"
-  port: "{{ ALPACA_Operator_API_Port | default(8443) }}"
-  username: "{{ ALPACA_Operator_API_Username }}"
-  password: "{{ ALPACA_Operator_API_Password }}"
-  tls_verify: "{{ ALPACA_Operator_API_Validate_Certs | default(false) }}"
+# ALPACA API Configuration (will be built dynamically in tasks)
+# Required variables that must be set by the user:
+# - ALPACA_Operator_API_Protocol (optional, defaults to 'https')
+# - ALPACA_Operator_API_Port (optional, defaults to 8443)
+# - ALPACA_Operator_API_Username (required)
+# - ALPACA_Operator_API_Password (required)
+# - ALPACA_Operator_API_Validate_Certs (optional, defaults to false)
 
 # Processing Options
 processing_options:
   # Whether to create commands immediately or generate playbooks
-  create_commands: false
+  create_commands: true
 
   # Whether to validate CSV data before processing
   validate_data: true
-
-  # Whether to process CSV data
-  process_csv_data: true
 
   # Log level for processing
   log_level: "info"

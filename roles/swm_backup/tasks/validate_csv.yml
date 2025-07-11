@@ -85,4 +85,4 @@
          * SLA2: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length }}
          * SLA3: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length }}
          * SLA4: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length }}
-      - All validation checks passed successfully 
+      - All validation checks passed successfully

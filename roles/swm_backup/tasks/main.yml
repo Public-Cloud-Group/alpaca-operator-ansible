@@ -1,22 +1,103 @@
 ---
-# CSV Processor Role - Main Tasks
+# SWM Backup New Role - Main Tasks
 
-- name: Gather facts for timestamp generation
-  setup:
-    gather_subset: date_time
+- name: Validate CSV processor configuration
+  ansible.builtin.assert:
+    that:
+      - csv_processor.input_file is defined
+      - csv_processor.delimiter is defined
+      - sla_definitions is defined
+    fail_msg: "Required configuration variables are missing"
+    success_msg: "CSV processor configuration is valid"
 
-- name: Include CSV processor tasks
-  include_tasks: validate.yml
-  when: csv_processor.validate_data | default(true)
+- name: Validate ALPACA API configuration
+  ansible.builtin.assert:
+    that:
+      - ALPACA_Operator_API_Username is defined
+      - ALPACA_Operator_API_Password is defined
+    fail_msg: "Required ALPACA API variables are missing. Please set ALPACA_Operator_API_Username and ALPACA_Operator_API_Password"
+    success_msg: "ALPACA API configuration is valid"
 
-- name: Include CSV processor tasks
+- name: Build ALPACA API configuration
+  ansible.builtin.set_fact:
+    alpaca_api:
+      host: "{{ inventory_hostname }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol | default('https') }}"
+      port: "{{ ALPACA_Operator_API_Port | default(8443) }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs | default(false) }}"
+
+- name: Determine if execution is on remote host
+  ansible.builtin.set_fact:
+    is_remote_execution: "{{ inventory_hostname != 'localhost' and inventory_hostname != '127.0.0.1' and inventory_hostname != ansible_connection | default('ssh') != 'local' }}"
+
+- name: Clear any existing CSV file variables
+  ansible.builtin.set_fact:
+    csv_source_file: ""
+    csv_target_file: ""
+
+- name: Set CSV file paths
+  ansible.builtin.set_fact:
+    csv_source_file: "{{ csv_processor.input_file }}"
+    csv_target_file: "{{ ('/tmp/swm_prod_' + ansible_date_time.epoch + '_' + (999999999 | random | string) + '.csv') if is_remote_execution else csv_processor.input_file }}"
+
+- name: Copy CSV file to remote host
+  ansible.builtin.copy:
+    src: "{{ csv_processor.input_file }}"
+    dest: "{{ csv_target_file }}"
+    mode: '0644'
+  when: is_remote_execution
+
+- name: Check if CSV file exists
+  ansible.builtin.stat:
+    path: "{{ csv_target_file }}"
+  register: csv_file_stat
+
+- name: Fail if CSV file does not exist
+  ansible.builtin.fail:
+    msg: "CSV file not found: {{ csv_target_file }}"
+  when: not csv_file_stat.stat.exists
+
+- name: Update CSV processor configuration with target file path
+  ansible.builtin.set_fact:
+    csv_processor: "{{ csv_processor | combine({'input_file': csv_target_file}) }}"
+
+- name: Display processing information
+  ansible.builtin.debug:
+    msg: |
+      Starting CSV processing for SLA-based ALPACA commands
+      CSV Source File: {{ csv_source_file }}
+      CSV Target File: {{ csv_target_file }}
+      Remote Execution: {{ is_remote_execution }}
+      Processing Mode: {{ 'Create Commands' if processing_options.create_commands else 'Generate Playbooks' }}
+      Validation: {{ 'Enabled' if processing_options.validate_data else 'Disabled' }}
+
+- name: Read and process CSV data
   include_tasks: process_csv.yml
-  when: csv_processor.process_csv_data | default(true)
 
-- name: Include CSV processor tasks
-  include_tasks: generate_playbooks.yml
-  when: not csv_processor.create_commands | default(false)
+- name: Validate CSV data
+  include_tasks: validate_csv.yml
+  when: processing_options.validate_data | default(true)
 
-- name: Include CSV processor tasks
+- name: Create ALPACA commands
   include_tasks: create_commands.yml
-  when: csv_processor.create_commands | default(false)
+  when: processing_options.create_commands | default(true)
+
+- name: Clean up temporary CSV file on remote host
+  ansible.builtin.file:
+    path: "{{ csv_target_file }}"
+    state: absent
+  when: is_remote_execution
+
+- name: Display processing summary
+  ansible.builtin.debug:
+    msg: |
+      CSV Processing Summary:
+      - Total rows processed: {{ csv_data | length }}
+      - SLA1 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list | length }}
+      - SLA2 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length }}
+      - SLA3 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length }}
+      - SLA4 systems: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length }}
+      - Commands created: {{ commands_created | default(0) }}
+  when: csv_data is defined
