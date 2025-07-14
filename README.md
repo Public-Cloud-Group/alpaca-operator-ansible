@@ -1,4 +1,4 @@
-# pcg.alpaca_operator Collection for Ansible
+# ALPACA Operator Collection for Ansible
 
 [![CI](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/test.yml/badge.svg)](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/test.yml)
 
