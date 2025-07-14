@@ -124,4 +124,4 @@
       - Individual files generated: {{ individual_files_generated | default(0) }}
       - Consolidated file generated: {{ consolidated_file_generated | default(false) }}
       - Output directory: {{ output_config.output_dir }}
-  when: csv_data is defined 
+  when: csv_data is defined

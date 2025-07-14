@@ -23,4 +23,4 @@
 - name: Fail if variables file generation failed
   ansible.builtin.fail:
     msg: "Failed to generate variables file. Error: {{ variables_file_result.msg | default('Unknown error') }}"
-  when: variables_file_result.failed | default(false) 
+  when: variables_file_result.failed | default(false)

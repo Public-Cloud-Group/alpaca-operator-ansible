@@ -39,7 +39,7 @@ csv_columns:
 output_config:
   # Output directory for generated files
   output_dir: "{{ playbook_dir }}/generated"
-  
+
   # File naming patterns
   command_file_pattern: "command_{{ item.system_name | replace(' ', '_') | lower }}.yml"
   consolidated_file: "consolidated_commands.yml"
@@ -51,7 +51,7 @@ output_config:
 template_config:
   # Template directory
   template_dir: "{{ role_path }}/templates"
-  
+
   # Template files
   command_template: "command_template.yml.j2"
   consolidated_template: "consolidated_template.yml.j2"
@@ -63,22 +63,22 @@ template_config:
 processing_options:
   # Whether to generate individual command files
   generate_individual_files: true
-  
+
   # Whether to generate consolidated file
   generate_consolidated_file: true
-  
+
   # Whether to generate inventory file
   generate_inventory: true
-  
+
   # Whether to generate variables file
   generate_variables: true
-  
+
   # Whether to generate README
   generate_readme: true
-  
+
   # Whether to validate CSV data before processing
   validate_data: true
-  
+
   # Log level for processing
   log_level: "info"
 
@@ -88,4 +88,4 @@ processing_options:
 # - ALPACA_Operator_API_Port (optional, defaults to 8443)
 # - ALPACA_Operator_API_Username (required)
 # - ALPACA_Operator_API_Password (required)
-# - ALPACA_Operator_API_Validate_Certs (optional, defaults to false) 
+# - ALPACA_Operator_API_Validate_Certs (optional, defaults to false)

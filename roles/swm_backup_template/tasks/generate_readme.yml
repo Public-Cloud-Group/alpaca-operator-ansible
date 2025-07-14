@@ -24,4 +24,4 @@
 - name: Fail if README file generation failed
   ansible.builtin.fail:
     msg: "Failed to generate README file. Error: {{ readme_file_result.msg | default('Unknown error') }}"
-  when: readme_file_result.failed | default(false) 
+  when: readme_file_result.failed | default(false)

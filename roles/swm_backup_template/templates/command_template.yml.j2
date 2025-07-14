@@ -6,7 +6,7 @@
 - name: Create ALPACA Command for {{ csv_row.system_name }}
   hosts: {{ alpaca_api.host }}
   gather_facts: false
-  
+
   vars:
     # ALPACA API Configuration
     ALPACA_Operator_API_Protocol: "{{ alpaca_api.protocol }}"
@@ -70,4 +70,4 @@
           - SLA: {{ csv_row.system_sla }} ({{ sla_config.name }})
           - Status: {{ 'Created' if result.changed else 'Already exists' }}
       vars:
-        result: "{{ ansible_facts.get('alpaca_command_result', {}) }}" 
+        result: "{{ ansible_facts.get('alpaca_command_result', {}) }}"

@@ -22,4 +22,4 @@
 - name: Fail if inventory file generation failed
   ansible.builtin.fail:
     msg: "Failed to generate inventory file. Error: {{ inventory_file_result.msg | default('Unknown error') }}"
-  when: inventory_file_result.failed | default(false) 
+  when: inventory_file_result.failed | default(false)

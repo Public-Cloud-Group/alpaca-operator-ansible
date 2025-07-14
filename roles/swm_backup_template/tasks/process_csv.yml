@@ -69,4 +69,4 @@
       - SLA2 ({{ sla_definitions.SLA2.name }}): {{ sla_grouped_data.SLA2 | length }} systems
       - SLA3 ({{ sla_definitions.SLA3.name }}): {{ sla_grouped_data.SLA3 | length }} systems
       - SLA4 ({{ sla_definitions.SLA4.name }}): {{ sla_grouped_data.SLA4 | length }} systems
-  when: sla_grouped_data is defined 
+  when: sla_grouped_data is defined

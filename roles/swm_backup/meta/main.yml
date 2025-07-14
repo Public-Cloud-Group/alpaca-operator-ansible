@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  author: PCG Team
+  author: Public Cloud Group
   description: SWM Backup New - SLA-based ALPACA command creation from CSV data
   company: PCG
   license: GPL-3.0-or-later

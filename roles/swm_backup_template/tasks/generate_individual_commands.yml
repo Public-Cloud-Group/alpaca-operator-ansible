@@ -50,4 +50,4 @@
 - name: Fail if any individual file generation failed
   ansible.builtin.fail:
     msg: "One or more individual command file generations failed. Check the debug output above for details."
-  when: individual_command_results.results | selectattr('failed', 'defined') | selectattr('failed', 'equalto', true) | list | length > 0 
+  when: individual_command_results.results | selectattr('failed', 'defined') | selectattr('failed', 'equalto', true) | list | length > 0

@@ -27,4 +27,4 @@
 - name: Fail if consolidated file generation failed
   ansible.builtin.fail:
     msg: "Failed to generate consolidated command file. Error: {{ consolidated_file_result.msg | default('Unknown error') }}"
-  when: consolidated_file_result.failed | default(false) 
+  when: consolidated_file_result.failed | default(false)

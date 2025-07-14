@@ -273,8 +273,8 @@ GPL-3.0-or-later
 
 ## Author
 
-PCG Team
+Public Cloud Group
 
 ## Support
 
-For issues and questions, please contact the PCG team or create an issue in the project repository.
+For issues and questions, please contact the Public Cloud Group or create an issue in the project repository.
