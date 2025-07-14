@@ -322,7 +322,7 @@ def get_system_details(api_url, headers, system_id, verify):
 
     # Clean up description: Current workaround for trailing whitespace returned by API --- #0001
     if "description" in general:
-        general["description"] = re.sub(r'\s+', ' ', general["description"]).strip() 
+        general["description"] = re.sub(r'\s+', ' ', general["description"]).strip()
     # ------------------------------------------------------------------------------------------
 
     return {"general": general, "agents": agents, "variables": variables}
