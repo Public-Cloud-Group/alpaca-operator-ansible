@@ -1,0 +1,44 @@
+---
+# Generate Individual Command Files
+
+- name: Generate individual command playbook files
+  ansible.builtin.template:
+    src: "{{ template_config.template_dir }}/{{ template_config.command_template }}"
+    dest: "{{ output_config.output_dir }}/{{ output_config.command_file_pattern | replace('item.', '') }}"
+    mode: '0644'
+  vars:
+    csv_row: "{{ command_data.csv_row }}"
+    command_name: "{{ command_data.command_name }}"
+    system_name: "{{ command_data.system_name }}"
+    agent_name: "{{ command_data.agent_name }}"
+    system_sla: "{{ command_data.system_sla }}"
+    system_type: "{{ command_data.system_type }}"
+    hdb_nw_sid: "{{ command_data.hdb_nw_sid }}"
+    system_az: "{{ command_data.system_az }}"
+    processId: "{{ command_data.processId }}"
+    parameters: "{{ command_data.parameters }}"
+    schedule: "{{ command_data.schedule }}"
+    parametersNeeded: "{{ command_data.parametersNeeded }}"
+    disabled: "{{ command_data.disabled }}"
+    critical: "{{ command_data.critical }}"
+    autoDeploy: "{{ command_data.autoDeploy }}"
+    history: "{{ command_data.history }}"
+    timeout: "{{ command_data.timeout }}"
+    escalation: "{{ command_data.escalation }}"
+  loop: "{{ expanded_command_data }}"
+  loop_control:
+    loop_var: command_data
+  register: individual_command_files
+
+- name: Set individual files generated count
+  ansible.builtin.set_fact:
+    individual_files_generated: "{{ individual_command_files.results | length }}"
+
+- name: Display individual command generation summary
+  ansible.builtin.debug:
+    msg: |
+      Individual Command Generation Summary:
+      - Total files generated: {{ individual_files_generated }}
+      - Files with changes: {{ individual_command_files.results | selectattr('changed', 'equalto', true) | list | length }}
+      - Files unchanged: {{ individual_command_files.results | selectattr('changed', 'equalto', false) | list | length }}
+      - Output directory: {{ output_config.output_dir }} 

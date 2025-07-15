@@ -1,0 +1,74 @@
+---
+# ALPACA Command Playbook for {{ system_name }} - {{ command_name }}
+# Generated from CSV data - SLA: {{ system_sla }}
+# System Type: {{ system_type }} | HDB SID: {{ hdb_nw_sid }} | AZ: {{ system_az }}
+# Generated on: {{ ansible_date_time.iso8601 }}
+
+- name: Create ALPACA Command for {{ system_name }} - {{ command_name }}
+  hosts: {{ alpaca_api.host }}
+  gather_facts: false
+
+  vars:
+    # ALPACA API Configuration
+    ALPACA_Operator_API_Protocol: "{{ alpaca_api.protocol }}"
+    ALPACA_Operator_API_Port: {{ alpaca_api.port }}
+    ALPACA_Operator_API_Username: "{{ alpaca_api.username }}"
+    ALPACA_Operator_API_Password: "{{ alpaca_api.password }}"
+    ALPACA_Operator_API_Validate_Certs: {{ alpaca_api.tls_verify | lower }}
+
+  tasks:
+    - name: Create {{ command_name }} for {{ system_name }}
+      pcg.alpaca_operator.alpaca_command:
+        system:
+          systemName: "{{ system_name }}"
+        command:
+          name: "{{ command_name }}"
+          state: present
+          agentName: "{{ agent_name }}"
+          processId: {{ processId }}
+          parameters: "{{ parameters | replace('__SYSTEM_TYPE__', system_type) | replace('__HDB_NW_SID__', hdb_nw_sid) | replace('__SYSTEM_AZ__', system_az) }}"
+          parametersNeeded: {{ parametersNeeded | lower }}
+          disabled: {{ disabled | lower }}
+          critical: {{ critical | lower }}
+          autoDeploy: {{ autoDeploy | lower }}
+          schedule:
+            period: "{{ schedule.period }}"
+            time: "{{ schedule.time }}"
+            cronExpression: "{{ schedule.cronExpression }}"
+            daysOfWeek: {{ schedule.daysOfWeek | to_json }}
+          history:
+            documentAllRuns: {{ history.documentAllRuns | lower }}
+            retention: {{ history.retention }}
+          timeout:
+            type: "{{ timeout.type }}"
+            value: {{ timeout.value }}
+          escalation:
+            mailEnabled: {{ escalation.mailEnabled | lower }}
+            smsEnabled: {{ escalation.smsEnabled | lower }}
+            mailAddress: "{{ escalation.mailAddress }}"
+            smsAddress: "{{ escalation.smsAddress }}"
+            minFailureCount: {{ escalation.minFailureCount }}
+            triggers:
+              everyChange: {{ escalation.triggers.everyChange | lower }}
+              toRed: {{ escalation.triggers.toRed | lower }}
+              toYellow: {{ escalation.triggers.toYellow | lower }}
+              toGreen: {{ escalation.triggers.toGreen | lower }}
+        apiConnection:
+          host: "{{ alpaca_api.host }}"
+          protocol: "{{ alpaca_api.protocol }}"
+          port: {{ alpaca_api.port }}
+          username: "{{ alpaca_api.username }}"
+          password: "{{ alpaca_api.password }}"
+          tls_verify: {{ alpaca_api.tls_verify | lower }}
+
+    - name: Display command creation result
+      ansible.builtin.debug:
+        msg: |
+          Command Creation Result for {{ system_name }}:
+          - Command Name: {{ command_name }}
+          - System: {{ system_name }}
+          - Agent: {{ agent_name }}
+          - SLA: {{ system_sla }}
+          - Status: {{ 'Created' if result.changed else 'Already exists' }}
+      vars:
+        result: "{{ ansible_facts.get('alpaca_command_result', {}) }}" 

@@ -1,190 +1,312 @@
 ---
-# SWM Backup New Role Defaults
+# SWM Backup Role - Complete Redesign
+# Neue Architektur für flexible Command-Generierung basierend auf CSV-Daten
 
 # CSV File Configuration
 csv_processor:
   # Input CSV file path
   input_file: "{{ role_path }}/files/swm_prod.csv"
-
+  
   # CSV delimiter
   delimiter: ";"
-
+  
   # CSV encoding
   encoding: "utf-8"
-
+  
   # Whether to skip header row
   skip_header: true
 
 # CSV Column Mapping
-# Based on the CSV structure: primary_system;hdb_nw_sid;hdb_tenant;system_type;system_staging;system_sla;system_vm_type;system_vm_flavor;system_vdns;system_az;hdb_data_min;hdb_data_max;hdb_log_min;hdb_log_max;hdb_shared_min;hdb_shared_max;Instance_no
-csv_columns:
-  primary_system: 0     # Column index for primary_system
-  hdb_nw_sid: 1         # Column index for hdb_nw_sid (maps to SystemName)
-  hdb_tenant: 2         # Column index for hdb_tenant
-  system_type: 3        # Column index for system_type
-  system_staging: 4     # Column index for system_staging
-  system_sla: 5         # Column index for system_sla (SLA1, SLA2, SLA3)
-  system_vm_type: 6     # Column index for system_vm_type
-  system_vm_flavor: 7   # Column index for system_vm_flavor
-  system_vdns: 8        # Column index for system_vdns (maps to AgentName)
-  system_az: 9          # Column index for system_az
-  hdb_data_min: 10      # Column index for hdb_data_min
-  hdb_data_max: 11      # Column index for hdb_data_max
-  hdb_log_min: 12       # Column index for hdb_log_min
-  hdb_log_max: 13       # Column index for hdb_log_max
-  hdb_shared_min: 14    # Column index for hdb_shared_min
-  hdb_shared_max: 15    # Column index for hdb_shared_max
-  Instance_no: 16       # Column index for Instance_no
+# Maps CSV columns to variables that can be used in command templates
+csv_column_mapping:
+  primary_system: 0      # Column index for primary_system
+  hdb_nw_sid: 1          # Column index for hdb_nw_sid (maps to systemName)
+  hdb_tenant: 2          # Column index for hdb_tenant
+  system_type: 3         # Column index for system_type
+  system_staging: 4      # Column index for system_staging
+  system_sla: 5          # Column index for system_sla (SLA1, SLA2, SLA3, SLA4)
+  system_vm_type: 6      # Column index for system_vm_type
+  system_vm_flavor: 7    # Column index for system_vm_flavor
+  system_vdns: 8         # Column index for system_vdns (maps to agentName)
+  system_az: 9           # Column index for system_az
+  hdb_data_min: 10       # Column index for hdb_data_min
+  hdb_data_max: 11       # Column index for hdb_data_max
+  hdb_log_min: 12        # Column index for hdb_log_min
+  hdb_log_max: 13        # Column index for hdb_log_max
+  hdb_shared_min: 14     # Column index for hdb_shared_min
+  hdb_shared_max: 15     # Column index for hdb_shared_max
+  Instance_no: 16        # Column index for Instance_no
 
-# SLA Definitions (SLA1-SLA4)
-sla_definitions:
+# SLA Command Templates
+# Define which commands should be created for each SLA
+# Each command template can use variables from CSV data
+sla_command_templates:
   "SLA1":
-    name: "Production"
-    description: "High-availability production systems"
-    command_defaults:
-      processId: 801  # Default process ID for SLA1 commands
-      parameters: "-p prod -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: true
-      schedule:
-        period: "hourly"
-        time: "00:00:00"
-        cronExpression: ""
-        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-      history:
-        documentAllRuns: true
-        retention: 604800  # 7 days in seconds
-      timeout:
-        type: "default"
-        value: 300
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "prod-monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 2
-        triggers:
-          everyChange: false
-          toRed: true
-          toYellow: false
-          toGreen: false
+    - name: "Production Full Backup"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Production Full Backup - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 801
+        parameters: "-p prod -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -backup full"
+        parametersNeeded: false
+        disabled: false
+        critical: true
+        autoDeploy: true
+        schedule:
+          period: "hourly"
+          time: "00:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        history:
+          documentAllRuns: true
+          retention: 604800
+        timeout:
+          type: "default"
+          value: 300
+        escalation:
+          mailEnabled: true
+          smsEnabled: false
+          mailAddress: "prod-monitoring@pcg.io"
+          smsAddress: ""
+          minFailureCount: 2
+          triggers:
+            everyChange: false
+            toRed: true
+            toYellow: false
+            toGreen: false
+
+    - name: "Production Log Backup"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Production Log Backup - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 802
+        parameters: "-p prod -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -backup log"
+        parametersNeeded: false
+        disabled: false
+        critical: true
+        autoDeploy: true
+        schedule:
+          period: "every_5min"
+          time: "00:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        history:
+          documentAllRuns: true
+          retention: 604800
+        timeout:
+          type: "default"
+          value: 300
+        escalation:
+          mailEnabled: true
+          smsEnabled: false
+          mailAddress: "prod-monitoring@pcg.io"
+          smsAddress: ""
+          minFailureCount: 2
+          triggers:
+            everyChange: false
+            toRed: true
+            toYellow: false
+            toGreen: false
+
+    - name: "Production Health Check"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Production Health Check - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 803
+        parameters: "-p prod -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -health"
+        parametersNeeded: false
+        disabled: false
+        critical: true
+        autoDeploy: true
+        schedule:
+          period: "every_5min"
+          time: "00:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        history:
+          documentAllRuns: true
+          retention: 604800
+        timeout:
+          type: "default"
+          value: 300
+        escalation:
+          mailEnabled: true
+          smsEnabled: false
+          mailAddress: "prod-monitoring@pcg.io"
+          smsAddress: ""
+          minFailureCount: 2
+          triggers:
+            everyChange: false
+            toRed: true
+            toYellow: false
+            toGreen: false
 
   "SLA2":
-    name: "Staging"
-    description: "Staging / Pre-production systems"
-    command_defaults:
-      processId: 802  # Default process ID for SLA2 commands
-      parameters: "-p staging -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: true
-      schedule:
-        period: "every_5min"
-        time: "00:00:00"
-        cronExpression: ""
-        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-      history:
-        documentAllRuns: true
-        retention: 1209600  # 14 days in seconds
-      timeout:
-        type: "custom"
-        value: 600
-      escalation:
-        mailEnabled: true
-        smsEnabled: true
-        mailAddress: "staging-monitoring@pcg.io"
-        smsAddress: "0123456789"
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: true
-          toGreen: false
+    - name: "Staging Backup"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Staging Backup - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 802
+        parameters: "-p staging -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -backup full"
+        parametersNeeded: false
+        disabled: false
+        critical: true
+        autoDeploy: true
+        schedule:
+          period: "every_5min"
+          time: "00:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        history:
+          documentAllRuns: true
+          retention: 1209600
+        timeout:
+          type: "custom"
+          value: 600
+        escalation:
+          mailEnabled: true
+          smsEnabled: true
+          mailAddress: "staging-monitoring@pcg.io"
+          smsAddress: "0123456789"
+          minFailureCount: 1
+          triggers:
+            everyChange: true
+            toRed: true
+            toYellow: true
+            toGreen: false
+
+    - name: "Staging Health Check"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Staging Health Check - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 803
+        parameters: "-p staging -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -health"
+        parametersNeeded: false
+        disabled: false
+        critical: true
+        autoDeploy: true
+        schedule:
+          period: "every_5min"
+          time: "00:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        history:
+          documentAllRuns: true
+          retention: 1209600
+        timeout:
+          type: "custom"
+          value: 600
+        escalation:
+          mailEnabled: true
+          smsEnabled: true
+          mailAddress: "staging-monitoring@pcg.io"
+          smsAddress: "0123456789"
+          minFailureCount: 1
+          triggers:
+            everyChange: true
+            toRed: true
+            toYellow: true
+            toGreen: false
 
   "SLA3":
-    name: "Development"
-    description: "Development environment"
-    command_defaults:
-      processId: 803  # Default process ID for SLA3 commands
-      parameters: "-p dev -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
-      parametersNeeded: false
-      disabled: false
-      critical: false
-      autoDeploy: false
-      schedule:
-        period: "daily"
-        time: "02:00:00"
-        cronExpression: ""
-        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday"]
-      history:
-        documentAllRuns: false
-        retention: 259200  # 3 days in seconds
-      timeout:
-        type: "custom"
-        value: 1800
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "dev-monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 3
-        triggers:
-          everyChange: false
-          toRed: true
-          toYellow: false
-          toGreen: false
+    - name: "Development Backup"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Development Backup - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 803
+        parameters: "-p dev -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -backup full"
+        parametersNeeded: false
+        disabled: false
+        critical: false
+        autoDeploy: false
+        schedule:
+          period: "one_per_day"
+          time: "02:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        history:
+          documentAllRuns: false
+          retention: 259200
+        timeout:
+          type: "custom"
+          value: 1800
+        escalation:
+          mailEnabled: true
+          smsEnabled: false
+          mailAddress: "dev-monitoring@pcg.io"
+          smsAddress: ""
+          minFailureCount: 3
+          triggers:
+            everyChange: false
+            toRed: true
+            toYellow: false
+            toGreen: false
 
   "SLA4":
-    name: "Backup"
-    description: "Backup environment"
-    command_defaults:
-      processId: 804  # Default process ID for SLA4 commands
-      parameters: "-p backup -t __SYSTEM_TYPE__ -s __HDB_NW_SID__ -az __SYSTEM_AZ__"
-      parametersNeeded: false
-      disabled: false
-      critical: false
-      autoDeploy: false
-      schedule:
-        period: "daily"
-        time: "02:00:00"
-        cronExpression: ""
-        daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday"]
-      history:
-        documentAllRuns: false
-        retention: 259200  # 3 days in seconds
-      timeout:
-        type: "custom"
-        value: 1800
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "dev-monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 3
-        triggers:
-          everyChange: false
-          toRed: true
-          toYellow: false
-          toGreen: false
-
-# ALPACA API Configuration (will be built dynamically in tasks)
-# Required variables that must be set by the user:
-# - ALPACA_Operator_API_Protocol (optional, defaults to 'https')
-# - ALPACA_Operator_API_Port (optional, defaults to 8443)
-# - ALPACA_Operator_API_Username (required)
-# - ALPACA_Operator_API_Password (required)
-# - ALPACA_Operator_API_Validate_Certs (optional, defaults to false)
+    - name: "Backup Environment"
+      system:
+        systemName: "{{ csv_row.hdb_nw_sid }}"
+      command:
+        name: "Backup Environment - {{ csv_row.hdb_nw_sid }}"
+        state: present
+        agentName: "{{ csv_row.system_vdns }}"
+        processId: 804
+        parameters: "-p backup -t {{ csv_row.system_type }} -s {{ csv_row.hdb_nw_sid }} -az {{ csv_row.system_az }} -backup full"
+        parametersNeeded: false
+        disabled: false
+        critical: false
+        autoDeploy: false
+        schedule:
+          period: "one_per_day"
+          time: "02:00:00"
+          cronExpression: ""
+          daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        history:
+          documentAllRuns: false
+          retention: 259200
+        timeout:
+          type: "custom"
+          value: 1800
+        escalation:
+          mailEnabled: true
+          smsEnabled: false
+          mailAddress: "dev-monitoring@pcg.io"
+          smsAddress: ""
+          minFailureCount: 3
+          triggers:
+            everyChange: false
+            toRed: true
+            toYellow: false
+            toGreen: false
 
 # Processing Options
 processing_options:
-  # Whether to create commands immediately or generate playbooks
-  create_commands: true
-
   # Whether to validate CSV data before processing
   validate_data: true
-
+  
   # Log level for processing
   log_level: "info"
+  
+  # Whether to continue processing if a command fails
+  continue_on_error: false
+  
+  # Whether to show detailed output for each command creation
+  verbose_output: true

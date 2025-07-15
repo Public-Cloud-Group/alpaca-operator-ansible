@@ -1,0 +1,52 @@
+---
+# Process a single CSV row and create all commands for its SLA
+
+- name: Initialize counters for current row
+  ansible.builtin.set_fact:
+    commands_created: "{{ commands_created | default(0) }}"
+    commands_failed: "{{ commands_failed | default(0) }}"
+
+- name: Display current row information
+  ansible.builtin.debug:
+    msg: |
+      Processing CSV row:
+      - System: {{ csv_row.hdb_nw_sid }}
+      - SLA: {{ csv_row.system_sla }}
+      - Agent: {{ csv_row.system_vdns }}
+      - Type: {{ csv_row.system_type }}
+      - AZ: {{ csv_row.system_az }}
+  when: processing_options.verbose_output | default(true)
+
+- name: Check if SLA has command templates defined
+  ansible.builtin.set_fact:
+    current_sla_templates: "{{ sla_command_templates[csv_row.system_sla] | default([]) }}"
+
+- name: Display SLA template information
+  ansible.builtin.debug:
+    msg: |
+      SLA {{ csv_row.system_sla }} has {{ current_sla_templates | length }} command templates:
+      {% for template in current_sla_templates %}
+      - {{ template.name }}
+      {% endfor %}
+  when: processing_options.verbose_output | default(true)
+
+- name: Fail if no command templates found for SLA
+  ansible.builtin.fail:
+    msg: "No command templates found for SLA {{ csv_row.system_sla }}. Please define templates in sla_command_templates."
+  when: current_sla_templates | length == 0
+
+- name: Create commands for current row
+  include_tasks: create_command.yml
+  loop: "{{ current_sla_templates }}"
+  loop_control:
+    loop_var: command_template
+    label: "{{ command_template.name }} for {{ csv_row.hdb_nw_sid }}"
+
+- name: Display row processing summary
+  ansible.builtin.debug:
+    msg: |
+      Completed processing for {{ csv_row.hdb_nw_sid }} ({{ csv_row.system_sla }}):
+      - Commands created: {{ commands_created }}
+      - Commands failed: {{ commands_failed }}
+      - Total templates: {{ current_sla_templates | length }}
+  when: processing_options.verbose_output | default(true) 

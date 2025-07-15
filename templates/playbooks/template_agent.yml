@@ -27,7 +27,7 @@
 
         # --- API connection configuration ---
         apiConnection:
-          host: "{{ inventory_hostname }}"                          # Defined in the corresponding inventory
+          host: "{{ ALPACA_Operator_API_Host }}"                          # Defined in the corresponding inventory
           protocol: "{{ ALPACA_Operator_API_Protocol }}"            # Defined in the corresponding inventory
           port: "{{ ALPACA_Operator_API_Port }}"                    # Defined in the corresponding inventory
           username: "{{ ALPACA_Operator_API_Username }}"            # Defined in the corresponding inventory

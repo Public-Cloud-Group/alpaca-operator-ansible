@@ -1,0 +1,85 @@
+---
+# Create ALPACA Commands for a single CSV row
+
+- name: Get SLA configuration for current row
+  ansible.builtin.set_fact:
+    sla_config: "{{ sla_definitions[csv_row.system_sla] }}"
+
+- name: Get command templates for current SLA
+  ansible.builtin.set_fact:
+    command_templates: "{{ sla_config.command_templates | default([{'name': sla_config.name + ' Backup Command'}]) }}"
+
+- name: Create ALPACA commands for each command template
+  pcg.alpaca_operator.alpaca_command:
+    system:
+      systemName: "{{ csv_row.system_name }}"
+    command:
+      name: "{{ command_template.name }} - {{ csv_row.system_name }}"
+      state: present
+      agentName: "{{ csv_row.agent_name }}"
+      processId: "{{ command_template.processId | default(sla_config.command_defaults.processId) }}"
+      parameters: "{{ command_template.parameters | replace('__SYSTEM_TYPE__', csv_row.system_type) | replace('__HDB_NW_SID__', csv_row.hdb_nw_sid) | replace('__SYSTEM_AZ__', csv_row.system_az) }}"
+      parametersNeeded: "{{ command_template.parametersNeeded | default(sla_config.command_defaults.parametersNeeded) }}"
+      disabled: "{{ command_template.disabled | default(sla_config.command_defaults.disabled) }}"
+      critical: "{{ command_template.critical | default(sla_config.command_defaults.critical) }}"
+      autoDeploy: "{{ command_template.autoDeploy | default(sla_config.command_defaults.autoDeploy) }}"
+      schedule:
+        period: "{{ command_template.schedule.period | default(sla_config.command_defaults.schedule.period) }}"
+        time: "{{ command_template.schedule.time | default(sla_config.command_defaults.schedule.time) }}"
+        cronExpression: "{{ command_template.schedule.cronExpression | default(sla_config.command_defaults.schedule.cronExpression) }}"
+        daysOfWeek: "{{ command_template.schedule.daysOfWeek | default(sla_config.command_defaults.schedule.daysOfWeek) }}"
+      history:
+        documentAllRuns: "{{ command_template.history.documentAllRuns | default(sla_config.command_defaults.history.documentAllRuns) }}"
+        retention: "{{ command_template.history.retention | default(sla_config.command_defaults.history.retention) }}"
+      timeout:
+        type: "{{ command_template.timeout.type | default(sla_config.command_defaults.timeout.type) }}"
+        value: "{{ command_template.timeout.value | default(sla_config.command_defaults.timeout.value) }}"
+      escalation:
+        mailEnabled: "{{ command_template.escalation.mailEnabled | default(sla_config.command_defaults.escalation.mailEnabled) }}"
+        smsEnabled: "{{ command_template.escalation.smsEnabled | default(sla_config.command_defaults.escalation.smsEnabled) }}"
+        mailAddress: "{{ command_template.escalation.mailAddress | default(sla_config.command_defaults.escalation.mailAddress) }}"
+        smsAddress: "{{ command_template.escalation.smsAddress | default(sla_config.command_defaults.escalation.smsAddress) }}"
+        minFailureCount: "{{ command_template.escalation.minFailureCount | default(sla_config.command_defaults.escalation.minFailureCount) }}"
+        triggers:
+          everyChange: "{{ command_template.escalation.triggers.everyChange | default(sla_config.command_defaults.escalation.triggers.everyChange) }}"
+          toRed: "{{ command_template.escalation.triggers.toRed | default(sla_config.command_defaults.escalation.triggers.toRed) }}"
+          toYellow: "{{ command_template.escalation.triggers.toYellow | default(sla_config.command_defaults.escalation.triggers.toYellow) }}"
+          toGreen: "{{ command_template.escalation.triggers.toGreen | default(sla_config.command_defaults.escalation.triggers.toGreen) }}"
+    apiConnection:
+      host: "{{ alpaca_api.host }}"
+      protocol: "{{ alpaca_api.protocol }}"
+      port: "{{ alpaca_api.port }}"
+      username: "{{ alpaca_api.username }}"
+      password: "{{ alpaca_api.password }}"
+      tls_verify: "{{ alpaca_api.tls_verify }}"
+  loop: "{{ command_templates }}"
+  loop_control:
+    loop_var: command_template
+    label: "{{ command_template.name }} for {{ csv_row.system_name }}"
+  register: command_results
+
+- name: Update command creation counter
+  ansible.builtin.set_fact:
+    commands_created: "{{ commands_created | int + (command_results.results | selectattr('changed', 'equalto', true) | list | length) }}"
+
+- name: Display command creation results for current row
+  ansible.builtin.debug:
+    msg: |
+      Created {{ command_results.results | selectattr('changed', 'equalto', true) | list | length }} commands for {{ csv_row.system_name }} ({{ csv_row.system_sla }})
+      Templates used: {{ command_templates | map(attribute='name') | list }}
+
+- name: Display failed command creations for current row
+  ansible.builtin.debug:
+    msg: |
+      Failed to create command for system: {{ csv_row.system_name }}
+      Template: {{ item.command_template.name if item.command_template is defined else 'Unknown' }}
+      Error: {{ item.msg | default('Unknown error') }}
+  loop: "{{ command_results.results }}"
+  loop_control:
+    label: "{{ item.command_template.name if item.command_template is defined else 'Unknown' }}"
+  when: item.failed | default(false)
+
+- name: Fail if any command creation failed for current row
+  ansible.builtin.fail:
+    msg: "Failed to create one or more commands for system {{ csv_row.system_name }}. Check the debug output above for details."
+  when: command_results.results | selectattr('failed', 'defined') | selectattr('failed', 'equalto', true) | list | length > 0 

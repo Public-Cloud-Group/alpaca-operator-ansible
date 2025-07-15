@@ -1,0 +1,88 @@
+---
+# Validate CSV Data
+
+- name: Validate that CSV data exists
+  ansible.builtin.assert:
+    that:
+      - csv_data is defined
+      - csv_data | length > 0
+    fail_msg: "No CSV data found to validate"
+    success_msg: "CSV data is available for validation"
+
+- name: Check for required fields in each row
+  ansible.builtin.assert:
+    that:
+      - item.system_name is defined and item.system_name | length > 0
+      - item.agent_name is defined and item.agent_name | length > 0
+      - item.system_sla is defined and item.system_sla | length > 0
+      - item.system_type is defined and item.system_type | length > 0
+    fail_msg: "Missing required fields in CSV row: {{ item }}"
+    success_msg: "Required fields present in row for system {{ item.system_name }}"
+  loop: "{{ csv_data }}"
+  loop_control:
+    label: "{{ item.system_name | default('Unknown') }}"
+
+- name: Validate SLA values
+  ansible.builtin.assert:
+    that:
+      - item.system_sla in ['SLA1', 'SLA2', 'SLA3', 'SLA4']
+    fail_msg: "Invalid SLA value '{{ item.system_sla }}' for system {{ item.system_name }}. Must be one of: SLA1, SLA2, SLA3, SLA4"
+    success_msg: "Valid SLA value for system {{ item.system_name }}"
+  loop: "{{ csv_data }}"
+  loop_control:
+    label: "{{ item.system_name | default('Unknown') }} (SLA: {{ item.system_sla | default('Unknown') }})"
+
+- name: Check for duplicate system names
+  ansible.builtin.set_fact:
+    duplicate_systems: "{{ csv_data | map(attribute='system_name') | list | select('equalto', item) | list | length }}"
+  loop: "{{ csv_data | map(attribute='system_name') | list | unique }}"
+  register: duplicate_check
+
+# - name: Validate no duplicate system names
+#   ansible.builtin.assert:
+#     that:
+#       - duplicate_systems | int == 1
+#     fail_msg: "Duplicate system name found: {{ item }}"
+#     success_msg: "No duplicate system names found"
+#   loop: "{{ csv_data | map(attribute='system_name') | list | unique }}"
+#   vars:
+#     duplicate_systems: "{{ csv_data | map(attribute='system_name') | list | select('equalto', item) | list | length }}"
+
+- name: Validate numeric fields
+  ansible.builtin.assert:
+    that:
+      - item.hdb_data_min | int >= 0
+      - item.hdb_data_max | int >= 0
+      - item.hdb_log_min | int >= 0
+      - item.hdb_log_max | int >= 0
+      - item.hdb_shared_min | int >= 0
+      - item.hdb_shared_max | int >= 0
+      - item.Instance_no | length > 0
+    fail_msg: "Invalid numeric values in CSV row for system {{ item.system_name }}"
+    success_msg: "Valid numeric values for system {{ item.system_name }}"
+  loop: "{{ csv_data }}"
+  loop_control:
+    label: "{{ item.system_name | default('Unknown') }}"
+
+- name: Validate SLA definitions exist
+  ansible.builtin.assert:
+    that:
+      - sla_definitions[item.system_sla] is defined
+    fail_msg: "SLA definition missing for {{ item.system_sla }}"
+    success_msg: "SLA definition exists for {{ item.system_sla }}"
+  loop: "{{ csv_data }}"
+  loop_control:
+    label: "{{ item.system_name | default('Unknown') }} (SLA: {{ item.system_sla | default('Unknown') }})"
+
+- name: Display validation summary
+  ansible.builtin.debug:
+    msg: |
+      CSV Data Validation Complete:
+      - Total rows validated: {{ csv_data | length }}
+      - Unique systems: {{ csv_data | map(attribute='system_name') | list | unique | length }}
+             - SLA distribution:
+         * SLA1: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA1') | list | length }}
+         * SLA2: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA2') | list | length }}
+         * SLA3: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA3') | list | length }}
+         * SLA4: {{ csv_data | selectattr('system_sla', 'equalto', 'SLA4') | list | length }}
+      - All validation checks passed successfully

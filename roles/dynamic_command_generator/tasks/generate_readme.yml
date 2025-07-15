@@ -1,0 +1,16 @@
+---
+# Generate README File
+
+- name: Generate README documentation file
+  ansible.builtin.template:
+    src: "{{ template_config.template_dir }}/{{ template_config.readme_template }}"
+    dest: "{{ output_config.output_dir }}/{{ output_config.readme_file }}"
+    mode: '0644'
+
+- name: Display README file generation result
+  ansible.builtin.debug:
+    msg: |
+      README File Generation:
+      - File: {{ output_config.readme_file }}
+      - Location: {{ output_config.output_dir }}
+      - Contains: Complete documentation and usage instructions 

@@ -1,0 +1,20 @@
+---
+# Generate Consolidated Command File
+
+- name: Generate consolidated command playbook
+  ansible.builtin.template:
+    src: "{{ template_config.template_dir }}/{{ template_config.consolidated_template }}"
+    dest: "{{ output_config.output_dir }}/{{ output_config.consolidated_file }}"
+    mode: '0644'
+
+- name: Set consolidated file generated flag
+  ansible.builtin.set_fact:
+    consolidated_file_generated: true
+
+- name: Display consolidated file generation result
+  ansible.builtin.debug:
+    msg: |
+      Consolidated Command File Generation:
+      - File: {{ output_config.consolidated_file }}
+      - Location: {{ output_config.output_dir }}
+      - Total commands included: {{ expanded_command_data | length }} 
