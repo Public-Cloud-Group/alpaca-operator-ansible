@@ -1,0 +1,29 @@
+---
+- name: HANA Backup - Generate and Execute Commands from CSV
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    csv_file: "{{ playbook_dir }}/.tmp/swm_prod.csv"
+    output_dir: "{{ playbook_dir }}/generated_commands"
+    # command:
+    #   agentId: "Ebenso Deine Mudda baut Häuser aus Kruppstahl"
+    # system:
+    #   systemId: "DeineMuddaWäschtImKlo"
+    # schedule:
+    #   period: PENIS
+    # timeout:
+    #   type: "default"
+    #   value: 666
+    # history:
+    #   documentAllRuns: false
+    #   retention: 222
+    # timeout:
+    #   type: PENIS
+    #   value: 123
+
+  tasks:
+    - name: Include hana_backup role
+      include_role:
+        name: hana_backup

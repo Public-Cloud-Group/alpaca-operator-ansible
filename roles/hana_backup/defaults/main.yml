@@ -1,0 +1,379 @@
+---
+# CSV-Datei Pfad
+csv_file: ""
+
+# Command-Templates für verschiedene SLA-Level
+command_templates:
+  SLA1:
+    - name: "BKP: DB log sync {{ system.systemName }}"
+      agentId: "ES IST DEINE MUDDA AM TELEFON"
+      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+      schedule:
+        period: "every_5min"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 11
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+    - name: "BKP: DB data sync {{ system.systemName }}"
+      agentId: "ES IST DEINE MUDDA AM TELEFON"
+      parameters: "-p GLTdata -s <BKP_DATA_SRC> -l 4 -d <BKP_DATA_DEST1> -r <BKP_DATA_DEST2> -b <BKP_DATA_CLEANUP_INT> -t <BKP_DATA_CLEANUP_INT2> -h DB_HOST"
+      schedule:
+        period: "every_15min"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 12
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+    - name: "BKP: DB shared sync {{ system.systemName }}"
+      agentId: "ES IST DEINE MUDDA AM TELEFON"
+      parameters: "-p GLTshared -s <BKP_SHARED_SRC> -l 4 -d <BKP_SHARED_DEST1> -r <BKP_SHARED_DEST2> -b <BKP_SHARED_CLEANUP_INT> -t <BKP_SHARED_CLEANUP_INT2> -h DB_HOST"
+      schedule:
+        period: "every_30min"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 13
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+    - name: "BKP: System health check {{ system.systemName }}"
+      agentId: "ES IST DEINE MUDDA AM TELEFON"
+      parameters: "-p health -s <HEALTH_CHECK_SRC> -l 2 -d <HEALTH_CHECK_DEST> -h DB_HOST"
+      schedule:
+        period: "every_hour"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 14
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+
+  SLA2:
+    - name: "BKP: DB log sync {{ system.systemName }}"
+      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 3 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -h DB_HOST"
+      schedule:
+        period: "every_15min"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 21
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+    - name: "BKP: DB data sync {{ system.systemName }}"
+      parameters: "-p GLTdata -s <BKP_DATA_SRC> -l 3 -d <BKP_DATA_DEST1> -r <BKP_DATA_DEST2> -b <BKP_DATA_CLEANUP_INT> -h DB_HOST"
+      schedule:
+        period: "every_30min"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 22
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+    - name: "BKP: System health check {{ system.systemName }}"
+      parameters: "-p health -s <HEALTH_CHECK_SRC> -l 2 -d <HEALTH_CHECK_DEST> -h DB_HOST"
+      schedule:
+        period: "every_2hours"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 23
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+
+  SLA3:
+    - name: "BKP: DB log sync {{ system.systemName }}"
+      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 2 -d <BKP_LOG_DEST1> -b <BKP_LOG_CLEANUP_INT> -h DB_HOST"
+      schedule:
+        period: "every_30min"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 31
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+    - name: "BKP: System health check {{ system.systemName }}"
+      parameters: "-p health -s <HEALTH_CHECK_SRC> -l 1 -d <HEALTH_CHECK_DEST> -h DB_HOST"
+      schedule:
+        period: "every_4hours"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 32
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+
+  SLA4:
+    - name: "BKP: Basic health check {{ system.systemName }}"
+      parameters: "-p basic -s <BASIC_CHECK_SRC> -l 1 -d <BASIC_CHECK_DEST> -h DB_HOST"
+      schedule:
+        period: "every_6hours"
+        time: "12:00:00"
+        cronExpression: ""
+        daysOfWeek:
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday
+          - sunday
+      parametersNeeded: false
+      disabled: false
+      critical: true
+      autoDeploy: false
+      timeout:
+        type: "default"
+        value: 41
+      history:
+        documentAllRuns: true
+        retention: 100
+      escalation:
+        mailEnabled: true
+        smsEnabled: false
+        mailAddress: "monitoring@pcg.io"
+        smsAddress: ""
+        minFailureCount: 1
+        triggers:
+          everyChange: true
+          toRed: true
+          toYellow: false
+          toGreen: false
+
+# Output-Verzeichnis für generierte Playbooks
+output_directory: "{{ playbook_dir }}/generated_playbooks"
+
+# API-Verbindung (wird aus Inventory übernommen)
+api_connection:
+  host: "{{ ALPACA_Operator_API_Host }}"
+  protocol: "{{ ALPACA_Operator_API_Protocol }}"
+  port: "{{ ALPACA_Operator_API_Port }}"
+  username: "{{ ALPACA_Operator_API_Username }}"
+  password: "{{ ALPACA_Operator_API_Password }}"
+  tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"

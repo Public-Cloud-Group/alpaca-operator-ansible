@@ -1,0 +1,52 @@
+---
+- name: Prüfen ob csv_file gesetzt ist
+  fail:
+    msg: "Variable 'csv_file' ist nicht gesetzt. Bitte setzen Sie diese im Playbook."
+  when: csv_file is not defined or csv_file == ""
+
+- name: Prüfen ob CSV-Datei existiert
+  stat:
+    path: "{{ csv_file }}"
+  register: csv_file_stat
+
+- name: Fehler ausgeben wenn CSV-Datei nicht existiert
+  fail:
+    msg: "CSV-Datei '{{ csv_file }}' wurde nicht gefunden."
+  when: not csv_file_stat.stat.exists
+
+- name: CSV-Datei mit Python einlesen
+  command: python3 "{{ role_path }}/files/read_csv.py" "{{ csv_file }}"
+  register: csv_output
+  delegate_to: localhost
+  changed_when: false
+
+- name: CSV-Daten parsen
+  set_fact:
+    csv_data: "{{ csv_output.stdout | from_json }}"
+
+- name: Output-Verzeichnis anlegen
+  file:
+    path: "{{ output_dir }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+
+- name: Debug - CSV-Daten anzeigen
+  debug:
+    msg: "Gefundene {{ csv_data | length }} Zeilen in CSV-Datei"
+  when: csv_data is defined
+
+- name: Über alle CSV-Zeilen iterieren und Commands generieren
+  include_tasks: process_csv_row.yml
+  loop: "{{ csv_data }}"
+  loop_control:
+    loop_var: csv_row
+    index_var: row_index
+  when: csv_data is defined
+
+- name: Zusammenfassung anzeigen
+  debug:
+    msg: |
+      Verarbeitung abgeschlossen!
+      - CSV-Zeilen verarbeitet: {{ csv_data | length }}
+      - Generierte Playbooks: {{ output_dir }}

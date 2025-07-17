@@ -1,0 +1,44 @@
+---
+- name: Playbook-Dateiname generieren
+  set_fact:
+    playbook_filename: "command_{{ system.systemName }}_{{ command.agentName }}_{{ system_sla }}_{{ command_index + 1 }}.yml"
+
+- name: Debug - Ich kack ab.... warum??!???
+  debug:
+    msg: |
+      - command_template.agentId: "{{ command_template.agentId | default("Nö, nix angekommen bis hier") }}"
+
+- name: Command-Playbook generieren
+  vars:
+    system:
+      systemName: "{{ system.systemName | default(command_template.system.systemName) }}"
+      systemId: "{{ system.systemId | default(command_template.system.systemId) }}"
+    command:
+      agentName: "{{ command.agentName | default(command_template.agentName) }}"
+      agentId: "{{ command.agentId | default(command_template.agentId) }}" # <----------- WARUM wird die variable hier nicht übergeben??!? Ich will nen gottverdammten default setzen können! (Playbook klappt, default variable noch nicht... Ich kotz im dreieck.)
+    commandName: "{{ command_template.name | replace('{{ system.systemName }}', system.systemName) }}"
+    commandParameters: "{{ command_template.parameters }}"
+    commandSchedule: "{{ schedule | default(command_template.schedule) }}"
+    commandParametersNeeded: "{{ parametersNeeded | default(command_template.parametersNeeded) }}"
+    commandDisabled: "{{ disabled | default(command_template.disabled) }}"
+    commandCritical: "{{ critical | default(command_template.critical) }}"
+    commandAutoDeploy: "{{ autoDeploy | default(command_template.autoDeploy) }}"
+    commandTimeout: "{{ timeout | default(command_template.timeout) }}"
+    commandHistory: "{{ history | default(command_template.history) }}"
+    commandEscalation: "{{ escalation | default(command_template.escalation) }}"
+  debug:
+    msg: |
+      - command.agentId: "{{ command.agentId }}"
+  # template:
+  #   src: command_playbook_template.yml.j2
+  #   dest: "{{ output_dir }}/{{ playbook_filename }}"
+  #   mode: '0644'
+
+- name: Debug - Ist der bums immer noch gesetzt?
+  debug:
+    msg: |
+      - command_template.agentId: "{{ command_template.agentId | default("Nö, nix angekommen bis hier") }}"
+
+- name: Debug - Generiertes Playbook anzeigen
+  debug:
+    msg: "Hab das was gebastelt: {{ playbook_filename }}"
