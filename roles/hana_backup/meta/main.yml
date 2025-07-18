@@ -3,7 +3,7 @@ dependencies: []
 galaxy_info:
   role_name: hana_backup
   author: ALPACA Operator Team
-  description: Generate and execute ALPACA Operator commands based on CSV data and SLA levels
+  description: Generate and execute ALPACA Operator commands based on CSV data and SLA levels for HANA backup automation
   company: ""
   license: MIT
   min_ansible_version: "2.9"

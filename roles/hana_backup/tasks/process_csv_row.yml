@@ -1,47 +1,31 @@
 ---
 
-# - name: Debug - Variablen anzeigen
-#   debug:
-#     msg: |
-#       - command.agentId: "{{ command.agentId }}
-
-- name: Variablen für aktuelle CSV-Zeile setzen
+- name: Set variables for current CSV row
   set_fact:
-    # Hier angegebene Werte haben IMMER Vorang vor dem, was in dem Playbook definiert ist
-    system:
+    csv:
       systemName: "{{ csv_row.hdb_nw_sid | default(omit) }}"
-      systemId: "{{ system.systemId | default(omit) }}"
-    command:
       agentName: "{{ csv_row.system_vdns | default(omit) }}"
-      # agentId: "{{ command.agentId | default(omit) }}"
-      # agentId: "{{ command.agentId }}"
-      # agentId: "GEHT MIR DAS AUF DEN PISS"
-    system_sla: "{{ csv_row.system_sla | default(omit) }}"
-    system_type: "{{ csv_row.system_type | default(omit) }}"
-    system_staging: "{{ csv_row.system_staging | default(omit) }}"
-    instance_no: "{{ csv_row.Instance_no | default(omit) }}"
+      systemSla: "{{ csv_row.system_sla | default(omit) }}"
+      systemType: "{{ csv_row.system_type | default(omit) }}"
+      systemStaging: "{{ csv_row.system_staging | default(omit) }}"
+      instanceNo: "{{ csv_row.Instance_no | default(omit) }}"
 
-# - name: Debug - Variablen erneut anzeigen
+# - name: Debug - Show current row
 #   debug:
 #     msg: |
-#       - command.agentId: "{{ command.agentId }}
+#       Processing row {{ row_index }}:
+#       - System: {{ csv.systemName }}
+#       - Agent: {{ csv.agentName }}
+#       - SLA: {{ csv.systemSla }}
+#       - Type: {{ csv.systemType }}
 
-- name: Debug - Aktuelle Zeile anzeigen
-  debug:
-    msg: |
-      Verarbeite Zeile {{ row_index }}:
-      - System: {{ system.systemName }}
-      - Agent: {{ command.agentName }}
-      - SLA: {{ system_sla }}
-      - Typ: {{ system_type }}
+# - name: Debug - Show command count
+#   debug:
+#     msg: "{{ csv.systemSla }} gets {{ command_templates[csv.systemSla] | length }} commands"
 
-- name: Debug - Command-Anzahl anzeigen
-  debug:
-    msg: "SLA {{ system_sla }} erhält {{ command_templates[system_sla] | length }} Commands"
-
-- name: Commands für aktuelle Zeile generieren
+- name: Generate commands for current row
   include_tasks: generate_commands.yml
-  loop: "{{ command_templates[system_sla] }}"
+  loop: "{{ command_templates[csv.systemSla] }}"
   loop_control:
     loop_var: command_template
     index_var: command_index

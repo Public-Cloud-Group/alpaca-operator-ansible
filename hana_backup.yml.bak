@@ -9,25 +9,6 @@
 
   vars:
     csv_file: "{{ playbook_dir }}/.tmp/swm_prod.csv"
-
-    globals:
-      disabled: true
-
-    override:
-      globals:
-        # < Das soll alles hier hin wandern ( Also Überschreibungen von command-parameter-values über sämtliche SLA-Ebenen hinweg!)
-      SLA1:
-        critical: false
-    # SLA2:
-    # SLA3:
-    # SLA4:
-
-
-
-
-
-
-
     # output_dir: "{{ playbook_dir }}/generated_commands"
     # cleanup_generated_playbooks: false                          # Controls whether generated command playbooks are deleted after execution
 

@@ -1,17 +1,21 @@
 ---
-# CSV-Datei Pfad
+# CSV file path
 csv_file: ""
 
-# Command-Templates für verschiedene SLA-Level
+# Output directory for generated playbooks
+output_directory: "{{ playbook_dir }}/generated_playbooks"
+
+# Command templates for different SLA levels
 command_templates:
   SLA1:
-    - name: "BKP: DB log sync {{ system.systemName }}"
-      agentId: "ES IST DEINE MUDDA AM TELEFON"
+    - name: "BKP: DB log sync {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
       schedule:
         period: "every_5min"
-        time: "12:00:00"
-        cronExpression: ""
+        # time: "12:00:00"
+        # cronExpression: ""
         daysOfWeek:
           - monday
           - tuesday
@@ -41,20 +45,21 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-    - name: "BKP: DB data sync {{ system.systemName }}"
-      agentId: "ES IST DEINE MUDDA AM TELEFON"
+    - name: "BKP: DB data sync {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p GLTdata -s <BKP_DATA_SRC> -l 4 -d <BKP_DATA_DEST1> -r <BKP_DATA_DEST2> -b <BKP_DATA_CLEANUP_INT> -t <BKP_DATA_CLEANUP_INT2> -h DB_HOST"
       schedule:
-        period: "every_15min"
+        period: "fixed_time"
         time: "12:00:00"
-        cronExpression: ""
+        # cronExpression: ""
         daysOfWeek:
           - monday
           - tuesday
-          - wednesday
+          # - wednesday
           - thursday
           - friday
-          - saturday
+          # - saturday
           - sunday
       parametersNeeded: false
       disabled: false
@@ -77,21 +82,22 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-    - name: "BKP: DB shared sync {{ system.systemName }}"
-      agentId: "ES IST DEINE MUDDA AM TELEFON"
+    - name: "BKP: DB shared sync {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p GLTshared -s <BKP_SHARED_SRC> -l 4 -d <BKP_SHARED_DEST1> -r <BKP_SHARED_DEST2> -b <BKP_SHARED_CLEANUP_INT> -t <BKP_SHARED_CLEANUP_INT2> -h DB_HOST"
       schedule:
-        period: "every_30min"
+        period: "one_per_day"
         time: "12:00:00"
         cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
+        # daysOfWeek:
+        #   - monday
+        #   - tuesday
+        #   - wednesday
+        #   - thursday
+        #   - friday
+        #   - saturday
+        #   - sunday
       parametersNeeded: false
       disabled: false
       critical: true
@@ -113,21 +119,22 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-    - name: "BKP: System health check {{ system.systemName }}"
-      agentId: "ES IST DEINE MUDDA AM TELEFON"
+    - name: "BKP: System health check {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p health -s <HEALTH_CHECK_SRC> -l 2 -d <HEALTH_CHECK_DEST> -h DB_HOST"
       schedule:
-        period: "every_hour"
+        period: "hourly"
         time: "12:00:00"
         cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
+        # daysOfWeek:
+        #   - monday
+        #   - tuesday
+        #   - wednesday
+        #   - thursday
+        #   - friday
+        #   - saturday
+        #   - sunday
       parametersNeeded: false
       disabled: false
       critical: true
@@ -151,10 +158,12 @@ command_templates:
           toGreen: false
 
   SLA2:
-    - name: "BKP: DB log sync {{ system.systemName }}"
+    - name: "BKP: DB log sync {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 3 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -h DB_HOST"
       schedule:
-        period: "every_15min"
+        period: "fixed_time"
         time: "12:00:00"
         cronExpression: ""
         daysOfWeek:
@@ -186,19 +195,21 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-    - name: "BKP: DB data sync {{ system.systemName }}"
+    - name: "BKP: DB data sync {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p GLTdata -s <BKP_DATA_SRC> -l 3 -d <BKP_DATA_DEST1> -r <BKP_DATA_DEST2> -b <BKP_DATA_CLEANUP_INT> -h DB_HOST"
       schedule:
-        period: "every_30min"
+        period: "fixed_time"
         time: "12:00:00"
-        cronExpression: ""
+        # cronExpression: ""
         daysOfWeek:
           - monday
           - tuesday
-          - wednesday
+          # - wednesday
           - thursday
           - friday
-          - saturday
+          # - saturday
           - sunday
       parametersNeeded: false
       disabled: false
@@ -221,10 +232,12 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-    - name: "BKP: System health check {{ system.systemName }}"
+    - name: "BKP: System health check {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p health -s <HEALTH_CHECK_SRC> -l 2 -d <HEALTH_CHECK_DEST> -h DB_HOST"
       schedule:
-        period: "every_2hours"
+        period: "fixed_time"
         time: "12:00:00"
         cronExpression: ""
         daysOfWeek:
@@ -258,20 +271,22 @@ command_templates:
           toGreen: false
 
   SLA3:
-    - name: "BKP: DB log sync {{ system.systemName }}"
+    - name: "BKP: DB log sync {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 2 -d <BKP_LOG_DEST1> -b <BKP_LOG_CLEANUP_INT> -h DB_HOST"
       schedule:
-        period: "every_30min"
+        period: "one_per_day"
         time: "12:00:00"
-        cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
+        # cronExpression: ""
+        # daysOfWeek:
+        #   - monday
+        #   - tuesday
+        #   - wednesday
+        #   - thursday
+        #   - friday
+        #   - saturday
+        #   - sunday
       parametersNeeded: false
       disabled: false
       critical: true
@@ -293,7 +308,9 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-    - name: "BKP: System health check {{ system.systemName }}"
+    - name: "BKP: System health check {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p health -s <HEALTH_CHECK_SRC> -l 1 -d <HEALTH_CHECK_DEST> -h DB_HOST"
       schedule:
         period: "every_4hours"
@@ -330,10 +347,12 @@ command_templates:
           toGreen: false
 
   SLA4:
-    - name: "BKP: Basic health check {{ system.systemName }}"
+    - name: "BKP: Basic health check {{ csv.systemName }}"
+      # processId: 801
+      processCentralId: 8990048
       parameters: "-p basic -s <BASIC_CHECK_SRC> -l 1 -d <BASIC_CHECK_DEST> -h DB_HOST"
       schedule:
-        period: "every_6hours"
+        period: "fixed_time"
         time: "12:00:00"
         cronExpression: ""
         daysOfWeek:
@@ -365,15 +384,3 @@ command_templates:
           toRed: true
           toYellow: false
           toGreen: false
-
-# Output-Verzeichnis für generierte Playbooks
-output_directory: "{{ playbook_dir }}/generated_playbooks"
-
-# API-Verbindung (wird aus Inventory übernommen)
-api_connection:
-  host: "{{ ALPACA_Operator_API_Host }}"
-  protocol: "{{ ALPACA_Operator_API_Protocol }}"
-  port: "{{ ALPACA_Operator_API_Port }}"
-  username: "{{ ALPACA_Operator_API_Username }}"
-  password: "{{ ALPACA_Operator_API_Password }}"
-  tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"

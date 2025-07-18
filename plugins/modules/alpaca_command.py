@@ -612,12 +612,12 @@ def main():
             module.fail_json(msg="Agent with ID '{0}' not found. Please ensure agent is created first.".format(module.params['command']['agentId']))
 
     # Check if either a process ID or the processes central ID is provided
-    if not module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('state') == "present":
+    if not module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('command', {}).get('state') == "present":
         module.fail_json(msg="Either processCentralId or processId must be provided")
 
     # Resolve processId if needed
-    if module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('state') == "present":
-        processId = lookup_processId(api_url, headers, "globalId", module.params.get('command', {}).get('processCentralId'), module.params['apiConnection']['tls_verify'])
+    if module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('command', {}).get('state') == "present":
+        processId = lookup_processId(api_url, headers, "globalId", module.params.get('command', {}).get('processCentralId'), module.params['apiConnection']['tls_verify'],)
         if not processId:
             module.fail_json(msg="Process ID lookup for Central ID '{0}' not found".format(module.params['command']['processCentralId']))
         module.params['command']['processId'] = processId

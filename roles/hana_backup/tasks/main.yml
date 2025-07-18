@@ -1,42 +1,42 @@
 ---
-- name: Prüfen ob csv_file gesetzt ist
+- name: Check if csv_file is set
   fail:
-    msg: "Variable 'csv_file' ist nicht gesetzt. Bitte setzen Sie diese im Playbook."
+    msg: "Variable 'csv_file' is not set. Please set this in the playbook."
   when: csv_file is not defined or csv_file == ""
 
-- name: Prüfen ob CSV-Datei existiert
+- name: Check if CSV file exists
   stat:
     path: "{{ csv_file }}"
   register: csv_file_stat
 
-- name: Fehler ausgeben wenn CSV-Datei nicht existiert
+- name: Error if CSV file not found
   fail:
-    msg: "CSV-Datei '{{ csv_file }}' wurde nicht gefunden."
+    msg: "CSV file '{{ csv_file }}' was not found."
   when: not csv_file_stat.stat.exists
 
-- name: CSV-Datei mit Python einlesen
+- name: Read CSV file with Python
   command: python3 "{{ role_path }}/files/read_csv.py" "{{ csv_file }}"
   register: csv_output
   delegate_to: localhost
   changed_when: false
 
-- name: CSV-Daten parsen
+- name: Parse CSV data
   set_fact:
     csv_data: "{{ csv_output.stdout | from_json }}"
 
-- name: Output-Verzeichnis anlegen
-  file:
-    path: "{{ output_dir }}"
-    state: directory
-    mode: '0755'
-  delegate_to: localhost
+# - name: Create output directory
+#   file:
+#     path: "{{ output_dir }}"
+#     state: directory
+#     mode: '0755'
+#   delegate_to: localhost
 
-- name: Debug - CSV-Daten anzeigen
+- name: Debug - Show CSV data
   debug:
-    msg: "Gefundene {{ csv_data | length }} Zeilen in CSV-Datei"
+    msg: "Found {{ csv_data | length }} rows in CSV file"
   when: csv_data is defined
 
-- name: Über alle CSV-Zeilen iterieren und Commands generieren
+- name: Iterate over all CSV rows and generate commands
   include_tasks: process_csv_row.yml
   loop: "{{ csv_data }}"
   loop_control:
@@ -44,9 +44,27 @@
     index_var: row_index
   when: csv_data is defined
 
-- name: Zusammenfassung anzeigen
-  debug:
-    msg: |
-      Verarbeitung abgeschlossen!
-      - CSV-Zeilen verarbeitet: {{ csv_data | length }}
-      - Generierte Playbooks: {{ output_dir }}
+# - name: List generated playbooks in "{{ output_dir }}"
+#   find:
+#     paths: "{{ output_dir }}"
+#     patterns: "*.yml"
+#   register: generated_playbooks
+#
+# - name: Execute generated playbooks
+#   shell: ansible-playbook "{{ item.path }}"
+#   loop: "{{ generated_playbooks.files }}"
+#   when: generated_playbooks.files | length > 0
+#   register: playbook_execution_results
+
+# - name: Show summary
+#   debug:
+#     msg: |
+#       Processing completed!
+#       - CSV rows processed: {{ csv_data | length }}
+#       - Generated playbooks: {{ output_dir }}
+
+# - name: Clean up generated playbooks
+#   file:
+#     path: "{{ output_dir }}"
+#     state: absent
+#   when: cleanup_generated_playbooks | default(true)
