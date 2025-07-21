@@ -2,10 +2,9 @@
 dependencies: []
 galaxy_info:
   role_name: hana_backup
-  author: ALPACA Operator Team
+  author: Public Cloud Group GmbH (pcg.io)
   description: Generate and execute ALPACA Operator commands based on CSV data and SLA levels for HANA backup automation
-  company: ""
-  license: MIT
+  license: GPL-3.0-or-later # <!-- License --!>
   min_ansible_version: "2.9"
   platforms:
     - name: EL

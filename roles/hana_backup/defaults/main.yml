@@ -1,386 +1,68 @@
 ---
 # CSV file path
-csv_file: ""
+csv_file: "/tmp/swm_prod.csv"
 
-# Output directory for generated playbooks
-output_directory: "{{ playbook_dir }}/generated_playbooks"
+role_defaults:
+  global:
+    # defaults:
+    #   state: present
+    # commands:
+    #   - name: "BKP: HANA log multi incl. external"
+    #     processCentralId: 8990048
+    #     parameters: "-s <HANA_DB_SID> -n 4 -e blob -o <BKP_LB_LOG_01> -z $SKEY -r <CZ_BLOB_LOG_RET_CLASS_1> -k <CZ_LOCAL_LOG_RET_CLASS_1> -y -"
+    #     schedule:
+    #       period: fixed_time
+    #       time: "12:12:12"
+    #       # cronExpression: ""
+    #       daysOfWeek:
+    #         - monday
+    #         - tuesday
+    #         - wednesday
+    #         - thursday
+    #         - friday
+    #         - saturday
+    #         - sunday
 
-# Command templates for different SLA levels
-command_templates:
-  SLA1:
-    - name: "BKP: DB log sync {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-      schedule:
-        period: "every_5min"
-        # time: "12:00:00"
-        # cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 11
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-    - name: "BKP: DB data sync {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p GLTdata -s <BKP_DATA_SRC> -l 4 -d <BKP_DATA_DEST1> -r <BKP_DATA_DEST2> -b <BKP_DATA_CLEANUP_INT> -t <BKP_DATA_CLEANUP_INT2> -h DB_HOST"
-      schedule:
-        period: "fixed_time"
-        time: "12:00:00"
-        # cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          # - wednesday
-          - thursday
-          - friday
-          # - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 12
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-    - name: "BKP: DB shared sync {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p GLTshared -s <BKP_SHARED_SRC> -l 4 -d <BKP_SHARED_DEST1> -r <BKP_SHARED_DEST2> -b <BKP_SHARED_CLEANUP_INT> -t <BKP_SHARED_CLEANUP_INT2> -h DB_HOST"
-      schedule:
-        period: "one_per_day"
-        time: "12:00:00"
-        cronExpression: ""
-        # daysOfWeek:
-        #   - monday
-        #   - tuesday
-        #   - wednesday
-        #   - thursday
-        #   - friday
-        #   - saturday
-        #   - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 13
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-    - name: "BKP: System health check {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p health -s <HEALTH_CHECK_SRC> -l 2 -d <HEALTH_CHECK_DEST> -h DB_HOST"
-      schedule:
-        period: "hourly"
-        time: "12:00:00"
-        cronExpression: ""
-        # daysOfWeek:
-        #   - monday
-        #   - tuesday
-        #   - wednesday
-        #   - thursday
-        #   - friday
-        #   - saturday
-        #   - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 14
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-
-  SLA2:
-    - name: "BKP: DB log sync {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 3 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -h DB_HOST"
-      schedule:
-        period: "fixed_time"
-        time: "12:00:00"
-        cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 21
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-    - name: "BKP: DB data sync {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p GLTdata -s <BKP_DATA_SRC> -l 3 -d <BKP_DATA_DEST1> -r <BKP_DATA_DEST2> -b <BKP_DATA_CLEANUP_INT> -h DB_HOST"
-      schedule:
-        period: "fixed_time"
-        time: "12:00:00"
-        # cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          # - wednesday
-          - thursday
-          - friday
-          # - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 22
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-    - name: "BKP: System health check {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p health -s <HEALTH_CHECK_SRC> -l 2 -d <HEALTH_CHECK_DEST> -h DB_HOST"
-      schedule:
-        period: "fixed_time"
-        time: "12:00:00"
-        cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 23
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-
-  SLA3:
-    - name: "BKP: DB log sync {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 2 -d <BKP_LOG_DEST1> -b <BKP_LOG_CLEANUP_INT> -h DB_HOST"
-      schedule:
-        period: "one_per_day"
-        time: "12:00:00"
-        # cronExpression: ""
-        # daysOfWeek:
-        #   - monday
-        #   - tuesday
-        #   - wednesday
-        #   - thursday
-        #   - friday
-        #   - saturday
-        #   - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 31
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-    - name: "BKP: System health check {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p health -s <HEALTH_CHECK_SRC> -l 1 -d <HEALTH_CHECK_DEST> -h DB_HOST"
-      schedule:
-        period: "every_4hours"
-        time: "12:00:00"
-        cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 32
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
-
-  SLA4:
-    - name: "BKP: Basic health check {{ csv.systemName }}"
-      # processId: 801
-      processCentralId: 8990048
-      parameters: "-p basic -s <BASIC_CHECK_SRC> -l 1 -d <BASIC_CHECK_DEST> -h DB_HOST"
-      schedule:
-        period: "fixed_time"
-        time: "12:00:00"
-        cronExpression: ""
-        daysOfWeek:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-          - saturday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      autoDeploy: false
-      timeout:
-        type: "default"
-        value: 41
-      history:
-        documentAllRuns: true
-        retention: 100
-      escalation:
-        mailEnabled: true
-        smsEnabled: false
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: ""
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: true
-          toYellow: false
-          toGreen: false
+  global_defaults:
+    state: present
+    parametersNeeded: true
+    disabled: false
+    critical: true
+    history:
+      documentAllRuns: true
+      retention: 200
+    autoDeploy: false
+    timeout:
+      type: custom
+      value: 4000
+    escalation:
+      mailEnabled: true
+      smsEnabled: true
+      mailAddress: "monitoring@pcg.io"
+      smsAddress: "0123456789"
+      minFailureCount: 1
+      triggers:
+        everyChange: true
+        toRed: true
+        toYellow: true
+        toGreen: true
+  service_levels:
+    SLA1:
+      # defaults:
+      #   critical: false
+      commands:
+        - name: "BKP: HANA log multi incl. external"
+          processCentralId: 8990048
+          parameters: "-s <HANA_DB_SID> -n 4 -e blob -o <BKP_LB_LOG_01> -z $SKEY -r <CZ_BLOB_LOG_RET_CLASS_1> -k <CZ_LOCAL_LOG_RET_CLASS_1> -y -"
+          schedule:
+            period: fixed_time
+            time: "12:12:12"
+            # cronExpression: ""
+            daysOfWeek:
+              - monday
+              - tuesday
+              - wednesday
+              - thursday
+              - friday
+              - saturday
+              - sunday

@@ -24,17 +24,59 @@
   set_fact:
     csv_data: "{{ csv_output.stdout | from_json }}"
 
-# - name: Create output directory
-#   file:
-#     path: "{{ output_dir }}"
-#     state: directory
-#     mode: '0755'
-#   delegate_to: localhost
+# - name: Debug - Show CSV data
+#   debug:
+#     msg: "Found {{ csv_data | length }} rows in CSV file"
+#   when: csv_data is defined
 
-- name: Debug - Show CSV data
-  debug:
-    msg: "Found {{ csv_data | length }} rows in CSV file"
-  when: csv_data is defined
+# - name: Debug - Show role defaults
+#   debug:
+#     msg: "role_defaults: {{ role_defaults }}"
+
+# - name: Debug - Show override
+#   debug:
+#     msg: "override: {{ override | default('NOT DEFINED') }}"
+
+# - name: Debug - Show JSON strings
+#   debug:
+#     msg: "Base JSON: {{ role_defaults | to_json }}"
+#   when: role_defaults is defined
+
+# - name: Debug - Show override JSON
+#   debug:
+#     msg: "Override JSON: {{ (override | default({})) | to_json }}"
+#   when: override is defined
+
+- name: Merge dictionaries using Python recursive merge
+  command: >
+    python3 "{{ role_path }}/files/merge_definitions.py"
+    '{{ role_defaults | to_json }}'
+    '{{ (override | default({})) | to_json }}'
+  register: merge_output
+  changed_when: false
+  when: role_defaults is defined
+
+# - name: Debug - Show merge output
+#   debug:
+#     msg: "Merge stdout: {{ merge_output.stdout }}"
+#     verbosity: 2
+#   when: merge_output is defined
+
+# - name: Debug - Show merge stderr
+#   debug:
+#     msg: "Merge stderr: {{ merge_output.stderr }}"
+#     verbosity: 2
+#   when: merge_output is defined
+
+- name: Parse merged definitions
+  set_fact:
+    merged_definitions: "{{ merge_output.stdout | from_json }}"
+  when: merge_output is defined and merge_output.stdout != ""
+
+# - name: Debug - Show merged definitions
+#   debug:
+#     msg: "Merged definitions: {{ merged_definitions }}"
+#   when: merged_definitions is defined
 
 - name: Iterate over all CSV rows and generate commands
   include_tasks: process_csv_row.yml
@@ -43,28 +85,3 @@
     loop_var: csv_row
     index_var: row_index
   when: csv_data is defined
-
-# - name: List generated playbooks in "{{ output_dir }}"
-#   find:
-#     paths: "{{ output_dir }}"
-#     patterns: "*.yml"
-#   register: generated_playbooks
-#
-# - name: Execute generated playbooks
-#   shell: ansible-playbook "{{ item.path }}"
-#   loop: "{{ generated_playbooks.files }}"
-#   when: generated_playbooks.files | length > 0
-#   register: playbook_execution_results
-
-# - name: Show summary
-#   debug:
-#     msg: |
-#       Processing completed!
-#       - CSV rows processed: {{ csv_data | length }}
-#       - Generated playbooks: {{ output_dir }}
-
-# - name: Clean up generated playbooks
-#   file:
-#     path: "{{ output_dir }}"
-#     state: absent
-#   when: cleanup_generated_playbooks | default(true)

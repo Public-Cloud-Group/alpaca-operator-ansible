@@ -30,7 +30,7 @@
             retention: 200
           autoDeploy: false
           timeout:
-            type: DEFAULT
+            type: default
             value: 30
           escalation:
             mailEnabled: true

@@ -1,0 +1,24 @@
+---
+- name: HANA Backup - Generate and Execute Commands from CSV
+  hosts: local
+  gather_facts: false
+
+  vars:
+    csv_file: "{{ playbook_dir }}/../../.tmp/swm_prod.csv"
+
+    # override:
+    #   global_defaults:
+    #     # critical: OVERRIDE_GLOBAL_LEVEL
+    #   service_levels:
+    #     SLA1:
+    #       defaults:
+    #         critical: OVERRIDE_SLA_LEVEL
+    #       commands:
+    #         - name: "BKP: DB log sync"
+    #           critical: OVERRIDE_COMMAND_LEVEL
+
+
+  tasks:
+    - name: Include hana_backup role
+      include_role:
+        name: hana_backup

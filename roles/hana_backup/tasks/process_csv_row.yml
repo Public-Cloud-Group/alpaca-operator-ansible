@@ -10,6 +10,12 @@
       systemStaging: "{{ csv_row.system_staging | default(omit) }}"
       instanceNo: "{{ csv_row.Instance_no | default(omit) }}"
 
+- name: Set definitions for current CSV row
+  set_fact:
+    definitions:
+      global_defaults: "{{ merged_definitions.global_defaults | default(omit) }}"
+      sla_defaults: "{{ merged_definitions.service_levels[csv.systemSla].defaults | default(omit) }}"
+
 # - name: Debug - Show current row
 #   debug:
 #     msg: |
@@ -21,11 +27,17 @@
 
 # - name: Debug - Show command count
 #   debug:
-#     msg: "{{ csv.systemSla }} gets {{ command_templates[csv.systemSla] | length }} commands"
+#     msg: "{{ csv.systemSla }} gets {{ merged_definitions.service_levels[csv.systemSla].commands | length }} commands"
+
+# - name: Debug - Show definitions
+#   debug:
+#     msg: |
+#       global_defaults: {{ definitions.global_defaults }}
+#       sla_defaults: {{ definitions.sla_defaults }}
 
 - name: Generate commands for current row
   include_tasks: generate_commands.yml
-  loop: "{{ command_templates[csv.systemSla] }}"
+  loop: "{{ merged_definitions.service_levels[csv.systemSla].commands }}"
   loop_control:
-    loop_var: command_template
+    loop_var: command_definition
     index_var: command_index
