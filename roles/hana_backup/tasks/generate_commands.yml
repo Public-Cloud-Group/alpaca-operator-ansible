@@ -10,7 +10,7 @@
         state: "{{ command_definition.state | default(definitions.sla_defaults.state | default(definitions.global_defaults.state | default(omit))) }}"
         processId: "{{ command_definition.processId | default(definitions.sla_defaults.processId | default(definitions.global_defaults.processId | default(omit))) }}"
         processCentralId: "{{ command_definition.processCentralId | default(definitions.sla_defaults.processCentralId | default(definitions.global_defaults.processCentralId | default(omit))) }}"
-        parameters: "{{ command_definition.parameters | default(definitions.sla_defaults.parameters | default(definitions.global_defaults.parameters | default(omit))) }}"
+        parameters: "{{ (command_definition.parameters | default(definitions.sla_defaults.parameters | default(definitions.global_defaults.parameters | default(omit)))) | replace('__csv.systemName__', csv.systemName) }}"
         schedule: "{{ command_definition.schedule | default(definitions.sla_defaults.schedule | default(definitions.global_defaults.schedule | default(omit))) }}"
         parametersNeeded: "{{ command_definition.parametersNeeded | default(definitions.sla_defaults.parametersNeeded | default(definitions.global_defaults.parametersNeeded | default(omit))) }}"
         disabled: "{{ command_definition.disabled | default(definitions.sla_defaults.disabled | default(definitions.global_defaults.disabled | default(omit))) }}"
@@ -30,7 +30,7 @@
 # - name: Debug - Output test
 #   debug:
 #     msg: |
-#       this.command.critical: {{ this.command.critical | default(omit) }}
+#       this.command.parameters: {{ this.command.parameters | default(omit) }}
 
 # - name: Debug - Output task content
 #   debug:

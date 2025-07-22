@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    csv_file: "{{ playbook_dir }}/../../.tmp/swm_prod.csv"
+    csv_file: "/my-ansible-project/ansible_collections/pcg/alpaca_operator/.tmp/swm_prod.csv"
 
     # override:
     #   global_defaults:
