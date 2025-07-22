@@ -1,46 +1,66 @@
 ---
+### Using interal combine functionality
+- name: "Merge command_definition with SLA and role command defaults (Ansible combine)"
+  set_fact:
+    merged_command: >-
+      {{
+        merged_definitions.command_defaults | default({})
+        | combine(
+            merged_definitions.service_levels[csv.systemSla].command_defaults | default({}),
+            recursive=True
+          )
+        | combine(
+            command_definition | default({}),
+            recursive=True
+          )
+      }}
+
+- name: "Debug: Show merged_command"
+  debug:
+    var: merged_command
+    verbosity: 0
+
 - name: Prepare and configure ALPACA command for {{ csv.systemName }}
   set_fact:
-    this:
-      system:
-        systemName: "{{ csv.systemName | default(omit) }}"
-      command:
-        agentName: "{{ csv.agentName | default(omit) }}"
-        name: "{{ command_definition.name | default(definitions.sla_defaults.name | default(definitions.global_defaults.name | default(omit))) }}"
-        state: "{{ command_definition.state | default(definitions.sla_defaults.state | default(definitions.global_defaults.state | default(omit))) }}"
-        processId: "{{ command_definition.processId | default(definitions.sla_defaults.processId | default(definitions.global_defaults.processId | default(omit))) }}"
-        processCentralId: "{{ command_definition.processCentralId | default(definitions.sla_defaults.processCentralId | default(definitions.global_defaults.processCentralId | default(omit))) }}"
-        parameters: "{{ (command_definition.parameters | default(definitions.sla_defaults.parameters | default(definitions.global_defaults.parameters | default(omit)))) | replace('__csv.systemName__', csv.systemName) }}"
-        schedule: "{{ command_definition.schedule | default(definitions.sla_defaults.schedule | default(definitions.global_defaults.schedule | default(omit))) }}"
-        parametersNeeded: "{{ command_definition.parametersNeeded | default(definitions.sla_defaults.parametersNeeded | default(definitions.global_defaults.parametersNeeded | default(omit))) }}"
-        disabled: "{{ command_definition.disabled | default(definitions.sla_defaults.disabled | default(definitions.global_defaults.disabled | default(omit))) }}"
-        critical: "{{ command_definition.critical | default(definitions.sla_defaults.critical | default(definitions.global_defaults.critical | default(omit))) }}"
-        autoDeploy: "{{ command_definition.autoDeploy | default(definitions.sla_defaults.autoDeploy | default(definitions.global_defaults.autoDeploy | default(omit))) }}"
-        history: "{{ command_definition.history | default(definitions.sla_defaults.history | default(definitions.global_defaults.history | default(omit))) }}"
-        timeout: "{{ command_definition.timeout | default(definitions.sla_defaults.timeout | default(definitions.global_defaults.timeout | default(omit))) }}"
-        escalation: "{{ command_definition.escalation | default(definitions.sla_defaults.escalation | default(definitions.global_defaults.escalation | default(omit))) }}"
-      apiConnection:
-        host: "{{ ALPACA_Operator_API_Host }}"
-        protocol: "{{ ALPACA_Operator_API_Protocol }}"
-        port: "{{ ALPACA_Operator_API_Port }}"
-        username: "{{ ALPACA_Operator_API_Username }}"
-        password: "{{ ALPACA_Operator_API_Password }}"
-        tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+    system:
+      systemName: "{{ csv.systemName | default(omit) }}"
+    command:
+      agentName: "{{ csv.agentName | default(omit) }}"
+      name: "{{ merged_command.name | default(omit) }}"
+      state: "{{ merged_command.state | default(omit) }}"
+      processId: "{{ merged_command.processId | default(omit) }}"
+      processCentralId: "{{ merged_command.processCentralId | default(omit) }}"
+      parameters: "{{ (merged_command.parameters | default(omit)) | replace('__csv.systemName__', csv.systemName) }}"
+      schedule: "{{ merged_command.schedule | default(omit) }}"
+      parametersNeeded: "{{ merged_command.parametersNeeded | default(omit) }}"
+      disabled: "{{ merged_command.disabled | default(omit) }}"
+      critical: "{{ merged_command.critical | default(omit) }}"
+      autoDeploy: "{{ merged_command.autoDeploy | default(omit) }}"
+      history: "{{ merged_command.history | default(omit) }}"
+      timeout: "{{ merged_command.timeout | default(omit) }}"
+      escalation: "{{ merged_command.escalation | default(omit) }}"
+    apiConnection:
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
-# - name: Debug - Output test
-#   debug:
-#     msg: |
-#       this.command.parameters: {{ this.command.parameters | default(omit) }}
+- name: "Replace each SLA variable in system, command, and apiConnection"
+  set_fact:
+    system: "{{ system | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+    command: "{{ command | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+    apiConnection: "{{ apiConnection | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+  loop: "{{ merged_definitions.service_levels[csv.systemSla].variables | default({}) | dict2items }}"
 
-# - name: Debug - Output task content
-#   debug:
-#     msg: |
-#       system: {{ this.system | to_nice_yaml }}
-#       command: {{ this.command | to_nice_yaml }}
-#       apiConnection: {{ this.apiConnection | to_nice_yaml }}
+- name: "Debug: Show task content with actual variable values"
+  debug:
+    var: "{ 'system': system, 'command': command, 'apiConnection': apiConnection }"
+    verbosity: 0
 
-- name: "Ensure command {{ this.command.name }} is configured"
-  pcg.alpaca_operator.alpaca_command:
-    system: "{{ this.system }}"
-    command: "{{ this.command }}"
-    apiConnection: "{{ this.apiConnection }}"
+# - name: "Ensure command {{ this.command.name }} is configured"
+#   pcg.alpaca_operator.alpaca_command:
+#     system: "{{ this.system }}"
+#     command: "{{ this.command }}"
+#     apiConnection: "{{ this.apiConnection }}"

@@ -6,16 +6,77 @@
   vars:
     csv_file: "/my-ansible-project/ansible_collections/pcg/alpaca_operator/.tmp/swm_prod.csv"
 
-    # override:
-    #   global_defaults:
-    #     # critical: OVERRIDE_GLOBAL_LEVEL
-    #   service_levels:
-    #     SLA1:
-    #       defaults:
-    #         critical: OVERRIDE_SLA_LEVEL
-    #       commands:
-    #         - name: "BKP: DB log sync"
-    #           critical: OVERRIDE_COMMAND_LEVEL
+    override:
+      command_defaults:
+        # Global command defaults (only applied if not set at SLA or command level)
+        state: present
+        parametersNeeded: true
+        disabled: false
+        critical: false
+        history:
+          documentAllRuns: true
+          retention: 200
+        autoDeploy: false
+        timeout:
+          type: custom
+          value: 4000
+        escalation:
+          mailEnabled: true
+          smsEnabled: true
+          mailAddress: "monitoring@pcg.io"
+          smsAddress: "0123456789"
+          minFailureCount: 1
+          triggers:
+            everyChange: true
+            toRed: true
+            toYellow: true
+            toGreen: true
+      commands:
+        # A default command set for a service level
+        - name: "HANA BACKUP LOG"
+          processCentralId: 12345678
+          parameters: "-s <HANA_DB_SID> -n 4 -e blob -o <BKP_LB_LOG_01> -z $SKEY -r { blob_log_ret } -k { local_log_ret } -y -"
+          schedule:
+            period: fixed_time
+            time: "12:12:12"
+            # cronExpression: ""
+            daysOfWeek:
+              - monday
+              - tuesday
+              - wednesday
+              - thursday
+              - friday
+              - saturday
+              - sunday
+      service_levels:
+        SLA1:
+          variables:
+            blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_1>"
+            local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_1>"
+          command_defaults:
+            # SLA level command defaults (only applied if not set at command level)
+            critical: true
+          commands:
+            - name: "HANA BACKUP LOG"
+              schedule:
+                period: fixed_time
+                time: "13:13:13"
+                # cronExpression: ""
+                daysOfWeek:
+                  - monday
+                  - tuesday
+                  - wednesday
+                  - thursday
+                  - friday
+                  - saturday
+                  - sunday
+        SLA2:
+          variables:
+            blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_2>"
+          command_defaults:
+            # SLA level command defaults (only applied if not set at command level)
+            critical: false
+          commands:
 
 
   tasks:

@@ -1,5 +1,4 @@
 ---
-
 - name: Set variables for current CSV row
   set_fact:
     csv:
@@ -10,34 +9,46 @@
       systemStaging: "{{ csv_row.system_staging | default(omit) }}"
       instanceNo: "{{ csv_row.Instance_no | default(omit) }}"
 
-- name: Set definitions for current CSV row
+- name: Set SLA and default command sets for current CSV row
   set_fact:
-    definitions:
-      global_defaults: "{{ merged_definitions.global_defaults | default(omit) }}"
-      sla_defaults: "{{ merged_definitions.service_levels[csv.systemSla].defaults | default(omit) }}"
+    sla_command_set: "{{ merged_definitions.service_levels[csv.systemSla].commands | default([]) }}"
+    default_command_set: "{{ merged_definitions.commands | default([]) }}"
 
-# - name: Debug - Show current row
-#   debug:
-#     msg: |
-#       Processing row {{ row_index }}:
-#       - System: {{ csv.systemName }}
-#       - Agent: {{ csv.agentName }}
-#       - SLA: {{ csv.systemSla }}
-#       - Type: {{ csv.systemType }}
+- name: "Debug: Show sla_command_set (readable)"
+  debug:
+    var: sla_command_set | default([])
+    verbosity: 0
 
-# - name: Debug - Show command count
-#   debug:
-#     msg: "{{ csv.systemSla }} gets {{ merged_definitions.service_levels[csv.systemSla].commands | length }} commands"
+- name: "Debug: Show default_command_set (readable)"
+  debug:
+    var: default_command_set | default([])
+    verbosity: 0
 
-# - name: Debug - Show definitions
-#   debug:
-#     msg: |
-#       global_defaults: {{ definitions.global_defaults }}
-#       sla_defaults: {{ definitions.sla_defaults }}
+- name: "[merge:sla-commands->default-commands] Merge SLA specific commands into default command set"
+  command: >
+    python3 "{{ role_path }}/files/merge_definitions.py"
+    '{{ {"commands": (default_command_set | default([]))} | to_json }}'
+    '{{ {"commands": (sla_command_set | default([]))} | to_json }}'
+  register: merge_output
+  changed_when: false
 
-- name: Generate commands for current row
+- name: "[merge:override->role_defaults] Parse merged result"
+  set_fact:
+    merged_command_set: "{{ (merge_output.stdout | from_json).commands }}"
+  when: merge_output is defined and merge_output.stdout != ""
+
+- name: "Debug: Show merged_command_set (readable)"
+  debug:
+    var: merged_command_set
+    verbosity: 0
+
+- name: "Debug: Show command count for current csv row / SLA"
+  debug:
+    msg: "{{ csv.systemSla }} gets {{ merged_command_set | length }} commands"
+
+- name: Generate commands for current csv row
   include_tasks: generate_commands.yml
-  loop: "{{ merged_definitions.service_levels[csv.systemSla].commands }}"
+  loop: "{{ merged_command_set }}"
   loop_control:
     loop_var: command_definition
     index_var: command_index

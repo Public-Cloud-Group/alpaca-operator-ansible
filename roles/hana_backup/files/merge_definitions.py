@@ -2,28 +2,28 @@
 import json
 import sys
 
-def recursive_merge(base_dict, override_dict):
+def merge_dicts(default_dict, override_dict):
     """
     Recursively merge two dictionaries, with override_dict taking precedence.
-    None values in override_dict are ignored (they don't override base values).
+    Handles nested dictionaries and lists properly.
     """
-    if not isinstance(base_dict, dict):
+    if not isinstance(default_dict, dict):
         return override_dict
 
     if not isinstance(override_dict, dict):
-        return base_dict
+        return default_dict
 
-    result = base_dict.copy()
+    result = default_dict.copy()
 
     for key, value in override_dict.items():
         if value is None:
-            # Skip None values - they don't override base values
+            # Skip None values - they don't override default values
             continue
         elif key in result and isinstance(result[key], dict) and isinstance(value, dict):
             # Recursively merge nested dictionaries
-            result[key] = recursive_merge(result[key], value)
+            result[key] = merge_dicts(result[key], value)
         elif key in result and isinstance(result[key], list) and isinstance(value, list):
-            # For lists, we need to merge by index or by matching keys
+            # Merge lists by matching items with 'name' key, or combine them
             result[key] = merge_lists(result[key], value)
         else:
             # Override the value (only if it's not None)
@@ -31,61 +31,62 @@ def recursive_merge(base_dict, override_dict):
 
     return result
 
-def merge_lists(base_list, override_list):
+def merge_lists(default_list, override_list):
     """
     Merge two lists. If both lists contain dictionaries with 'name' keys,
-    merge them by matching the 'name' field. Otherwise, override the base list.
+    merge them by matching the 'name' field. Otherwise, override the default list.
     """
-    if not base_list:
+    if not default_list:
         return override_list
 
     if not override_list:
-        return base_list
+        return default_list
 
     # Check if both lists contain dictionaries with 'name' keys
-    if (isinstance(base_list[0], dict) and isinstance(override_list[0], dict) and
-        'name' in base_list[0] and 'name' in override_list[0]):
+    if (isinstance(default_list[0], dict) and isinstance(override_list[0], dict) and
+        'name' in default_list[0] and 'name' in override_list[0]):
 
-        # Create a mapping of base items by name
-        base_map = {item['name']: item for item in base_list}
+        # Create a mapping of default items by name
+        default_map = {item['name']: item for item in default_list}
 
-        # Merge override items
+        # Process override items
         for override_item in override_list:
-            if override_item['name'] in base_map:
+            override_name = override_item['name']
+            if override_name in default_map:
                 # Recursively merge the matching items
-                base_map[override_item['name']] = recursive_merge(
-                    base_map[override_item['name']], override_item
+                default_map[override_name] = merge_dicts(
+                    default_map[override_name], override_item
                 )
             else:
                 # Add new item
-                base_map[override_item['name']] = override_item
+                default_map[override_name] = override_item
 
-        return list(base_map.values())
+        return list(default_map.values())
     else:
-        # If not dictionaries with 'name' keys, override the base list
+        # If not dictionaries with 'name' keys, override the default list
         return override_list
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print(json.dumps({"error": "Usage: python3 merge_definitions.py <base_json> <override_json>"}))
+        print(json.dumps({"error": "Usage: python3 merge_definitions.py <default_json> <override_json>"}))
         sys.exit(1)
 
     try:
-        base_json = sys.argv[1]
+        default_json = sys.argv[1]
         override_json = sys.argv[2]
 
         # Debug output to stderr
-        print(f"Base JSON: {base_json}", file=sys.stderr)
+        print(f"Default JSON: {default_json}", file=sys.stderr)
         print(f"Override JSON: {override_json}", file=sys.stderr)
 
-        base_dict = json.loads(base_json)
+        default_dict = json.loads(default_json)
         override_dict = json.loads(override_json)
 
         # Debug output to stderr
-        print(f"Base dict: {base_dict}", file=sys.stderr)
+        print(f"Default dict: {default_dict}", file=sys.stderr)
         print(f"Override dict: {override_dict}", file=sys.stderr)
 
-        merged_dict = recursive_merge(base_dict, override_dict)
+        merged_dict = merge_dicts(default_dict, override_dict)
 
         # Debug output to stderr
         print(f"Merged dict: {merged_dict}", file=sys.stderr)
