@@ -4,17 +4,7 @@
   gather_facts: false
 
   vars:
-    csv_file: "/tmp/swm_prod.csv"
-
-    # override:
-    #   global_defaults:
-    #     critical: false
-    #   SLA1:
-    #     critical: true
-    #   SLA2:
-    #     ...
-    #   SLA3:
-    #   SLA4:
+    csv_file: "./systems.csv"
 
   tasks:
     - name: Include hana_backup role

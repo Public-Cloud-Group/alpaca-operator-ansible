@@ -9,7 +9,7 @@
     override:
       command_defaults:
         # Global command defaults (only applied if not set at SLA or command level)
-        state: present
+        state: absent
         schedule:
           period: manually
         parametersNeeded: false
@@ -69,11 +69,6 @@
             blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_1>"
             blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_1>"
             blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_1>"
-          commands:
-            - name: "JUST A TEST"
-              processCentralId: 8990048
-              parameters: "-a { systemName } -b <BKP_LB_FS_01> -c 0 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
-              disabled: true
         SLA2:
           variables:
             local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_2>"

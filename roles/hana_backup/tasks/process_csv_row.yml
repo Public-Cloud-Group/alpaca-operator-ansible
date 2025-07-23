@@ -14,12 +14,12 @@
     sla_command_set: "{{ merged_definitions.service_levels[csv.systemSla].commands | default([]) }}"
     default_command_set: "{{ merged_definitions.commands | default([]) }}"
 
-- name: "Debug: Show sla_command_set (readable)"
+- name: "Debug: Show sla_command_set"
   debug:
     var: sla_command_set | default([])
     verbosity: 1
 
-- name: "Debug: Show default_command_set (readable)"
+- name: "Debug: Show default_command_set"
   debug:
     var: default_command_set | default([])
     verbosity: 1
@@ -28,7 +28,7 @@
   set_fact:
     merged_command_set: "{{ (default_command_set | default([])) + (sla_command_set | default([])) }}"
 
-- name: "Debug: Show merged_command_set (readable)"
+- name: "Debug: Show merged_command_set"
   debug:
     var: merged_command_set
     verbosity: 1

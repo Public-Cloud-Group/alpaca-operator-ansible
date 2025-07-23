@@ -17,8 +17,12 @@
 - name: Read CSV file with Python
   command: python3 "{{ role_path }}/files/read_csv.py" "{{ csv_file }}"
   register: csv_output
-  delegate_to: localhost
   changed_when: false
+
+- name: "Debug: CSV output"
+  debug:
+    var: csv_output
+    verbosity: 1
 
 - name: Parse CSV data
   set_fact:
@@ -34,7 +38,7 @@
         )
       }}
 
-- name: "Debug: Show merged_definitions (readable)"
+- name: "Debug: Show merged_definitions"
   debug:
     var: merged_definitions
     verbosity: 1

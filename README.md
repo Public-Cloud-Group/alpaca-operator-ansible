@@ -40,58 +40,9 @@ Additionally, a shared utility (`_alpaca_api.py`) is available under `module_uti
 
 This collection also includes the following role:
 
-| Role Name     | Description                                                          |
-| ------------- | -------------------------------------------------------------------- |
-| `hana_backup` | Automate SAP HANA backup command creation in ALPACA Operator systems |
-
-### HANA Backup Role
-
-The `hana_backup` role automates the creation and management of SAP HANA backup commands in ALPACA Operator systems. It reads system information from a CSV file and creates standardized commands for each system based on their Service Level Agreement (SLA) classification.
-
-#### Basic Usage
-
-```yaml
----
-- name: Configure HANA Backup Commands
-  hosts: localhost
-  gather_facts: false
-
-  vars:
-    csv_file: "/path/to/your/systems.csv"
-    ALPACA_Operator_API_Host: "alpaca.example.com"
-    ALPACA_Operator_API_Protocol: "https"
-    ALPACA_Operator_API_Port: 8443
-    ALPACA_Operator_API_Username: "admin"
-    ALPACA_Operator_API_Password: "{{ vault_alpaca_password }}"
-    ALPACA_Operator_API_Validate_Certs: true
-
-  roles:
-    - hana_backup
-```
-
-#### CSV File Requirements
-
-The role expects a CSV file with semicolon (`;`) delimiter containing:
-
-| Column Name      | Description                | Example                        |
-| ---------------- | -------------------------- | ------------------------------ |
-| `hdb_nw_sid`     | System ID/Name             | `HDB`                          |
-| `system_vdns`    | Agent hostname             | `agent01.example.com`          |
-| `system_sla`     | Service Level Agreement    | `SLA1`, `SLA2`, `SLA3`, `SLA4` |
-| `system_type`    | System type classification | `PROD`, `TEST`, `DEV`          |
-| `system_staging` | Staging environment        | `PROD`, `STAGE`, `DEV`         |
-| `Instance_no`    | HANA instance number       | `00`, `01`, `02`               |
-
-#### Supported Commands
-
-The role creates standardized backup commands including:
-- HANA BACKUP LOG
-- HANA RESTORE FILE/SNAP
-- HANA BACKUP FILE (Daily/Monthly/Yearly)
-- HANA BACKUP SNAP
-- FS BACKUP (Incremental/Full)
-
-For detailed configuration options and advanced usage, see the role's [README](roles/hana_backup/README.md).
+| Role Name     | Description                                                                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hana_backup` | Automate command creation in ALPACA Operator. For detailed configuration options and advanced usage, see the role's [README](roles/hana_backup/README.md). |
 
 ## Requirements
 
@@ -105,11 +56,11 @@ For detailed configuration options and advanced usage, see the role's [README](r
 
 |             | Ansible 2.12.* | Ansible 2.13.* | Ansible 2.14.* | Ansible 2.15.* | Ansible 2.16.* | Ansible 2.17.* |
 | ----------- | -------------- | -------------- | -------------- | -------------- | -------------- | -------------- |
-| Python 3.8 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Python 3.9 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ |
-| Python 3.10 | ⬜ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Python 3.11 | ⬜ | ⬜ | ✅ | ✅ | ✅ | ✅ |
-| Python 3.12 | ⬜ | ⬜ | ⬜ | ⬜ | ✅ | ✅ |
+| Python 3.8  | ✅             | ✅             | ⬜             | ⬜             | ⬜             | ⬜             |
+| Python 3.9  | ✅             | ✅             | ✅             | ✅             | ⬜             | ⬜             |
+| Python 3.10 | ⬜             | ✅             | ✅             | ✅             | ✅             | ✅             |
+| Python 3.11 | ⬜             | ⬜             | ✅             | ✅             | ✅             | ✅             |
+| Python 3.12 | ⬜             | ⬜             | ⬜             | ⬜             | ✅             | ✅             |
 
 <!-- support-matrix:end -->
 

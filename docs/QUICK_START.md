@@ -1,6 +1,6 @@
 # Quick Start Guide - ALPACA Operator Collection
 
-This guide will help you set up Ansible and the ALPACA Operator collection on SLES 15 for local execution with ALPACA API access.
+This guide will help you set up Ansible and the ALPACA Operator collection on SLES for local execution with ALPACA API access. The instructions describe the installation directly on the ALPACA Operator server itself.
 
 ## Prerequisites
 
@@ -14,6 +14,7 @@ This guide will help you set up Ansible and the ALPACA Operator collection on SL
 First, determine your Python version to select the appropriate Ansible version:
 
 ```bash
+ls /usr/bin/python*
 python3 --version
 ```
 
@@ -87,18 +88,18 @@ After installing the collection, install the required Python packages from the c
 sudo zypper install python3-pip
 
 # Install required packages from the collection
-pip3 install -r /usr/share/ansible/collections/ansible_collections/pcg/alpaca_operator/requirements.txt
+pip3 install -r ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/requirements.txt
 ```
 
 **Note**: If you installed the collection manually, the path might be different. Adjust the path to where you extracted the collection.
 
 ## Step 5: Create Project Directory
 
-Create a working directory for your ALPACA automation:
+Create a working directory:
 
 ```bash
-mkdir -p ~/alpaca-automation
-cd ~/alpaca-automation
+mkdir -p ~/alpaca-ansible-automation
+cd ~/alpaca-ansible-automation
 ```
 
 ## Step 6: Configure Ansible
@@ -108,14 +109,8 @@ Create an Ansible configuration file:
 ```bash
 cat > ansible.cfg << 'EOF'
 [defaults]
-inventory = ./inventory
+inventory = ./inventories/alpaca.ini
 host_key_checking = False
-stdout_callback = yaml
-gathering = smart
-fact_caching = memory
-
-[ssh_connection]
-ssh_args = -o ControlMaster=auto -o ControlPersist=60s
 EOF
 ```
 
@@ -124,21 +119,21 @@ EOF
 Create a simple inventory for local execution with ALPACA API configuration:
 
 ```bash
-mkdir inventory
-cat > inventory/hosts << 'EOF'
-[alpaca]
+mkdir inventories
+cat > inventories/alpaca.ini << 'EOF'
+[local]
 localhost ansible_connection=local
 
-[alpaca:vars]
+[local:vars]
 ansible_python_interpreter=/usr/bin/python3
 
 # ALPACA API Configuration
-ALPACA_Operator_API_Host: "localhost"  # or your ALPACA host
-ALPACA_Operator_API_Protocol: "https"
-ALPACA_Operator_API_Port: 8443
-ALPACA_Operator_API_Username: "your_username"
-ALPACA_Operator_API_Password: "your_password"
-ALPACA_Operator_API_Validate_Certs: false  # Set to true for production
+ALPACA_Operator_API_Host='nightly03.lnwsoft.corp'
+ALPACA_Operator_API_Protocol='https'
+ALPACA_Operator_API_Port='8443'
+ALPACA_Operator_API_Username='pms*'
+ALPACA_Operator_API_Password='pms'
+ALPACA_Operator_API_Validate_Certs=False
 EOF
 ```
 
@@ -151,11 +146,60 @@ EOF
 You can check available Python versions with:
 ```bash
 ls /usr/bin/python*
-which python3
 python3 --version
 ```
 
-## Step 8: Create Sample CSV File
+## Step 8: Test Connection
+
+Test the ALPACA API connection (using variables from inventory):
+
+```bash
+mkdir playbooks
+cat > playbooks/test_connection.yml << 'EOF'
+---
+- name: Test ALPACA API Connection
+  hosts: local
+  gather_facts: false
+
+  tasks:
+    - name: Test API connection using ALPACA module utilities
+      block:
+        - name: Import ALPACA API utilities
+          set_fact:
+            api_url: "{{ ALPACA_Operator_API_Protocol }}://{{ ALPACA_Operator_API_Host }}:{{ ALPACA_Operator_API_Port }}/api"
+
+        - name: Test authentication and API access
+          uri:
+            url: "{{ api_url }}/auth/login"
+            method: POST
+            body_format: json
+            body: '{"username": "{{ ALPACA_Operator_API_Username }}", "password": "{{ ALPACA_Operator_API_Password }}"}'
+            validate_certs: "{{ ALPACA_Operator_API_Validate_Certs }}"
+            status_code: [200, 401, 403]
+          register: auth_test
+
+        - name: Display authentication result
+          debug:
+            msg: "Authentication test: {{ 'SUCCESS' if auth_test.status == 200 else 'FAILED' }} (Status: {{ auth_test.status }})"
+
+        - name: Show API token (if authentication successful)
+          debug:
+            msg: "API Token obtained: {{ auth_test.json.token | default('None') | truncate(20, true, '...') }}"
+          when: auth_test.status == 200
+
+      rescue:
+        - name: Display connection error
+          debug:
+            msg: "Connection failed: {{ ansible_failed_result.msg | default('Unknown error') }}"
+          failed_when: true
+
+EOF
+
+# Run the test
+ansible-playbook playbooks/test_connection.yml
+```
+
+## Step 9: Create Sample CSV File
 
 Create a sample CSV file for the HANA backup role:
 
@@ -166,16 +210,13 @@ HDB;localhost;SLA1;PROD;PROD;00
 EOF
 ```
 
-## Step 9: Create First Playbook
+## Step 10: Create First Playbook
 
 Copy the HANA backup template and customize it:
 
 ```bash
-# Copy the template
-cp /usr/share/ansible/collections/ansible_collections/pcg/alpaca_operator/templates/playbooks/template_commands_hana_backup_role.yml hana_backup_demo.yml
-
-# Or if using manual installation, copy from your extracted directory
-# cp /path/to/extracted/alpaca-operator-ansible/templates/playbooks/template_commands_hana_backup_role.yml hana_backup_demo.yml
+mkdir playbooks
+cp ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/templates/playbooks/template_commands_hana_backup_role.yml playbooks/hana_backup_demo.yml
 ```
 
 Edit the playbook (the ALPACA API configuration is now in the inventory):
@@ -187,43 +228,12 @@ Edit the playbook (the ALPACA API configuration is now in the inventory):
   gather_facts: false
 
   vars:
-    csv_file: "./systems.csv"
+    csv_file: "../systems.csv"
 
   tasks:
     - name: Include hana_backup role
       include_role:
-        name: hana_backup
-```
-
-## Step 10: Test Connection
-
-Before running the full playbook, test the ALPACA API connection (using variables from inventory):
-
-```bash
-cat > test_connection.yml << 'EOF'
----
-- name: Test ALPACA API Connection
-  hosts: localhost
-  gather_facts: false
-
-  tasks:
-    - name: Test API connection
-      uri:
-        url: "{{ ALPACA_Operator_API_Protocol }}://{{ ALPACA_Operator_API_Host }}:{{ ALPACA_Operator_API_Port }}/api/v1/health"
-        method: GET
-        user: "{{ ALPACA_Operator_API_Username }}"
-        password: "{{ ALPACA_Operator_API_Password }}"
-        validate_certs: "{{ ALPACA_Operator_API_Validate_Certs }}"
-        status_code: [200, 401, 403]
-      register: api_test
-
-    - name: Display connection result
-      debug:
-        var: api_test
-EOF
-
-# Run the test
-ansible-playbook test_connection.yml
+        name: pcg.alpaca_operator.hana_backup
 ```
 
 ## Step 11: Run Your First Playbook
@@ -232,10 +242,10 @@ Execute the HANA backup playbook:
 
 ```bash
 # Run in check mode first (dry run)
-ansible-playbook hana_backup_demo.yml --check
+ansible-playbook playbooks/hana_backup_demo.yml --check
 
 # Run the actual playbook
-ansible-playbook hana_backup_demo.yml
+ansible-playbook playbooks/hana_backup_demo.yml
 ```
 
 ## Troubleshooting
@@ -255,18 +265,8 @@ ansible-playbook hana_backup_demo.yml
 
    # Reinstall if needed
    ansible-galaxy collection install pcg.alpaca_operator --force
-   ```
 
-3. **API Connection Issues**
-   - Verify ALPACA Operator is running
-   - Check firewall settings
-   - Verify API credentials
-   - Test with curl:
-     ```bash
-     curl -k -u username:password https://localhost:8443/api/v1/health
-     ```
-
-4. **CSV File Issues**
+3. **CSV File Issues**
    - Ensure semicolon (`;`) delimiter
    - Check file permissions
    - Verify required columns are present
@@ -276,7 +276,9 @@ ansible-playbook hana_backup_demo.yml
 Enable verbose output for debugging:
 
 ```bash
-ansible-playbook hana_backup_demo.yml -vvv
+ansible-playbook playbooks/hana_backup_demo.yml -v
+ansible-playbook playbooks/hana_backup_demo.yml -vv
+ansible-playbook playbooks/hana_backup_demo.yml -vvv
 ```
 
 ## Next Steps
@@ -285,13 +287,6 @@ ansible-playbook hana_backup_demo.yml -vvv
 2. **Configure SLA Variables**: Modify retention settings in the playbook
 3. **Set Up Vault**: Use Ansible Vault for secure credential storage
 4. **Create Custom Commands**: Extend the role with your specific backup requirements
-
-## Security Notes
-
-- Store sensitive credentials in Ansible Vault
-- Use HTTPS with valid certificates in production
-- Restrict file permissions on configuration files
-- Regularly update Ansible and the collection
 
 ## Support
 

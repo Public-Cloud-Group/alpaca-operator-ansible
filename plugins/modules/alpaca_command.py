@@ -322,7 +322,7 @@ EXAMPLES = r'''
           toYellow: false
           toGreen: true
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -338,7 +338,7 @@ EXAMPLES = r'''
       agentName: agent01
       state: absent
   apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
