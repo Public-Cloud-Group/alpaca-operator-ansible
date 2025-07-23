@@ -36,6 +36,63 @@ All modules require API connection parameters and support both `present` and `ab
 
 Additionally, a shared utility (`_alpaca_api.py`) is available under `module_utils` for internal use, handling REST API logic and token management.
 
+## Included Roles
+
+This collection also includes the following role:
+
+| Role Name     | Description                                                          |
+| ------------- | -------------------------------------------------------------------- |
+| `hana_backup` | Automate SAP HANA backup command creation in ALPACA Operator systems |
+
+### HANA Backup Role
+
+The `hana_backup` role automates the creation and management of SAP HANA backup commands in ALPACA Operator systems. It reads system information from a CSV file and creates standardized commands for each system based on their Service Level Agreement (SLA) classification.
+
+#### Basic Usage
+
+```yaml
+---
+- name: Configure HANA Backup Commands
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    csv_file: "/path/to/your/systems.csv"
+    ALPACA_Operator_API_Host: "alpaca.example.com"
+    ALPACA_Operator_API_Protocol: "https"
+    ALPACA_Operator_API_Port: 8443
+    ALPACA_Operator_API_Username: "admin"
+    ALPACA_Operator_API_Password: "{{ vault_alpaca_password }}"
+    ALPACA_Operator_API_Validate_Certs: true
+
+  roles:
+    - hana_backup
+```
+
+#### CSV File Requirements
+
+The role expects a CSV file with semicolon (`;`) delimiter containing:
+
+| Column Name      | Description                | Example                        |
+| ---------------- | -------------------------- | ------------------------------ |
+| `hdb_nw_sid`     | System ID/Name             | `HDB`                          |
+| `system_vdns`    | Agent hostname             | `agent01.example.com`          |
+| `system_sla`     | Service Level Agreement    | `SLA1`, `SLA2`, `SLA3`, `SLA4` |
+| `system_type`    | System type classification | `PROD`, `TEST`, `DEV`          |
+| `system_staging` | Staging environment        | `PROD`, `STAGE`, `DEV`         |
+| `Instance_no`    | HANA instance number       | `00`, `01`, `02`               |
+
+#### Supported Commands
+
+The role creates standardized backup commands including:
+- HANA BACKUP LOG
+- HANA RESTORE FILE/SNAP
+- HANA BACKUP FILE (Daily/Monthly/Yearly)
+- HANA BACKUP SNAP
+- FS BACKUP (Incremental/Full)
+
+For detailed configuration options and advanced usage, see the role's [README](roles/hana_backup/README.md).
+
 ## Requirements
 
 - Python >= 3.8
@@ -78,6 +135,10 @@ Or directly from the Git repository:
 ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator-ansible.git
 ```
 
+### Quick Start Guide
+
+For a complete setup guide including Ansible installation, collection setup, and first playbook execution, see the [Quick Start Guide](docs/QUICK_START.md).
+
 ## Example Usage
 
 ### Group Management
@@ -88,7 +149,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
     name: ansible_testing_group_01
     state: present
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -100,7 +161,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
     name: ansible_testing_group_01
     state: absent
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -126,7 +187,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
     scriptGroupId: -1
     state: present
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -138,7 +199,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
     name: ansible_testing_agent_01
     state: absent
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -180,7 +241,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
         value: "11"
     state: present
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -192,7 +253,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
     name: ansible01
     state: absent
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -203,7 +264,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
 ### System Command Management
 
 **Warning**
-  
+
 ⚠️ When using the `alpaca_command_set` module, all existing commands on the target system that are not included in your playbook will be deleted. Use this module with care!
 
 ```yaml
@@ -322,7 +383,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
           toYellow: false
           toGreen: true
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -335,7 +396,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
       systemName: ansible01
     commands: []
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -351,7 +412,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
       agentName: "ansible_testing_agent_03"
       state: absent
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"

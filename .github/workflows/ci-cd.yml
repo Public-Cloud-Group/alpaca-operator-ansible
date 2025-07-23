@@ -10,10 +10,10 @@ name: CI/CD Pipeline
 on:
   push:
     paths-ignore:
-      - 'README.md'
+      - '*.md'
   pull_request:
     paths-ignore:
-      - 'README.md'
+      - '*.md'
   schedule:
     # Run every Sunday at 2:00 AM UTC (weekly)
     - cron: '0 2 * * 0'
