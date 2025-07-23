@@ -249,11 +249,6 @@ jobs:
             --notes "${{ steps.version.outputs.release_notes }}" \
             pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
 
-      - name: Upload collection to GitHub Packages
-        if: steps.check_release.outputs.exists == 'false'
-        run: |
-          gh release upload ${{ steps.version.outputs.tag }} pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
-
       - name: Skip release if already exists
         if: steps.check_release.outputs.exists == 'true'
         run: |
