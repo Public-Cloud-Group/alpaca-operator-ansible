@@ -185,6 +185,8 @@ jobs:
     permissions:
       contents: write
       packages: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
