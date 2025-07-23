@@ -9,7 +9,7 @@
     # override:
     #   command_defaults:
     #     # Global command defaults (only applied if not set at SLA or command level)
-    #     state: absent
+    #     state: present
     #     schedule:
     #       period: manually
     #     parametersNeeded: false
