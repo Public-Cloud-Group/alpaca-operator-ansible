@@ -1,5 +1,13 @@
 # Quick Start Guide - ALPACA Operator Collection
 
+## Target Audience
+
+This guide is specifically designed for **Public Cloud Group GmbH Delivery** who need to:
+- Set up and configure Ansible automation for ALPACA Operator environments
+- Deploy and manage ALPACA Operator commands and workflows
+
+---
+
 This guide will help you set up Ansible and the ALPACA Operator collection on SLES for local execution with ALPACA API access. The instructions describe the installation directly on the ALPACA Operator server itself.
 
 ## Prerequisites
