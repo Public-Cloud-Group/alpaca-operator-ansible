@@ -219,7 +219,7 @@ Copy the HANA backup template and customize it:
 
 ```bash
 mkdir playbooks
-cp ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/templates/playbooks/template_commands_hana_backup_role.yml playbooks/hana_backup_demo.yml
+cp ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/templates/playbooks/hana_backup_role.yml playbooks/hana_backup_demo.yml
 ```
 
 Edit the playbook (the ALPACA API configuration is now in the inventory):

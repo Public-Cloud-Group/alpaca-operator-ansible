@@ -24,5 +24,5 @@ docker run  --rm -it \
                                      pip install ansible-core requests && \
                                      cd /my-ansible-project/tests && \
                                      clear && \
-                                     echo 'You can now run e.g.: \"ansible-playbook ../templates/playbooks/template_stack_create.yml\"' && \
+                                     echo 'You can now run e.g.: \"ansible-playbook ../templates/playbooks/full_stack_deployment.yml\"' && \
                                      bash"
