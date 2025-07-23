@@ -4,9 +4,9 @@
   gather_facts: false
 
   vars:
-    csv_file: "./systems.csv"
+    csv_file: "../systems.csv"
 
   tasks:
     - name: Include hana_backup role
       include_role:
-        name: hana_backup
+        name: pcg.alpaca_operator.hana_backup

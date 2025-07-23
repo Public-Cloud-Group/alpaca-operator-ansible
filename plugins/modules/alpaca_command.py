@@ -576,6 +576,7 @@ def main():
     api_url = "{0}://{1}:{2}/api".format(module.params['apiConnection']['protocol'], module.params['apiConnection']['host'], module.params['apiConnection']['port'])
     token = get_token(api_url, module.params['apiConnection']['username'], module.params['apiConnection']['password'], module.params['apiConnection']['tls_verify'])
     headers = {"Authorization": "Bearer {0}".format(token)}
+    command_payload = None
 
     # Check if either a system ID or a system name is provided
     if not module.params.get('system', {}).get('systemName', None) and not module.params.get('system', {}).get('systemId', None):

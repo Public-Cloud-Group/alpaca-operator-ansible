@@ -18,6 +18,7 @@
   command: python3 "{{ role_path }}/files/read_csv.py" "{{ csv_file }}"
   register: csv_output
   changed_when: false
+  check_mode: no
 
 - name: "Debug: CSV output"
   debug:

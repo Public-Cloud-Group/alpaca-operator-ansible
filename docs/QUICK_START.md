@@ -77,6 +77,9 @@ cd alpaca-operator-ansible-*
 
 # Install the collection
 ansible-galaxy collection install .
+
+# Verify collection was installed
+ansible-galaxy collection list
 ```
 
 ## Step 4: Install Python Dependencies
@@ -128,11 +131,11 @@ localhost ansible_connection=local
 ansible_python_interpreter=/usr/bin/python3
 
 # ALPACA API Configuration
-ALPACA_Operator_API_Host='nightly03.lnwsoft.corp'
+ALPACA_Operator_API_Host='localhost'
 ALPACA_Operator_API_Protocol='https'
 ALPACA_Operator_API_Port='8443'
-ALPACA_Operator_API_Username='pms*'
-ALPACA_Operator_API_Password='pms'
+ALPACA_Operator_API_Username='<username>'
+ALPACA_Operator_API_Password='<password>'
 ALPACA_Operator_API_Validate_Certs=False
 EOF
 ```
@@ -224,7 +227,7 @@ Edit the playbook (the ALPACA API configuration is now in the inventory):
 ```yaml
 ---
 - name: HANA Backup - Generate and Execute Commands from CSV
-  hosts: localhost
+  hosts: local
   gather_facts: false
 
   vars:
@@ -242,7 +245,7 @@ Execute the HANA backup playbook:
 
 ```bash
 # Run in check mode first (dry run)
-ansible-playbook playbooks/hana_backup_demo.yml --check
+ansible-playbook playbooks/hana_backup_demo.yml --check -v
 
 # Run the actual playbook
 ansible-playbook playbooks/hana_backup_demo.yml
