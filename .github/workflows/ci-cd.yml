@@ -5,7 +5,7 @@
 #   correct path, runs sanity tests using `ansible-test`, and classifies each result as either tested,
 #   failed, unsupported, or untested. The results are compiled into a support matrix and uploaded as an artifact.
 #
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -96,7 +96,7 @@ jobs:
 
           # Remove excluded directories and files
           cd .tmp_build
-          rm -rf .github tests .tmp .gitignore
+          rm -rf .github .tmp .gitignore
 
           # Build the collection
           ansible-galaxy collection build
