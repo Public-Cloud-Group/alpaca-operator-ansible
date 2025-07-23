@@ -89,22 +89,7 @@ jobs:
 
       - name: Build Ansible Collection
         run: |
-          # Create a temporary directory for building
-          mkdir -p .tmp_build
-          cp -r * .tmp_build/ 2>/dev/null || true
-          cp -r .[^.]* .tmp_build/ 2>/dev/null || true
-
-          # Remove excluded directories and files
-          cd .tmp_build
-          rm -rf .github .tmp .gitignore
-
-          # Build the collection
           ansible-galaxy collection build
-
-          # Move the built archive back to the original directory
-          mv *.tar.gz ../
-          cd ..
-          rm -rf .tmp_build
 
       - name: List built archive
         run: ls -lh *.tar.gz
@@ -247,17 +232,28 @@ jobs:
           echo "release_notes=$RELEASE_NOTES" >> $GITHUB_OUTPUT
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Create or Update Release
+      - name: Check if release already exists
+        id: check_release
         run: |
-          # Check if release already exists
           if gh release view ${{ steps.version.outputs.tag }} 2>/dev/null; then
-            echo "Release ${{ steps.version.outputs.tag }} already exists, updating..."
-            # Delete existing release
-            gh release delete ${{ steps.version.outputs.tag }} --yes
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-          # Create new release
+      - name: Delete existing release if it exists
+        if: steps.check_release.outputs.exists == 'true'
+        run: |
+          echo "Release ${{ steps.version.outputs.tag }} already exists, deleting it to overwrite"
+          gh release delete ${{ steps.version.outputs.tag }} --yes
+
+      - name: Create or Recreate Release
+        run: |
           gh release create ${{ steps.version.outputs.tag }} \
             --title "${{ steps.version.outputs.release_title }}" \
             --notes "${{ steps.version.outputs.release_notes }}" \
             pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+
+      - name: Upload collection to GitHub Packages
+        run: |
+          gh release upload ${{ steps.version.outputs.tag }} pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
