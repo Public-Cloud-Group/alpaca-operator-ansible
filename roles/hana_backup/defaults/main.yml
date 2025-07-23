@@ -65,9 +65,6 @@ role_defaults:
     - name: "FS BACKUP INCR"
       processCentralId: 8990048
       parameters: "-a { systemName } -b <BKP_LB_FS_01> -c 1 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
-    - name: "FS BACKUP FULL 2"
-      processCentralId: 8990048
-      parameters: "-a { systemName } -b <BKP_LB_FS_01> -c 0 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
   service_levels:
     SLA1:
       variables:
@@ -81,20 +78,20 @@ role_defaults:
       # command_defaults:
       #   # SLA level command defaults (only applied if not set at command level)
       #   critical: true
-      commands:
-        - name: "HANA BACKUP LOG"
-          schedule:
-            period: fixed_time
-            time: "13:13:13"
-            # cronExpression: ""
-            daysOfWeek:
-              - monday
-              - tuesday
-              - wednesday
-              - thursday
-              - friday
-              - saturday
-              - sunday
+      # commands:
+      #   - name: "HANA BACKUP LOG"
+      #     schedule:
+      #       period: fixed_time
+      #       time: "13:13:13"
+      #       # cronExpression: ""
+      #       daysOfWeek:
+      #         - monday
+      #         - tuesday
+      #         - wednesday
+      #         - thursday
+      #         - friday
+      #         - saturday
+      #         - sunday
     SLA2:
       variables:
         local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_2>"
