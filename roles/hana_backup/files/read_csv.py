@@ -3,6 +3,7 @@ import csv
 import json
 import sys
 
+
 def read_csv_file(file_path):
     data = []
     try:

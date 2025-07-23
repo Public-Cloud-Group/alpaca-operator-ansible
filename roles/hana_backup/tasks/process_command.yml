@@ -1,5 +1,4 @@
 ---
-### Using interal combine functionality
 - name: "Merge command_definition with SLA and role command defaults (Ansible combine)"
   set_fact:
     merged_command: >-
@@ -18,7 +17,7 @@
 - name: "Debug: Show merged_command"
   debug:
     var: merged_command
-    verbosity: 0
+    verbosity: 1
 
 - name: Prepare and configure ALPACA command for {{ csv.systemName }}
   set_fact:
@@ -30,7 +29,7 @@
       state: "{{ merged_command.state | default(omit) }}"
       processId: "{{ merged_command.processId | default(omit) }}"
       processCentralId: "{{ merged_command.processCentralId | default(omit) }}"
-      parameters: "{{ (merged_command.parameters | default(omit)) | replace('__csv.systemName__', csv.systemName) }}"
+      parameters: "{{ merged_command.parameters | default(omit) }}"
       schedule: "{{ merged_command.schedule | default(omit) }}"
       parametersNeeded: "{{ merged_command.parametersNeeded | default(omit) }}"
       disabled: "{{ merged_command.disabled | default(omit) }}"
@@ -54,13 +53,20 @@
     apiConnection: "{{ apiConnection | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
   loop: "{{ merged_definitions.service_levels[csv.systemSla].variables | default({}) | dict2items }}"
 
+- name: "Replace each CSV variable in system, command, and apiConnection"
+  set_fact:
+    system: "{{ system | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+    command: "{{ command | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+    apiConnection: "{{ apiConnection | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+  loop: "{{ csv | default({}) | dict2items }}"
+
 - name: "Debug: Show task content with actual variable values"
   debug:
     var: "{ 'system': system, 'command': command, 'apiConnection': apiConnection }"
-    verbosity: 0
+    verbosity: 1
 
-# - name: "Ensure command {{ this.command.name }} is configured"
-#   pcg.alpaca_operator.alpaca_command:
-#     system: "{{ this.system }}"
-#     command: "{{ this.command }}"
-#     apiConnection: "{{ this.apiConnection }}"
+- name: "Ensure command {{ command.name }} is configured"
+  pcg.alpaca_operator.alpaca_command:
+    system: "{{ system }}"
+    command: "{{ command }}"
+    apiConnection: "{{ apiConnection }}"

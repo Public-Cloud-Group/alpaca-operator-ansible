@@ -37,9 +37,9 @@
 - name: "Debug: Show merged_definitions (readable)"
   debug:
     var: merged_definitions
-    verbosity: 0
+    verbosity: 1
 
-- name: Iterate over all CSV rows and generate commands
+- name: Iterate over all CSV rows to generate and process commands
   include_tasks: process_csv_row.yml
   loop: "{{ csv_data }}"
   loop_control:

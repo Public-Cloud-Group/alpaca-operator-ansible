@@ -17,37 +17,28 @@
 - name: "Debug: Show sla_command_set (readable)"
   debug:
     var: sla_command_set | default([])
-    verbosity: 0
+    verbosity: 1
 
 - name: "Debug: Show default_command_set (readable)"
   debug:
     var: default_command_set | default([])
-    verbosity: 0
+    verbosity: 1
 
 - name: "[merge:sla-commands->default-commands] Merge SLA specific commands into default command set"
-  command: >
-    python3 "{{ role_path }}/files/merge_definitions.py"
-    '{{ {"commands": (default_command_set | default([]))} | to_json }}'
-    '{{ {"commands": (sla_command_set | default([]))} | to_json }}'
-  register: merge_output
-  changed_when: false
-
-- name: "[merge:override->role_defaults] Parse merged result"
   set_fact:
-    merged_command_set: "{{ (merge_output.stdout | from_json).commands }}"
-  when: merge_output is defined and merge_output.stdout != ""
+    merged_command_set: "{{ (default_command_set | default([])) + (sla_command_set | default([])) }}"
 
 - name: "Debug: Show merged_command_set (readable)"
   debug:
     var: merged_command_set
-    verbosity: 0
+    verbosity: 1
 
 - name: "Debug: Show command count for current csv row / SLA"
   debug:
     msg: "{{ csv.systemSla }} gets {{ merged_command_set | length }} commands"
 
 - name: Generate commands for current csv row
-  include_tasks: generate_commands.yml
+  include_tasks: process_command.yml
   loop: "{{ merged_command_set }}"
   loop_control:
     loop_var: command_definition
