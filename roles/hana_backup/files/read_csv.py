@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import csv
 import json
 import sys
@@ -15,6 +14,7 @@ def read_csv_file(file_path):
     except Exception as e:
         print(f"Error reading CSV file: {e}", file=sys.stderr)
         return []
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
