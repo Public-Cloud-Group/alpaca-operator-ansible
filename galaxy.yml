@@ -60,7 +60,75 @@ issues: https://github.com/pcg-sap/alpaca-operator-ansible/issues
 # artifact. A pattern is matched from the relative path of the file or directory of the collection directory. This
 # uses 'fnmatch' to match the files or directories. Some directories and files like 'galaxy.yml', '*.pyc', '*.retry',
 # and '.git' are always filtered. Mutually exclusive with 'manifest'
-build_ignore: []
+build_ignore:
+  # Development and temporary files
+  - ".dev"
+  - ".dev/*"
+  - ".tmp"
+  - ".tmp/*"
+  - ".DS_Store"
+  - "*.DS_Store"
+
+  # CI/CD and GitHub specific
+  - ".github"
+  - ".github/*"
+
+  # Build artifacts and distribution
+  - "build"
+  - "build/*"
+  - "dist"
+  - "dist/*"
+  - "*.egg-info"
+  - "*.egg-info/*"
+
+  # Python cache and virtual environments
+  - "__pycache__"
+  - "__pycache__/*"
+  - "*.pyc"
+  - "*.pyo"
+  - "*.pyd"
+  - ".venv"
+  - ".venv/*"
+  - "venv"
+  - "venv/*"
+  - "env"
+  - "env/*"
+
+  # IDE and editor files
+  - ".vscode"
+  - ".vscode/*"
+  - ".idea"
+  - ".idea/*"
+  - "*.code-workspace"
+
+  # Test coverage and cache
+  - ".coverage"
+  - ".cache"
+  - ".cache/*"
+  - ".tox"
+  - ".tox/*"
+  - ".pytest_cache"
+  - ".pytest_cache/*"
+  - "htmlcov"
+  - "htmlcov/*"
+  - "coverage.xml"
+  - "nosetests.xml"
+
+  # Logs and temporary files
+  - "*.log"
+  - "*.pid"
+  - "*.sock"
+  - "*.db"
+  - "pip-log.txt"
+  - "pip-delete-this-directory.txt"
+
+  # Environment and secrets
+  - ".env"
+  - ".env.*"
+
+  # Documentation and notes (if not needed in production)
+  - "notes.md"
+  - "*.notes.md"
 
 # A dict controlling use of manifest directives used in building the collection artifact. The key 'directives' is a
 # list of MANIFEST.in style
