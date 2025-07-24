@@ -52,11 +52,11 @@ This collection also includes the following role:
 
 |             | Ansible 2.12.* | Ansible 2.13.* | Ansible 2.14.* | Ansible 2.15.* | Ansible 2.16.* | Ansible 2.17.* |
 | ----------- | -------------- | -------------- | -------------- | -------------- | -------------- | -------------- |
-| Python 3.8 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Python 3.9 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ |
-| Python 3.10 | ⬜ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Python 3.11 | ⬜ | ⬜ | ✅ | ✅ | ✅ | ✅ |
-| Python 3.12 | ⬜ | ⬜ | ⬜ | ⬜ | ✅ | ✅ |
+| Python 3.8 | ❌ | ❌ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Python 3.9 | ❌ | ❌ | ❌ | ❌ | ⬜ | ⬜ |
+| Python 3.10 | ⬜ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Python 3.11 | ⬜ | ⬜ | ❌ | ❌ | ❌ | ❌ |
+| Python 3.12 | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | ❌ |
 
 <!-- support-matrix:end -->
 
