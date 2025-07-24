@@ -19,3 +19,8 @@ tests/start-container.sh shebang!skip                                           
 .github/scripts/generate-support-matrix.py shebang!skip                             # -> Internal use only
 .github/scripts/update-readme.py shebang!skip                                       # -> Internal use only
 .tmp/.notes.md no-smart-quotes                                                      # -> Internal use only
+plugins/modules/alpaca_agent.py validate-modules:missing-gplv3-license              # Using Apache-2.0 license instead of GPLv3
+plugins/modules/alpaca_command.py validate-modules:missing-gplv3-license            # Using Apache-2.0 license instead of GPLv3
+plugins/modules/alpaca_command_set.py validate-modules:missing-gplv3-license        # Using Apache-2.0 license instead of GPLv3
+plugins/modules/alpaca_group.py validate-modules:missing-gplv3-license              # Using Apache-2.0 license instead of GPLv3
+plugins/modules/alpaca_system.py validate-modules:missing-gplv3-license             # Using Apache-2.0 license instead of GPLv3
