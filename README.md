@@ -1,6 +1,6 @@
 # ALPACA Operator Collection for Ansible
 
-[![CI](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/test.yml/badge.svg)](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/ci-cd.yml)
+[![CI](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/pcg-sap/alpaca-operator-ansible/actions/workflows/ci-cd.yml)
 
 This Ansible Collection provides modules to manage **ALPACA Operator** via its REST API. It is designed to allow automation of common lifecycle operations related to groups, agents, systems, and commands within ALPACA-managed infrastructures.
 
