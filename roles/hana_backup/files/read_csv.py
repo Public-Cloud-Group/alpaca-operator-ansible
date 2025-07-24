@@ -1,3 +1,7 @@
+# Copyright: Contributors to the Ansible project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0)
+
+
 import csv
 import json
 import sys

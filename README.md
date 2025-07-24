@@ -6,11 +6,7 @@ This Ansible Collection provides modules to manage **ALPACA Operator** via its R
 
 ## License
 
-<!-- license:start -->
-
-This project is licensed under the GNU General Public License v3.0 or later. See the [LICENSE](LICENSE) file for details.
-
-<!-- license:end -->
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
 
 
 ## Code of Conduct

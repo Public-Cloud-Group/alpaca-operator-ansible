@@ -407,11 +407,7 @@ The role does not return specific values but creates/updates ALPACA Operator com
 
 ## License
 
-<!-- license:start -->
-
-This project is licensed under the GNU General Public License v3.0 or later. See the [LICENSE](LICENSE) file for details.
-
-<!-- license:end -->
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 
