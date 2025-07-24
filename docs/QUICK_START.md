@@ -120,7 +120,7 @@ Create an Ansible configuration file:
 ```bash
 cat > ansible.cfg << 'EOF'
 [defaults]
-inventory = ./inventories/alpaca.ini
+inventory = ./inventory.ini
 host_key_checking = False
 EOF
 ```
@@ -130,8 +130,7 @@ EOF
 Create a simple inventory for local execution with ALPACA API configuration:
 
 ```bash
-mkdir inventories
-cat > inventories/alpaca.ini << 'EOF'
+cat > inventory.ini << 'EOF'
 [local]
 localhost ansible_connection=local
 
@@ -147,6 +146,8 @@ ALPACA_Operator_API_Password='<password>'
 ALPACA_Operator_API_Validate_Certs=False
 EOF
 ```
+
+**Note**: Ensure to customize API username and password here according to your needs.
 
 **Note**: If you have multiple Python versions installed, you can specify the exact interpreter path. Common alternatives:
 - `/usr/bin/python3.9` - Python 3.9
@@ -254,10 +255,9 @@ Execute the HANA backup playbook:
 ```bash
 # Run in check mode first (dry run)
 ansible-playbook playbooks/hana_backup_demo.yml --check -v
-
-# Run the actual playbook
-ansible-playbook playbooks/hana_backup_demo.yml
 ```
+
+**Note**: The playbook will most likely fail on the first run when trying to create the first command, because the specified system (e.g., `HDB`) in the example CSV file we created here does not exist in the ALPACA Operator. This is normal and expected.
 
 ## Troubleshooting
 
@@ -294,14 +294,5 @@ ansible-playbook playbooks/hana_backup_demo.yml -vvv
 
 ## Next Steps
 
-1. **Customize CSV Data**: Update `systems.csv` with your actual HANA systems
-2. **Configure SLA Variables**: Modify retention settings in the playbook
-3. **Set Up Vault**: Use Ansible Vault for secure credential storage
-4. **Create Custom Commands**: Extend the role with your specific backup requirements
-
-## Support
-
-For issues and questions:
-- Check the [main README](../README.md)
-- Review the [HANA Backup Role documentation](../roles/hana_backup/README.md)
-- Create an issue in the [GitHub repository](https://github.com/pcg-sap/alpaca-operator-ansible/issues)
+1. **Customize CSV Data**: Update `systems.csv` with your actual HANA systems or link to another CSV file
+2. **Configure playbook**: Create a new or modify one of the template playbooks
