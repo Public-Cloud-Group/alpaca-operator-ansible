@@ -1,0 +1,53 @@
+---
+- name: Check if csv_file is set
+  fail:
+    msg: "Variable 'csv_file' is not set. Please set this in the playbook."
+  when: csv_file is not defined or csv_file == ""
+
+- name: Check if CSV file exists
+  stat:
+    path: "{{ csv_file }}"
+  register: csv_file_stat
+
+- name: Error if CSV file not found
+  fail:
+    msg: "CSV file '{{ csv_file }}' was not found."
+  when: not csv_file_stat.stat.exists
+
+- name: Read CSV file with Python
+  command: python3 "{{ role_path }}/files/read_csv.py" "{{ csv_file }}"
+  register: csv_output
+  changed_when: false
+  check_mode: no
+
+- name: "Debug: CSV output"
+  debug:
+    var: csv_output
+    verbosity: 1
+
+- name: Parse CSV data
+  set_fact:
+    csv_data: "{{ csv_output.stdout | from_json }}"
+
+- name: "[merge:override->role_defaults] Merge playbook override into role defaults (Ansible combine)"
+  set_fact:
+    merged_definitions: >-
+      {{
+        role_defaults | default({}) | combine(
+          override | default({}),
+          recursive=True
+        )
+      }}
+
+- name: "Debug: Show merged_definitions"
+  debug:
+    var: merged_definitions
+    verbosity: 1
+
+- name: Iterate over all CSV rows to generate and process commands
+  include_tasks: process_csv_row.yml
+  loop: "{{ csv_data }}"
+  loop_control:
+    loop_var: csv_row
+    index_var: row_index
+  when: csv_data is defined

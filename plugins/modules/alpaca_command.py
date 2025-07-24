@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: Contributors to the Ansible project
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-# <!-- License --!>
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0)
+
 
 from __future__ import (absolute_import, division, print_function)
 
@@ -322,7 +322,7 @@ EXAMPLES = r'''
           toYellow: false
           toGreen: true
     apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -338,7 +338,7 @@ EXAMPLES = r'''
       agentName: agent01
       state: absent
   apiConnection:
-      host: "{{ inventory_hostname }}"
+      host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
       username: "{{ ALPACA_Operator_API_Username }}"
@@ -576,6 +576,7 @@ def main():
     api_url = "{0}://{1}:{2}/api".format(module.params['apiConnection']['protocol'], module.params['apiConnection']['host'], module.params['apiConnection']['port'])
     token = get_token(api_url, module.params['apiConnection']['username'], module.params['apiConnection']['password'], module.params['apiConnection']['tls_verify'])
     headers = {"Authorization": "Bearer {0}".format(token)}
+    command_payload = None
 
     # Check if either a system ID or a system name is provided
     if not module.params.get('system', {}).get('systemName', None) and not module.params.get('system', {}).get('systemId', None):
@@ -584,15 +585,19 @@ def main():
     # Resolve system id if needed
     if module.params.get('system', {}).get('systemName', None):
         system = lookup_resource(api_url, headers, "systems", "name", module.params['system']['systemName'], module.params['apiConnection']['tls_verify'])
-        if not system:
+        if not system and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="System '{0}' not found.".format(module.params['system']['systemName']))
+        elif not system and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because system was not found.")
         module.params['system']['systemId'] = system['id']
 
     # Check if systemId is valid
     if module.params.get('system', {}).get('systemId', None):
         system = lookup_resource(api_url, headers, "systems", "id", module.params['system']['systemId'], module.params['apiConnection']['tls_verify'])
-        if not system:
+        if not system and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="System with ID '{0}' not found. Please ensure system is created first.".format(module.params['system']['systemId']))
+        elif not system and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because system was not found.")
 
     # Check if either a agent ID or a agent name is provided
     if not module.params.get('command', {}).get('agentName', None) and not module.params.get('command', {}).get('agentId', None):
@@ -601,23 +606,27 @@ def main():
     # Resolve agent id if needed
     if module.params.get('command', {}).get('agentName', None):
         agent = lookup_resource(api_url, headers, "agents", "hostname", module.params['command']['agentName'], module.params['apiConnection']['tls_verify'])
-        if not agent:
+        if not agent and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="Agent '{0}' not found.".format(module.params['command']['agentName']))
+        elif not agent and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because agent was not found.")
         module.params['command']['agentId'] = agent['id']
 
     # Check if agentId is valid
     if module.params.get('command', {}).get('agentId', None):
         agent = lookup_resource(api_url, headers, "agents", "id", module.params['command']['agentId'], module.params['apiConnection']['tls_verify'])
-        if not agent:
+        if not agent and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="Agent with ID '{0}' not found. Please ensure agent is created first.".format(module.params['command']['agentId']))
+        elif not agent and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because agent was not found.")
 
     # Check if either a process ID or the processes central ID is provided
-    if not module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('state') == "present":
+    if not module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('command', {}).get('state') == "present":
         module.fail_json(msg="Either processCentralId or processId must be provided")
 
     # Resolve processId if needed
-    if module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('state') == "present":
-        processId = lookup_processId(api_url, headers, "globalId", module.params.get('command', {}).get('processCentralId'), module.params['apiConnection']['tls_verify'])
+    if module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('command', {}).get('state') == "present":
+        processId = lookup_processId(api_url, headers, "globalId", module.params.get('command', {}).get('processCentralId'), module.params['apiConnection']['tls_verify'],)
         if not processId:
             module.fail_json(msg="Process ID lookup for Central ID '{0}' not found".format(module.params['command']['processCentralId']))
         module.params['command']['processId'] = processId

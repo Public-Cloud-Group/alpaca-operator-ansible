@@ -1,76 +1,69 @@
-- name: Test Alpaca Groups Module against Test Hosts
-  hosts: test
+- name: Delete full ALPACA Operator "stack" on target hosts         # Name of the Playbook
+  hosts: local                                                      # Hostname or group defined in the corresponding inventory
   gather_facts: false
 
-  tasks:
+  vars:
+    group_name: "ansible_testing_group_01"
+    agent_name_1: "ansible_testing_agent_01"
+    agent_name_2: "ansible_testing_agent_02"
+    system_name: "ansible01"
 
-    - name: Remove all commands in system ansible01
+  tasks:
+    - name: "1. Ensure ALL commands for {{ system_name }} are deleted"
       pcg.alpaca_operator.alpaca_command_set:
         system:
-          systemName: ansible01
+          systemName: "{{ system_name }}"
         commands: []
         apiConnection:
-          host: "{{ inventory_hostname }}"
+          host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
           username: "{{ ALPACA_Operator_API_Username }}"
           password: "{{ ALPACA_Operator_API_Password }}"
           tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
-    - name: Remove system ansible01
+    - name: "2. Ensure ALPACA system {{ system_name }} is deleted"
       pcg.alpaca_operator.alpaca_system:
-        name: ansible01
+        name: "{{ system_name }}"
         state: absent
         apiConnection:
-          host: "{{ inventory_hostname }}"
+          host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
           username: "{{ ALPACA_Operator_API_Username }}"
           password: "{{ ALPACA_Operator_API_Password }}"
           tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
-    - name: Remove group ansible_testing_group_01
+    - name: "3. Ensure ALPACA agent {{ agent_name_2 }} is deleted"
+      pcg.alpaca_operator.alpaca_agent:
+        name: "{{ agent_name_2 }}"
+        state: absent
+        apiConnection:
+          host: "{{ ALPACA_Operator_API_Host }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: "4. Ensure ALPACA agent {{ agent_name_1 }} is deleted"
+      pcg.alpaca_operator.alpaca_agent:
+        name: "{{ agent_name_1 }}"
+        state: absent
+        apiConnection:
+          host: "{{ ALPACA_Operator_API_Host }}"
+          protocol: "{{ ALPACA_Operator_API_Protocol }}"
+          port: "{{ ALPACA_Operator_API_Port }}"
+          username: "{{ ALPACA_Operator_API_Username }}"
+          password: "{{ ALPACA_Operator_API_Password }}"
+          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+    - name: "5. Ensure ALPACA group {{ group_name }} is deleted"
       pcg.alpaca_operator.alpaca_group:
-        name: ansible_testing_group_01
+        name: "{{ group_name }}"
         state: absent
         apiConnection:
-          host: "{{ inventory_hostname }}"
-          protocol: "{{ ALPACA_Operator_API_Protocol }}"
-          port: "{{ ALPACA_Operator_API_Port }}"
-          username: "{{ ALPACA_Operator_API_Username }}"
-          password: "{{ ALPACA_Operator_API_Password }}"
-          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-
-    - name: Remove agent ansible_testing_agent_01
-      pcg.alpaca_operator.alpaca_agent:
-        name: ansible_testing_agent_01
-        state: absent
-        apiConnection:
-          host: "{{ inventory_hostname }}"
-          protocol: "{{ ALPACA_Operator_API_Protocol }}"
-          port: "{{ ALPACA_Operator_API_Port }}"
-          username: "{{ ALPACA_Operator_API_Username }}"
-          password: "{{ ALPACA_Operator_API_Password }}"
-          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-
-    - name: Remove agent ansible_testing_agent_02
-      pcg.alpaca_operator.alpaca_agent:
-        name: ansible_testing_agent_02
-        state: absent
-        apiConnection:
-          host: "{{ inventory_hostname }}"
-          protocol: "{{ ALPACA_Operator_API_Protocol }}"
-          port: "{{ ALPACA_Operator_API_Port }}"
-          username: "{{ ALPACA_Operator_API_Username }}"
-          password: "{{ ALPACA_Operator_API_Password }}"
-          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-
-    - name: Remove agent ansible_testing_agent_03
-      pcg.alpaca_operator.alpaca_agent:
-        name: ansible_testing_agent_03
-        state: absent
-        apiConnection:
-          host: "{{ inventory_hostname }}"
+          host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
           username: "{{ ALPACA_Operator_API_Username }}"
