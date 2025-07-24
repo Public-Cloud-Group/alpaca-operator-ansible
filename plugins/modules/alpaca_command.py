@@ -585,15 +585,19 @@ def main():
     # Resolve system id if needed
     if module.params.get('system', {}).get('systemName', None):
         system = lookup_resource(api_url, headers, "systems", "name", module.params['system']['systemName'], module.params['apiConnection']['tls_verify'])
-        if not system:
+        if not system and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="System '{0}' not found.".format(module.params['system']['systemName']))
+        elif not system and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because system was not found.")
         module.params['system']['systemId'] = system['id']
 
     # Check if systemId is valid
     if module.params.get('system', {}).get('systemId', None):
         system = lookup_resource(api_url, headers, "systems", "id", module.params['system']['systemId'], module.params['apiConnection']['tls_verify'])
-        if not system:
+        if not system and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="System with ID '{0}' not found. Please ensure system is created first.".format(module.params['system']['systemId']))
+        elif not system and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because system was not found.")
 
     # Check if either a agent ID or a agent name is provided
     if not module.params.get('command', {}).get('agentName', None) and not module.params.get('command', {}).get('agentId', None):
@@ -602,15 +606,19 @@ def main():
     # Resolve agent id if needed
     if module.params.get('command', {}).get('agentName', None):
         agent = lookup_resource(api_url, headers, "agents", "hostname", module.params['command']['agentName'], module.params['apiConnection']['tls_verify'])
-        if not agent:
+        if not agent and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="Agent '{0}' not found.".format(module.params['command']['agentName']))
+        elif not agent and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because agent was not found.")
         module.params['command']['agentId'] = agent['id']
 
     # Check if agentId is valid
     if module.params.get('command', {}).get('agentId', None):
         agent = lookup_resource(api_url, headers, "agents", "id", module.params['command']['agentId'], module.params['apiConnection']['tls_verify'])
-        if not agent:
+        if not agent and module.params.get('command', {}).get('state') == "present":
             module.fail_json(msg="Agent with ID '{0}' not found. Please ensure agent is created first.".format(module.params['command']['agentId']))
+        elif not agent and module.params.get('command', {}).get('state') == "absent":
+            module.exit_json(changed=False, msg="Command already absent because agent was not found.")
 
     # Check if either a process ID or the processes central ID is provided
     if not module.params.get('command', {}).get('processCentralId', None) and not module.params.get('command', {}).get('processId', None) and module.params.get('command', {}).get('state') == "present":
