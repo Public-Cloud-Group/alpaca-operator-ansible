@@ -1,9 +1,28 @@
 #
 # Description:
-#   This GitHub Actions workflow tests the compatibility of the pcg.alpaca_operator Ansible Collection
-#   across a matrix of Python and Ansible versions. It builds the collection, installs it into the
-#   correct path, runs sanity tests using `ansible-test`, and classifies each result as either tested,
-#   failed, unsupported, or untested. The results are compiled into a support matrix and uploaded as an artifact.
+#   This GitHub Actions workflow provides comprehensive CI/CD for the pcg.alpaca_operator Ansible Collection.
+#
+#   The workflow consists of three main jobs:
+#
+#   1. TEST: Matrix testing across Python and Ansible version combinations
+#      - Builds the Ansible collection using ansible-galaxy
+#      - Installs the collection and runs sanity tests with ansible-test
+#      - Classifies results as tested, failed, or unsupported
+#      - Uploads individual test results as artifacts
+#
+#   2. SUMMARIZE: Aggregates test results and updates documentation
+#      - Downloads all test artifacts and combines results
+#      - Generates a comprehensive support matrix
+#      - Updates README.md with the latest compatibility matrix
+#      - Commits and pushes documentation updates
+#
+#   3. RELEASE: Automated release management
+#      - Creates GitHub releases for both main branch (stable) and feature branches (development)
+#      - Handles version tagging based on galaxy.yml version
+#      - Uploads collection artifacts to GitHub Packages
+#      - Supports release overwriting for development builds
+#
+#   Triggers: Push/PR (excluding .md files), weekly scheduled runs on Sundays at 2:00 AM UTC
 #
 name: CI/CD Pipeline
 
