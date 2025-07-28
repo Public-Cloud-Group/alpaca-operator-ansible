@@ -124,7 +124,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
     command:
       name: "Daily Backup"
       agentName: backup-agent-01
-      processId: 801
+      processCentralId: 8990048
       parameters: "-p PRD -s /backup/sap"
       schedule:
         period: fixed_time
@@ -152,13 +152,13 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
     commands:
       - name: "Daily Backup"
         agentName: backup-agent-01
-        processId: 801
+        processCentralId: 8990048
         schedule:
           period: fixed_time
           time: "02:00:00"
       - name: "Log Cleanup"
         agentName: backup-agent-01
-        processId: 802
+        processCentralId: 8990048
         schedule:
           period: cron_expression
           cronExpression: '0 3 * * 0'

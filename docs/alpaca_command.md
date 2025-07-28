@@ -159,7 +159,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
           state: present
           agentName: agent01
           parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-          processId: 801
+          processCentralId: 8990048
           schedule:
             period: manually
             time: "01:00:00"
