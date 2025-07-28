@@ -442,7 +442,10 @@ def main():
     token = get_token(api_url, module.params['apiConnection']['username'], module.params['apiConnection']['password'], module.params['apiConnection']['tls_verify'])
     headers = {"Authorization": "Bearer {0}".format(token)}
 
-    # Validate SID against pattern
+    # Validate rfc SID against pattern
+    if not 'rfcConnection' in module.params or module.params['rfcConnection'] is None:
+        module.params['rfcConnection'] = {}
+
     try:
         import re
         rfc_sid = module.params.get('rfcConnection', {}).get('sid') if module.params.get('rfcConnection') else None
@@ -503,30 +506,32 @@ def main():
                                 }
 
             # Check if agent assignments need to be updated
-            desired_agents = sorted([agent['name'] for agent in module.params['agents'] if 'name' in agent]) if module.params.get('agents') else []
-            current_agents = sorted([agent['name'] for agent in system_details.get('agents', []) if 'name' in agent])
+            if 'agents' in module.params and module.params['agents'] is not None:
+                desired_agents = sorted([agent['name'] for agent in module.params['agents'] if 'name' in agent]) if module.params.get('agents') else []
+                current_agents = sorted([agent['name'] for agent in system_details.get('agents', []) if 'name' in agent])
 
-            if desired_agents != current_agents:
-                diff['agents'] = {
-                    'current': current_agents,
-                    'desired': desired_agents
-                }
+                if desired_agents != current_agents:
+                    diff['agents'] = {
+                        'current': current_agents,
+                        'desired': desired_agents
+                    }
 
             # Check if variable assignments need to be updated
-            desired_vars = sorted(
-                [{"name": v['name'], "value": str(v['value'])} for v in module.params['variables']],
-                key=lambda x: x['name']
-            ) if module.params.get('variables') else []
-            current_vars = sorted(
-                [{"name": v['name'], "value": str(v['value'])} for v in system_details.get('variables', [])],
-                key=lambda x: x['name']
-            )
+            if 'variables' in module.params and module.params['variables'] is not None:
+                desired_vars = sorted(
+                    [{"name": v['name'], "value": str(v['value'])} for v in module.params['variables']],
+                    key=lambda x: x['name']
+                ) if module.params.get('variables') else []
+                current_vars = sorted(
+                    [{"name": v['name'], "value": str(v['value'])} for v in system_details.get('variables', [])],
+                    key=lambda x: x['name']
+                )
 
-            if desired_vars != current_vars:
-                diff['variables'] = {
-                    'current': current_vars,
-                    'desired': desired_vars
-                }
+                if desired_vars != current_vars:
+                    diff['variables'] = {
+                        'current': current_vars,
+                        'desired': desired_vars
+                    }
 
             if diff:
                 if module.check_mode:
