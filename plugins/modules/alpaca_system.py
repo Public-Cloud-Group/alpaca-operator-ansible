@@ -443,7 +443,7 @@ def main():
     headers = {"Authorization": "Bearer {0}".format(token)}
 
     # Validate rfc SID against pattern
-    if not 'rfcConnection' in module.params or module.params['rfcConnection'] is None:
+    if 'rfcConnection' not in module.params or module.params['rfcConnection'] is None:
         module.params['rfcConnection'] = {}
 
     try:
