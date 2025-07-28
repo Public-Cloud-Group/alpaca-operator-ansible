@@ -140,95 +140,111 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
 ```yaml
 - name: Ensure that multiple commands are configured correctly on system01
-  alpaca_command_set:
-    system:
-      systemName: system01
-    commands:
-      - name: "BKP: DB log sync"
-        state: present
-        agentName: agent01
-        parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-        processId: 801
-        schedule:
-          period: manually
-          time: "01:00:00"
-          daysOfWeek:
-            - monday
-            - sunday
-        parametersNeeded: false
-        disabled: false
-        critical: true
-        history:
-          documentAllRuns: true
-          retention: 900
-        autoDeploy: false
-        timeout:
-          type: default
-          value: 30
-        escalation:
-          mailEnabled: true
-          smsEnabled: true
-          mailAddress: "monitoring@pcg.io"
-          smsAddress: "0123456789"
-          minFailureCount: 1
-          triggers:
-            everyChange: true
-            toRed: false
-            toYellow: false
-            toGreen: true
-      - name: "BKP: DB log sync 2"
-        state: present
-        agentName: agent02
-        parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-        processId: 801
-        schedule:
-          period: cron_expression
-          cronExpression: '0 */5 * * * ?'
-        parametersNeeded: false
-        disabled: false
-        critical: true
-        history:
-          documentAllRuns: true
-          retention: 900
-        autoDeploy: false
-        timeout:
-          type: default
-          value: 30
-        escalation:
-          mailEnabled: true
-          smsEnabled: true
-          mailAddress: "monitoring@pcg.io"
-          smsAddress: "0123456789"
-          minFailureCount: 1
-          triggers:
-            everyChange: true
-            toRed: false
-            toYellow: false
-            toGreen: true
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Configure commands
+      alpaca_command_set:
+        system:
+          systemName: system01
+        commands:
+          - name: "BKP: DB log sync"
+            state: present
+            agentName: agent01
+            parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+            processId: 801
+            schedule:
+              period: manually
+              time: "01:00:00"
+              daysOfWeek:
+                - monday
+                - sunday
+            parametersNeeded: false
+            disabled: false
+            critical: true
+            history:
+              documentAllRuns: true
+              retention: 900
+            autoDeploy: false
+            timeout:
+              type: default
+              value: 30
+            escalation:
+              mailEnabled: true
+              smsEnabled: true
+              mailAddress: "monitoring@pcg.io"
+              smsAddress: "0123456789"
+              minFailureCount: 1
+              triggers:
+                everyChange: true
+                toRed: false
+                toYellow: false
+                toGreen: true
+          - name: "BKP: DB log sync 2"
+            state: present
+            agentName: agent02
+            parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+            processId: 801
+            schedule:
+              period: cron_expression
+              cronExpression: '0 */5 * * * ?'
+            parametersNeeded: false
+            disabled: false
+            critical: true
+            history:
+              documentAllRuns: true
+              retention: 900
+            autoDeploy: false
+            timeout:
+              type: default
+              value: 30
+            escalation:
+              mailEnabled: true
+              smsEnabled: true
+              mailAddress: "monitoring@pcg.io"
+              smsAddress: "0123456789"
+              minFailureCount: 1
+              triggers:
+                everyChange: true
+                toRed: false
+                toYellow: false
+                toGreen: true
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Remove All Commands
 
 ```yaml
 - name: Remove all commands from system system01
-  alpaca_command_set:
-    system:
-      systemName: system01
-    commands: []
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Remove all commands
+      alpaca_command_set:
+        system:
+          systemName: system01
+        commands: []
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ## Return Values
@@ -285,6 +301,7 @@ The `changes` dictionary typically follows the format `commandIndex_XXX`, repres
 - Escalation settings can be configured for both email and SMS notifications
 - Use this module for bulk operations rather than individual command management
 - Empty commands list will remove all commands from the system
+- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
 
 ## Author
 

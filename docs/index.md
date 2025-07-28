@@ -36,35 +36,42 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
    ansible-galaxy collection install pcg.alpaca_operator
    ```
 
-2. **Configure API Connection**
-   ```yaml
-   # group_vars/all.yml
-   ALPACA_Operator_API_Host: "your-alpaca-server"
-   ALPACA_Operator_API_Protocol: "https"
-   ALPACA_Operator_API_Port: 8443
-   ALPACA_Operator_API_Username: "your-username"
-   ALPACA_Operator_API_Password: "your-password"
-   ALPACA_Operator_API_Validate_Certs: false
+2. **Configure API Connection in Inventory**
+   ```ini
+   # inventories/alpaca.ini
+   [local]
+   localhost ansible_connection=local ansible_python_interpreter=python3
+
+   [local:vars]
+   ALPACA_Operator_API_Host='your-alpaca-server'
+   ALPACA_Operator_API_Protocol='https'
+   ALPACA_Operator_API_Port='8443'
+   ALPACA_Operator_API_Username='your-username'
+   ALPACA_Operator_API_Password='your-password'
+   ALPACA_Operator_API_Validate_Certs=False
    ```
 
 3. **Create a Basic Playbook**
    ```yaml
    - name: Manage ALPACA Operator Environment
-     hosts: localhost
+     hosts: local
      gather_facts: false
+     
+     vars:
+       apiConnection:
+         host: "{{ ALPACA_Operator_API_Host }}"
+         protocol: "{{ ALPACA_Operator_API_Protocol }}"
+         port: "{{ ALPACA_Operator_API_Port }}"
+         username: "{{ ALPACA_Operator_API_Username }}"
+         password: "{{ ALPACA_Operator_API_Password }}"
+         tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+     
      tasks:
        - name: Create a group
          pcg.alpaca_operator.alpaca_group:
            name: production
            state: present
-           apiConnection:
-             host: "{{ ALPACA_Operator_API_Host }}"
-             protocol: "{{ ALPACA_Operator_API_Protocol }}"
-             port: "{{ ALPACA_Operator_API_Port }}"
-             username: "{{ ALPACA_Operator_API_Username }}"
-             password: "{{ ALPACA_Operator_API_Password }}"
-             tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-   ```
+           apiConnection: "{{ apiConnection }}"
 
 ## Common Patterns
 
@@ -81,7 +88,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
       mailEnabled: true
       mailAddress: monitoring@company.com
     state: present
-    apiConnection: "{{ api_connection }}"
+    apiConnection: "{{ apiConnection }}"
 ```
 
 ### 2. System Management with RFC Connection
@@ -105,7 +112,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
       - name: "BACKUP_PATH"
         value: "/backup/sap"
     state: present
-    apiConnection: "{{ api_connection }}"
+    apiConnection: "{{ apiConnection }}"
 ```
 
 ### 3. Command Management
@@ -133,7 +140,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
         mailEnabled: true
         mailAddress: monitoring@company.com
         minFailureCount: 1
-    apiConnection: "{{ api_connection }}"
+    apiConnection: "{{ apiConnection }}"
 ```
 
 ### 4. Bulk Command Management
@@ -155,23 +162,39 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
         schedule:
           period: cron_expression
           cronExpression: '0 3 * * 0'
-    apiConnection: "{{ api_connection }}"
+    apiConnection: "{{ apiConnection }}"
 ```
 
 ## Best Practices
 
 ### 1. Use Variables for API Connection
-Store your API connection details in group variables or vault-encrypted files:
+Store your API connection details in the inventory file:
+
+```ini
+# inventories/alpaca.ini
+[local]
+localhost ansible_connection=local ansible_python_interpreter=python3
+
+[local:vars]
+ALPACA_Operator_API_Host='your-alpaca-server'
+ALPACA_Operator_API_Protocol='https'
+ALPACA_Operator_API_Port='8443'
+ALPACA_Operator_API_Username='your-username'
+ALPACA_Operator_API_Password='your-password'
+ALPACA_Operator_API_Validate_Certs=False
+```
+
+Then reference them in your playbook:
 
 ```yaml
-# group_vars/alpaca.yml
-api_connection:
-  host: "{{ ALPACA_Operator_API_Host }}"
-  protocol: "{{ ALPACA_Operator_API_Protocol }}"
-  port: "{{ ALPACA_Operator_API_Port }}"
-  username: "{{ ALPACA_Operator_API_Username }}"
-  password: "{{ ALPACA_Operator_API_Password }}"
-  tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+vars:
+  apiConnection:
+    host: "{{ ALPACA_Operator_API_Host }}"
+    protocol: "{{ ALPACA_Operator_API_Protocol }}"
+    port: "{{ ALPACA_Operator_API_Port }}"
+    username: "{{ ALPACA_Operator_API_Username }}"
+    password: "{{ ALPACA_Operator_API_Password }}"
+    tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 ```
 
 ### 2. Use Check Mode for Testing
@@ -239,7 +262,6 @@ ansible-playbook your-playbook.yml -vvv
 For issues and questions:
 
 - **Author**: Jan-Karsten Hansmeyer (@pcg)
-- **Requirements**: Python >= 3.6, Ansible >= 2.11, < 2.17, ALPACA Operator >= 5.5.1
 
 ## License
 

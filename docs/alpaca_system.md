@@ -99,122 +99,162 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
 ```yaml
 - name: Ensure system exists
-  alpaca_system:
-    name: system01
-    description: My Test System
-    magicNumber: 42
-    checksDisabled: false
-    groupName: test-group
-    rfcConnection:
-      type: instance
-      host: test-host
-      instanceNumber: 30
-      sid: ABC
-      logonGroup: my-logon-group
-      username: rfc_myUser
-      password: rfc_myPasswd
-      client: 123
-      sapRouterString: rfc_SAPRouter
-      sncEnabled: false
-    agents:
-      - name: localhost
-      - name: testjan01-agent
-    variables:
-      - name: "<BKP_DATA_CLEANUP_INT>"
-        value: "19"
-      - name: "<BKP_DATA_CLEANUP_INT2>"
-        value: "this is a string"
-      - name: "<BKP_DATA_DEST2>"
-        value: "11"
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Create system
+      alpaca_system:
+        name: system01
+        description: My Test System
+        magicNumber: 42
+        checksDisabled: false
+        groupName: test-group
+        rfcConnection:
+          type: instance
+          host: test-host
+          instanceNumber: 30
+          sid: ABC
+          logonGroup: my-logon-group
+          username: rfc_myUser
+          password: rfc_myPasswd
+          client: 123
+          sapRouterString: rfc_SAPRouter
+          sncEnabled: false
+        agents:
+          - name: localhost
+          - name: testjan01-agent
+        variables:
+          - name: "<BKP_DATA_CLEANUP_INT>"
+            value: "19"
+          - name: "<BKP_DATA_CLEANUP_INT2>"
+            value: "this is a string"
+          - name: "<BKP_DATA_DEST2>"
+            value: "11"
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Delete a System
 
 ```yaml
 - name: Ensure system is absent
-  alpaca_system:
-    name: system01
-    state: absent
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Delete system
+      alpaca_system:
+        name: system01
+        state: absent
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Rename a System
 
 ```yaml
 - name: Rename an existing system
-  alpaca_system:
-    name: system01
-    new_name: system_renamed
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Rename system
+      alpaca_system:
+        name: system01
+        new_name: system_renamed
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Create a System with RFC Connection Only
 
 ```yaml
 - name: Create system with RFC connection
-  alpaca_system:
-    name: sap-system-01
-    description: SAP Production System
-    rfcConnection:
-      type: instance
-      host: sap-prod-server
-      instanceNumber: 00
-      sid: PRD
-      username: rfc_user
-      password: rfc_password
-      client: 100
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Create SAP system
+      alpaca_system:
+        name: sap-system-01
+        description: SAP Production System
+        rfcConnection:
+          type: instance
+          host: sap-prod-server
+          instanceNumber: 00
+          sid: PRD
+          username: rfc_user
+          password: rfc_password
+          client: 100
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Create a System with Variables Only
 
 ```yaml
 - name: Create system with variables
-  alpaca_system:
-    name: config-system-01
-    description: Configuration System
-    variables:
-      - name: "BACKUP_PATH"
-        value: "/backup/data"
-      - name: "RETENTION_DAYS"
-        value: "30"
-      - name: "ENVIRONMENT"
-        value: "production"
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Create configuration system
+      alpaca_system:
+        name: config-system-01
+        description: Configuration System
+        variables:
+          - name: "BACKUP_PATH"
+            value: "/backup/data"
+          - name: "RETENTION_DAYS"
+            value: "30"
+          - name: "ENVIRONMENT"
+            value: "production"
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ## Return Values
@@ -270,6 +310,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - To ensure a new RFC password is applied, you must change at least one additional attribute
 - Variables can be of any type (string, integer, boolean, etc.)
 - The module uses token-based authentication for API communication
+- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
 
 ## Author
 

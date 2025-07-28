@@ -137,42 +137,10 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
 ```yaml
 - name: Ensure a specific system command exist
-  alpaca_command:
-    system:
-      systemName: system01
-    command:
-      name: "BKP: DB log sync"
-      state: present
-      agentName: agent01
-      parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-      processId: 801
-      schedule:
-        period: manually
-        time: "01:00:00"
-        daysOfWeek:
-          - monday
-          - sunday
-      parametersNeeded: false
-      disabled: false
-      critical: true
-      history:
-        documentAllRuns: true
-        retention: 900
-      autoDeploy: false
-      timeout:
-        type: default
-        value: 30
-      escalation:
-        mailEnabled: true
-        smsEnabled: true
-        mailAddress: "monitoring@pcg.io"
-        smsAddress: "0123456789"
-        minFailureCount: 1
-        triggers:
-          everyChange: true
-          toRed: false
-          toYellow: false
-          toGreen: true
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
@@ -180,19 +148,56 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Create command
+      alpaca_command:
+        system:
+          systemName: system01
+        command:
+          name: "BKP: DB log sync"
+          state: present
+          agentName: agent01
+          parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
+          processId: 801
+          schedule:
+            period: manually
+            time: "01:00:00"
+            daysOfWeek:
+              - monday
+              - sunday
+          parametersNeeded: false
+          disabled: false
+          critical: true
+          history:
+            documentAllRuns: true
+            retention: 900
+          autoDeploy: false
+          timeout:
+            type: default
+            value: 30
+          escalation:
+            mailEnabled: true
+            smsEnabled: true
+            mailAddress: "monitoring@pcg.io"
+            smsAddress: "0123456789"
+            minFailureCount: 1
+            triggers:
+              everyChange: true
+              toRed: false
+              toYellow: false
+              toGreen: true
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Delete a Command
 
 ```yaml
 - name: Delete a specific command
-  pcg.alpaca_operator.alpaca_command:
-    system:
-      systemName: system01
-    command:
-      name: "BKP: DB log sync"
-      agentName: agent01
-      state: absent
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
@@ -200,6 +205,17 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Delete command
+      pcg.alpaca_operator.alpaca_command:
+        system:
+          systemName: system01
+        command:
+          name: "BKP: DB log sync"
+          agentName: agent01
+          state: absent
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ## Return Values
@@ -249,6 +265,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - The agent must be assigned to the corresponding system if managed via Ansible
 - Schedule configurations support various periodic execution patterns
 - Escalation settings can be configured for both email and SMS notifications
+- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
 
 ## Author
 

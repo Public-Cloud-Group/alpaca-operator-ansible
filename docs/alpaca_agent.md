@@ -66,59 +66,83 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
 ```yaml
 - name: Ensure agent exists
-  alpaca_agent:
-    name: agent01
-    ipAddress: 192.168.1.100
-    location: virtual
-    description: Test agent
-    escalation:
-      failuresBeforeReport: 3
-      mailEnabled: true
-      mailAddress: my.mail@pcg.io
-      smsEnabled: true
-      smsAddress: 0123456789
-    scriptGroupId: 0
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Create agent
+      alpaca_agent:
+        name: agent01
+        ipAddress: 192.168.1.100
+        location: virtual
+        description: Test agent
+        escalation:
+          failuresBeforeReport: 3
+          mailEnabled: true
+          mailAddress: my.mail@pcg.io
+          smsEnabled: true
+          smsAddress: 0123456789
+        scriptGroupId: 0
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Delete an Agent
 
 ```yaml
 - name: Ensure agent is absent
-  alpaca_agent:
-    name: agent01
-    state: absent
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Delete agent
+      alpaca_agent:
+        name: agent01
+        state: absent
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Rename an Agent
 
 ```yaml
 - name: Rename an existing agent
-  alpaca_agent:
-    name: agent01
-    new_name: agent_renamed
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Rename agent
+      alpaca_agent:
+        name: agent01
+        new_name: agent_renamed
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ## Return Values
@@ -185,6 +209,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - Escalation settings are optional and can be configured independently
 - The `scriptGroupId` parameter defaults to -1 if not specified
 - Location options include: virtual, local1, local2, remote
+- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
 
 ## Author
 

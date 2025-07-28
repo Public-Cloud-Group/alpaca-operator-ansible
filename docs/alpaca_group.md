@@ -49,49 +49,73 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
 ```yaml
 - name: Ensure group exists
-  alpaca_groups:
-    name: testgroup01
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Create group
+      alpaca_groups:
+        name: testgroup01
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Delete a Group
 
 ```yaml
 - name: Ensure group is absent
-  alpaca_groups:
-    name: testgroup01
-    state: absent
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Delete group
+      alpaca_groups:
+        name: testgroup01
+        state: absent
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ### Rename a Group
 
 ```yaml
 - name: Rename an existing group
-  alpaca_groups:
-    name: testgroup01
-    new_name: testgroup_renamed
-    state: present
+  hosts: local
+  gather_facts: false
+  
+  vars:
     apiConnection:
-      host: localhost
-      port: 8443
-      protocol: https
-      username: secret
-      password: secret
-      tls_verify: false
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+  
+  tasks:
+    - name: Rename group
+      alpaca_groups:
+        name: testgroup01
+        new_name: testgroup_renamed
+        state: present
+        apiConnection: "{{ apiConnection }}"
 ```
 
 ## Return Values
@@ -156,6 +180,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - The module will create a new group if the specified name doesn't exist and `new_name` is provided
 - Groups can be used to organize systems within the ALPACA Operator environment
 - The module uses token-based authentication for API communication
+- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
 
 ## Author
 
