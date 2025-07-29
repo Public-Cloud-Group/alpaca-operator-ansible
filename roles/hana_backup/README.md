@@ -168,25 +168,27 @@ The role expects a CSV file with semicolon (`;`) as the delimiter.
 
 The role automatically maps CSV columns to variables that can be used in command parameters. These variables must be enclosed in curly braces `{ variableName }`:
 
-| CSV Column         | Variable Name        | Description | Example Value          |
-| ------------------ | -------------------- | ----------- | ---------------------- |
-| `primary_system`   | `{ primarySystem }`  | N/A         | `"MUP"`                |
-| `hdb_nw_sid`       | `{ systemName }`     | N/A         | `"MHP"`                |
-| `hdb_tenant`       | `{ hdbTenant }`      | N/A         | `"MUP"`                |
-| `system_vdns`      | `{ agentName }`      | N/A         | `"hdbmhpa"`            |
-| `system_sla`       | `{ systemSla }`      | N/A         | `"SLA2"`               |
-| `system_type`      | `{ systemType }`     | N/A         | `"HDB"`                |
-| `system_staging`   | `{ systemStaging }`  | N/A         | `"rg-sap-010msb-prod"` |
-| `system_vm_type`   | `{ systemVmType }`   | N/A         | `"Standard_E32ds_v5"`  |
-| `system_vm_flavor` | `{ systemVmFlavor }` | N/A         | `"hdb-t-e"`            |
-| `system_az`        | `{ systemAz }`       | N/A         | `"3"`                  |
-| `hdb_data_min`     | `{ hdbDataMin }`     | N/A         | `"1"`                  |
-| `hdb_data_max`     | `{ hdbDataMax }`     | N/A         | `"2"`                  |
-| `hdb_log_min`      | `{ hdbLogMin }`      | N/A         | `"3"`                  |
-| `hdb_log_max`      | `{ hdbLogMax }`      | N/A         | `"4"`                  |
-| `hdb_shared_min`   | `{ hdbSharedMin }`   | N/A         | `"5"`                  |
-| `hdb_shared_max`   | `{ hdbSharedMax }`   | N/A         | `"6"`                  |
-| `Instance_no`      | `{ instanceNo }`     | N/A         | `"05"`                 |
+| CSV Column            | Variable Name          | Description | Example Value          |
+| --------------------- | ---------------------- | ----------- | ---------------------- |
+| `primary_system`      | `{ primarySystem }`    | N/A         | `"MUP"`                |
+| `hdb_nw_sid`          | `{ systemName }`       | N/A         | `"MHP"`                |
+| `hdb_tenant`          | `{ hdbTenant }`        | N/A         | `"MUP"`                |
+| `system_vdns`         | `{ agentName }`        | N/A         | `"hdbmhpa"`            |
+| `system_sla`          | `{ systemSla }`        | N/A         | `"SLA2"`               |
+| `system_type`         | `{ systemType }`       | N/A         | `"HDB"`                |
+| `system_staging`      | `{ systemStaging }`    | N/A         | `"rg-sap-010msb-prod"` |
+| `system_vm_type`      | `{ systemVmType }`     | N/A         | `"Standard_E32ds_v5"`  |
+| `system_vm_flavor`    | `{ systemVmFlavor }`   | N/A         | `"hdb-t-e"`            |
+| `system_az`           | `{ systemAz }`         | N/A         | `"3"`                  |
+| `hdb_data_min`        | `{ hdbDataMin }`       | N/A         | `"1"`                  |
+| `hdb_data_max`        | `{ hdbDataMax }`       | N/A         | `"2"`                  |
+| `hdb_log_min`         | `{ hdbLogMin }`        | N/A         | `"3"`                  |
+| `hdb_log_max`         | `{ hdbLogMax }`        | N/A         | `"4"`                  |
+| `hdb_shared_min`      | `{ hdbSharedMin }`     | N/A         | `"5"`                  |
+| `hdb_shared_max`      | `{ hdbSharedMax }`     | N/A         | `"6"`                  |
+| `Instance_no`         | `{ instanceNo }`       | N/A         | `"05"`                 |
+| `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` | N/A         | `"SomeValue"`          |
+| `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` | N/A         | `"SomeValue"`          |
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in curly braces `{ variableName }` when used in command parameters. This is mandatory for proper variable substitution.
 
