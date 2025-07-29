@@ -101,7 +101,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure system exists
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -110,7 +110,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Create system
       alpaca_system:
@@ -150,7 +150,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure system is absent
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -159,7 +159,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Delete system
       alpaca_system:
@@ -174,7 +174,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Rename an existing system
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -183,7 +183,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Rename system
       alpaca_system:
@@ -198,7 +198,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Create system with RFC connection
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -207,7 +207,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Create SAP system
       alpaca_system:
@@ -231,7 +231,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Create system with variables
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -240,7 +240,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Create configuration system
       alpaca_system:

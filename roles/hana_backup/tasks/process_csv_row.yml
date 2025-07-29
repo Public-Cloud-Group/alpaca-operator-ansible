@@ -2,12 +2,26 @@
 - name: Set variables for current CSV row
   set_fact:
     csv:
+      primarySystem: "{{ csv_row.primary_system | default(omit) }}"
       systemName: "{{ csv_row.hdb_nw_sid | default(omit) }}"
+      hdbTenant: "{{ csv_row.hdb_tenant | default(omit) }}"
       agentName: "{{ csv_row.system_vdns | default(omit) }}"
       systemSla: "{{ csv_row.system_sla | default(omit) }}"
       systemType: "{{ csv_row.system_type | default(omit) }}"
       systemStaging: "{{ csv_row.system_staging | default(omit) }}"
+      systemVmType: "{{ csv_row.system_vm_type | default(omit) }}"
+      systemVmFlavor: "{{ csv_row.system_vm_flavor | default(omit) }}"
+      systemVdns: "{{ csv_row.system_vdns | default(omit) }}"
+      systemAz: "{{ csv_row.system_az | default(omit) }}"
+      hdbDataMin: "{{ csv_row.hdb_data_min | default(omit) }}"
+      hdbDataMax: "{{ csv_row.hdb_data_max | default(omit) }}"
+      hdbLogMin: "{{ csv_row.hdb_log_min | default(omit) }}"
+      hdbLogMax: "{{ csv_row.hdb_log_max | default(omit) }}"
+      hdbSharedMin: "{{ csv_row.hdb_shared_min | default(omit) }}"
+      hdbSharedMax: "{{ csv_row.hdb_shared_max | default(omit) }}"
       instanceNo: "{{ csv_row.Instance_no | default(omit) }}"
+      alpacaExtPoolOld: "{{ csv_row.alpaca_ext_pool_old | default(omit) }}"
+      alpacaExtPoolNew: "{{ csv_row.alpaca_ext_pool_new | default(omit) }}"
 
 - name: Set SLA and default command sets for current CSV row
   set_fact:

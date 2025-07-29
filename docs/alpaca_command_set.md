@@ -142,7 +142,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure that multiple commands are configured correctly on system01
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -151,7 +151,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Configure commands
       alpaca_command_set:
@@ -228,7 +228,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Remove all commands from system system01
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -237,7 +237,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Remove all commands
       alpaca_command_set:

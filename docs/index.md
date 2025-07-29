@@ -56,7 +56,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
    - name: Manage ALPACA Operator Environment
      hosts: local
      gather_facts: false
-     
+
      vars:
        apiConnection:
          host: "{{ ALPACA_Operator_API_Host }}"
@@ -65,7 +65,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
          username: "{{ ALPACA_Operator_API_Username }}"
          password: "{{ ALPACA_Operator_API_Password }}"
          tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-     
+
      tasks:
        - name: Create a group
          pcg.alpaca_operator.alpaca_group:

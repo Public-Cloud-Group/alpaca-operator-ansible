@@ -68,7 +68,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure agent exists
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -77,7 +77,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Create agent
       alpaca_agent:
@@ -102,7 +102,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure agent is absent
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -111,7 +111,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Delete agent
       alpaca_agent:
@@ -126,7 +126,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Rename an existing agent
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -135,7 +135,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Rename agent
       alpaca_agent:

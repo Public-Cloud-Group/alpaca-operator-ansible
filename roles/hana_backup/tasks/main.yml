@@ -1,20 +1,20 @@
 ---
-- name: Check if csv_file is set
+- name: "Check if csv_file is set"
   fail:
     msg: "Variable 'csv_file' is not set. Please set this in the playbook."
   when: csv_file is not defined or csv_file == ""
 
-- name: Check if CSV file exists
+- name: "Check if CSV file exists"
   stat:
     path: "{{ csv_file }}"
   register: csv_file_stat
 
-- name: Error if CSV file not found
+- name: "Error if CSV file not found"
   fail:
     msg: "CSV file '{{ csv_file }}' was not found."
   when: not csv_file_stat.stat.exists
 
-- name: Read CSV file with Python
+- name: "Read CSV file with Python"
   command: python3 "{{ role_path }}/files/read_csv.py" "{{ csv_file }}"
   register: csv_output
   changed_when: false
@@ -25,9 +25,20 @@
     var: csv_output
     verbosity: 1
 
-- name: Parse CSV data
+- name: "Parse CSV data"
   set_fact:
     csv_data: "{{ csv_output.stdout | from_json }}"
+
+- name: "Debug: CSV data structure"
+  debug:
+    msg: "CSV data contains {{ csv_data | length }} rows"
+    verbosity: 1
+
+- name: "Debug: First CSV row"
+  debug:
+    var: csv_data[0]
+    verbosity: 1
+  when: csv_data | length > 0
 
 - name: "[merge:override->role_defaults] Merge playbook override into role defaults (Ansible combine)"
   set_fact:
@@ -44,7 +55,58 @@
     var: merged_definitions
     verbosity: 1
 
-- name: Iterate over all CSV rows to generate and process commands
+- name: "Debug: Filter configuration"
+  debug:
+    msg: >-
+      Filter config: column='{{ merged_definitions.csv_defaults.filter.column_name }}', 
+      value='{{ merged_definitions.csv_defaults.filter.expected_value }}', 
+      has_wildcards={{ ('*' in merged_definitions.csv_defaults.filter.expected_value or '?' in merged_definitions.csv_defaults.filter.expected_value) }}
+    verbosity: 1
+  when: merged_definitions.csv_defaults.filter.enabled | default(false)
+
+- name: "Debug: regex pattern"
+  debug:
+    msg: >-
+      Regex pattern: '{{ merged_definitions.csv_defaults.filter.expected_value | replace('*', '.*') | replace('?', '.') }}'
+    verbosity: 1
+  when:
+    - merged_definitions.csv_defaults.filter.enabled | default(false)
+    - ('*' in merged_definitions.csv_defaults.filter.expected_value or '?' in merged_definitions.csv_defaults.filter.expected_value)
+
+- name: "Debug: Column values"
+  debug:
+    msg: >-
+      Values in column '{{ merged_definitions.csv_defaults.filter.column_name }}': {{ csv_data | map(attribute=merged_definitions.csv_defaults.filter.column_name) | list }}
+    verbosity: 1
+  when: merged_definitions.csv_defaults.filter.enabled | default(false)
+
+- name: "Filter CSV data based on filter configuration"
+  set_fact:
+    csv_data: >-
+      {{
+        csv_data | selectattr(
+          merged_definitions.csv_defaults.filter.column_name,
+          'equalto' if ('*' not in merged_definitions.csv_defaults.filter.expected_value and '?' not in merged_definitions.csv_defaults.filter.expected_value) else 'match',
+          merged_definitions.csv_defaults.filter.expected_value if ('*' not in merged_definitions.csv_defaults.filter.expected_value and '?' not in merged_definitions.csv_defaults.filter.expected_value) else (merged_definitions.csv_defaults.filter.expected_value | replace('*', '.*') | replace('?', '.'))
+        ) | list
+      }}
+  when:
+    - merged_definitions.csv_defaults.filter.enabled | default(false)
+    - merged_definitions.csv_defaults.filter.column_name is defined
+    - merged_definitions.csv_defaults.filter.expected_value is defined
+    - merged_definitions.csv_defaults.filter.column_name is not none
+    - merged_definitions.csv_defaults.filter.expected_value is not none
+
+- name: "Debug: Filtered CSV data"
+  debug:
+    msg: >-
+      Filtered CSV data contains {{ csv_data | length }} rows using
+      {{ 'wildcard' if ('*' in merged_definitions.csv_defaults.filter.expected_value or '?' in merged_definitions.csv_defaults.filter.expected_value) else 'exact' }}
+      filter on column '{{ merged_definitions.csv_defaults.filter.column_name }}' with value '{{ merged_definitions.csv_defaults.filter.expected_value }}'
+    verbosity: 1
+  when: merged_definitions.csv_defaults.filter.enabled | default(false)
+
+- name: "Iterate over all CSV rows to generate and process commands"
   include_tasks: process_csv_row.yml
   loop: "{{ csv_data }}"
   loop_control:

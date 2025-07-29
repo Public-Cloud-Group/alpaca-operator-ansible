@@ -51,7 +51,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure group exists
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -60,7 +60,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Create group
       alpaca_groups:
@@ -75,7 +75,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure group is absent
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -84,7 +84,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Delete group
       alpaca_groups:
@@ -99,7 +99,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Rename an existing group
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -108,7 +108,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Rename group
       alpaca_groups:

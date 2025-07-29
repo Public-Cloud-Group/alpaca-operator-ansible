@@ -139,7 +139,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Ensure a specific system command exist
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -148,7 +148,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Create command
       alpaca_command:
@@ -196,7 +196,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - name: Delete a specific command
   hosts: local
   gather_facts: false
-  
+
   vars:
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -205,7 +205,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       username: "{{ ALPACA_Operator_API_Username }}"
       password: "{{ ALPACA_Operator_API_Password }}"
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-  
+
   tasks:
     - name: Delete command
       pcg.alpaca_operator.alpaca_command:

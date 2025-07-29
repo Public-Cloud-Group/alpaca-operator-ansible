@@ -217,8 +217,8 @@ Create a sample CSV file for the HANA backup role:
 
 ```bash
 cat > systems.csv << 'EOF'
-hdb_nw_sid;system_vdns;system_sla;system_type;system_staging;Instance_no
-HDB;localhost;SLA1;PROD;PROD;00
+primary_system;hdb_nw_sid;hdb_tenant;system_type;system_staging;system_sla;system_vm_type;system_vm_flavor;system_vdns;system_az;hdb_data_min;hdb_data_max;hdb_log_min;hdb_log_max;hdb_shared_min;hdb_shared_max;Instance_no
+MUP;MHP;MUP;HDB;rg-sap-010msb-prod;SLA2;Standard_E32ds_v5;hdb-t-e;hdbmhpa;3;1;2;3;4;5;6;05
 EOF
 ```
 
@@ -243,9 +243,61 @@ Edit the playbook (the ALPACA API configuration is now in the inventory):
     csv_file: "../systems.csv"
 
   tasks:
-    - name: Include hana_backup role
+    - name: Execute hana_backup role
       include_role:
         name: pcg.alpaca_operator.hana_backup
+```
+
+### Understanding CSV Variables
+
+The HANA backup role automatically maps CSV columns to variables that you can use in your playbooks. Here are the available variables:
+
+| CSV Column         | Variable Name        | Description | Example Value          |
+| ------------------ | -------------------- | ----------- | ---------------------- |
+| `primary_system`   | `{ primarySystem }`  | N/A         | `"MUP"`                |
+| `hdb_nw_sid`       | `{ systemName }`     | N/A         | `"MHP"`                |
+| `hdb_tenant`       | `{ hdbTenant }`      | N/A         | `"MUP"`                |
+| `system_vdns`      | `{ agentName }`      | N/A         | `"hdbmhpa"`            |
+| `system_sla`       | `{ systemSla }`      | N/A         | `"SLA2"`               |
+| `system_type`      | `{ systemType }`     | N/A         | `"HDB"`                |
+| `system_staging`   | `{ systemStaging }`  | N/A         | `"rg-sap-010msb-prod"` |
+| `system_vm_type`   | `{ systemVmType }`   | N/A         | `"Standard_E32ds_v5"`  |
+| `system_vm_flavor` | `{ systemVmFlavor }` | N/A         | `"hdb-t-e"`            |
+| `system_az`        | `{ systemAz }`       | N/A         | `"3"`                  |
+| `hdb_data_min`     | `{ hdbDataMin }`     | N/A         | `"1"`                  |
+| `hdb_data_max`     | `{ hdbDataMax }`     | N/A         | `"2"`                  |
+| `hdb_log_min`      | `{ hdbLogMin }`      | N/A         | `"3"`                  |
+| `hdb_log_max`      | `{ hdbLogMax }`      | N/A         | `"4"`                  |
+| `hdb_shared_min`   | `{ hdbSharedMin }`   | N/A         | `"5"`                  |
+| `hdb_shared_max`   | `{ hdbSharedMax }`   | N/A         | `"6"`                  |
+| `Instance_no`      | `{ instanceNo }`     | N/A         | `"05"`                 |
+
+**⚠️ IMPORTANT**: CSV variables must be enclosed in curly braces `{ variableName }` when used in command parameters. This is mandatory for proper variable substitution.
+
+### Example: Using CSV Variables in Command Parameters
+
+```yaml
+---
+- name: HANA Backup with CSV Variables
+  hosts: local
+  gather_facts: false
+
+  vars:
+    csv_file: "../systems.csv"
+
+  tasks:
+    - name: Execute hana_backup role with custom commands
+      include_role:
+        name: pcg.alpaca_operator.hana_backup
+      vars:
+        override:
+          commands:
+            - name: "HANA BACKUP SNAP"
+              processCentralId: 8990048
+              parameters: "-s { systemName } -i { hdbTenant } -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
+            - name: "HANA BACKUP FILE DAILY"
+              processCentralId: 8990048
+              parameters: "-s { systemName } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
 ```
 
 ## Step 11: Run Your First Playbook

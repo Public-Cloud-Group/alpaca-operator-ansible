@@ -3,6 +3,16 @@
 csv_file: "/tmp/swm_prod.csv"
 
 role_defaults:
+  # CSV filtering configuration
+  # Filter rows based on column name and expected value
+  # Set to null/empty to disable filtering
+  # Wildcards (* and ?) are automatically detected in expected_value
+  csv_defaults:
+    filter:
+      enabled: true               # Enable or disable CSV filtering (true/false)
+      column_name: "system_type"  # Name of the column to filter on (e.g., "system_sla", "system_type")
+      expected_value: "HDB*"      # Expected value in the column for the row to be processed (supports wildcards * and ?)
+
   command_defaults:
     # Global command defaults (only applied if not set at SLA or command level)
     state: present
