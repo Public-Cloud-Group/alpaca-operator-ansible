@@ -317,7 +317,7 @@ ansible-playbook playbooks/hana_backup_demo.yml --check -v
 ansible-playbook playbooks/hana_backup_demo.yml
 ```
 
-**Note**: The playbook will most likely fail on the first run when trying to create the first command, because the specified system (e.g., `HDB`) in the example CSV file we created here does not exist in the ALPACA Operator. This is normal and expected.
+**Note**: The playbook will most likely fail on the first run when trying to create the first command, because the specified system (e.g., `MHP`) in the example CSV file we created here does not exist in the ALPACA Operator. This is normal and expected.
 
 ## Troubleshooting
 
