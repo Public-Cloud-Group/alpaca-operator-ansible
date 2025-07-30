@@ -264,6 +264,7 @@ Here's a complete example showing all available parameters and variables:
       # Global command defaults applied to all commands unless overridden
       command_defaults:
         state: present                     # Command state: present (create/update) or absent (delete)
+        # agentName: "localhost"           # Optional: Override agent name for all commands. If not specified, the role will automatically use the value from the "system_vdns" column in the CSV file.
         schedule:
           period: fixed_time               # Scheduling period: fixed_time, manually, hourly, etc.
           time: "02:00:00"                 # Execution time in HH:mm:ss format
@@ -454,6 +455,79 @@ This example demonstrates three types of variables:
 1. **CSV Variables** (from CSV file): `{ systemName }`, `{ instanceNo }`, `{ systemType }`, etc.
 2. **SLA Variables** (from service_levels): `{ local_file_ret }`, `{ blob_file_ret }`, etc.
 3. **System Variables** (from ALPACA system config): `$SKEY`, `<BKP_DATA_DEST1>`, etc.
+
+### Agent Name Configuration
+
+The role supports flexible agent name configuration through multiple levels:
+
+#### Default Behavior
+By default, the role automatically uses the value from the `system_vdns` column in the CSV file as the agent name for all commands.
+
+#### Global Override
+You can override the agent name for all commands by setting it in the global `command_defaults`:
+
+```yaml
+override:
+  command_defaults:
+    agentName: "localhost"  # All commands will use "localhost" as agent
+```
+
+#### SLA-Level Override
+You can set different agent names for specific SLA levels:
+
+```yaml
+override:
+  service_levels:
+    SLA1:
+      command_defaults:
+        agentName: "prod-agent"  # All SLA1 commands use "prod-agent"
+    SLA2:
+      command_defaults:
+        agentName: "test-agent"  # All SLA2 commands use "test-agent"
+```
+
+#### Command-Level Override
+You can override the agent name for specific commands:
+
+```yaml
+override:
+  commands:
+    - name: "HANA BACKUP LOG"
+      agentName: "backup-agent"  # This specific command uses "backup-agent"
+      processCentralId: 8990048
+      parameters: "-s { systemName } -n 4 -e blob -o <BKP_LB_LOG_01>"
+```
+
+#### Priority Order
+Agent name resolution follows this priority order (highest to lowest):
+1. **Command-specific** `agentName` setting
+2. **SLA-level** `command_defaults.agentName` setting
+3. **Global** `command_defaults.agentName` setting
+4. **CSV column** `system_vdns` value (default behavior)
+
+#### Example Configuration
+```yaml
+override:
+  command_defaults:
+    agentName: "default-agent"  # Global fallback
+  service_levels:
+    SLA1:
+      command_defaults:
+        agentName: "prod-agent"  # Override for SLA1
+    SLA2:
+      command_defaults:
+        agentName: "test-agent"  # Override for SLA2
+  commands:
+    - name: "HANA BACKUP LOG"
+      agentName: "backup-agent"  # Override for this specific command
+      processCentralId: 8990048
+```
+
+**Result**: 
+- "HANA BACKUP LOG" command uses `backup-agent`
+- Other SLA1 commands use `prod-agent`
+- SLA2 commands use `test-agent`
+- All other commands use `default-agent`
 
 ### Priority Order
 

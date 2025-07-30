@@ -21,6 +21,7 @@
       command_defaults:
         # Global command defaults (only applied if not set at SLA or command level)
         state: present
+        # agentName: "localhost"  # Optional: If not specified, the role will automatically use the value from the "system_vdns" column in the CSV file.
         schedule:
           period: fixed_time
           time: "12:12:12"
