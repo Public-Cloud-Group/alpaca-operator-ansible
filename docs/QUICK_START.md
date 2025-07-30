@@ -135,7 +135,7 @@ cat > inventory.ini << 'EOF'
 localhost ansible_connection=local
 
 [local:vars]
-ansible_python_interpreter=/usr/bin/python3
+ansible_python_interpreter=/usr/bin/python3.11
 
 # ALPACA API Configuration
 ALPACA_Operator_API_Host='localhost'
@@ -149,16 +149,19 @@ EOF
 
 **Note**: Ensure to customize API username and password here according to your needs.
 
-**Note**: If you have multiple Python versions installed, you can specify the exact interpreter path. Common alternatives:
+**Note**: If you have multiple Python versions installed, you should specify the exact interpreter path. The example uses Python 3.11, but you can use other versions based on your system:
 - `/usr/bin/python3.9` - Python 3.9
 - `/usr/bin/python3.10` - Python 3.10
-- `/usr/bin/python3.11` - Python 3.11
+- `/usr/bin/python3.11` - Python 3.11 (recommended)
 - `/usr/bin/python3.12` - Python 3.12
+
+**Important**: Avoid using generic `python3` if multiple Python 3.x versions are installed, as it may point to an outdated version.
 
 You can check available Python versions with:
 ```bash
 ls /usr/bin/python*
 python3 --version
+python3.11 --version
 ```
 
 ## Step 8: Test Connection
@@ -341,6 +344,47 @@ ansible-playbook playbooks/hana_backup_demo.yml
    - Ensure semicolon (`;`) delimiter
    - Check file permissions
    - Verify required columns are present
+
+4. **Inventory Configuration Issues**
+   ```bash
+   # Validate inventory syntax
+   ansible-inventory --list -i inventory.ini
+
+   # Check if variables are properly loaded
+   ansible-inventory --list -i inventory.ini --yaml
+   ```
+
+   **Common inventory problems to check:**
+   - **Section headers**: Ensure `[local]` and `[local:vars]` sections are correctly defined
+   - **Variable names**: Verify ALPACA API variable names match exactly:
+     - `ALPACA_Operator_API_Host`
+     - `ALPACA_Operator_API_Protocol`
+     - `ALPACA_Operator_API_Port`
+     - `ALPACA_Operator_API_Username`
+     - `ALPACA_Operator_API_Password`
+     - `ALPACA_Operator_API_Validate_Certs`
+   - **Quotes**: Ensure string values are properly quoted
+   - **Python interpreter**: Verify `ansible_python_interpreter` path exists and points to the correct version
+   - **Connection type**: Confirm `ansible_connection=local` is set for localhost
+
+   **Python Version Validation:**
+   ```bash
+   # Check available Python versions
+   ls /usr/bin/python*
+   python3 --version
+   python3.11 --version
+
+   # Verify the specific Python version used by Ansible
+   ansible localhost -m setup -a 'filter=ansible_python_version'
+
+   # Test if the specified interpreter works
+   /usr/bin/python3.11 -c "import sys; print(f'Python {sys.version}')"
+   ```
+
+   **Recommended Python interpreter settings:**
+   - Use specific version: `ansible_python_interpreter=/usr/bin/python3.11`
+   - Avoid generic `python3` if multiple Python 3.x versions are installed
+   - Ensure compatibility with your Ansible version (see Support Matrix in main README)
 
 ### Logging
 
