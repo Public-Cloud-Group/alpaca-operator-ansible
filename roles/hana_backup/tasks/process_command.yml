@@ -24,7 +24,7 @@
     system:
       systemName: "{{ csv.systemName | default(omit) }}"
     command:
-      agentName: "{{ csv.agentName | default(omit) }}"
+      agentName: "{{ merged_command.agentName | default(csv.agentName | default(omit)) }}"
       name: "{{ merged_command.name | default(omit) }}"
       state: "{{ merged_command.state | default(omit) }}"
       processId: "{{ merged_command.processId | default(omit) }}"
