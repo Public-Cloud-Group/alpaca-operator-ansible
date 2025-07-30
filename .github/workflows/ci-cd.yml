@@ -44,6 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Remember to update sanity ignore files in /tests/sanity/ if you add a new version pares to the test matrix!
           - ansible-version: "2.12"
             python-version: "3.8"
           - ansible-version: "2.12"
