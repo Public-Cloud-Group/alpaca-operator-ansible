@@ -307,8 +307,14 @@ The HANA backup role automatically maps CSV columns to variables that you can us
 Execute the HANA backup playbook:
 
 ```bash
-# Run in check mode first (dry run)
+# Run in check mode first (dry run) with verbosity
+# The --check flag performs a simulation without making actual changes
+# The -v flag enables verbose output for detailed debugging information
 ansible-playbook playbooks/hana_backup_demo.yml --check -v
+
+# Execute the playbook for real deployment
+# This command will make actual changes
+ansible-playbook playbooks/hana_backup_demo.yml
 ```
 
 **Note**: The playbook will most likely fail on the first run when trying to create the first command, because the specified system (e.g., `HDB`) in the example CSV file we created here does not exist in the ALPACA Operator. This is normal and expected.
