@@ -7,6 +7,14 @@
     # Variables relevant for the hana_backup role
     csv_file: "../systems.csv"
 
+    system_variables:
+      # Example for setting system variables
+      MHP:
+        - name: "<BKP_DATA_DEST1>"
+          value: "1"
+        - name: "<BKP_DATA_DEST2>"
+          value: "2"
+
     override:
       # CSV filtering configuration
       # Filter rows based on column name and expected value
