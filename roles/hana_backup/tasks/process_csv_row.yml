@@ -23,7 +23,16 @@
       alpacaExtPoolOld: "{{ csv_row.alpaca_ext_pool_old | default(omit) }}"
       alpacaExtPoolNew: "{{ csv_row.alpaca_ext_pool_new | default(omit) }}"
 
-- name: Set SLA and default command sets for current CSV row
+- name: "Set system variables for system {{ csv.systemName }}"
+  set_fact:
+    system:
+      variables: "{{ system_variables[csv.systemName] | default([]) }}"
+
+- name: "Generate commands for current csv row"
+  include_tasks: process_system.yml
+  when: system.variables is defined and system.variables is not none and system.variables | length > 0
+
+- name: "Set SLA and default command sets for current CSV row"
   set_fact:
     sla_command_set: "{{ merged_definitions.service_levels[csv.systemSla].commands | default([]) }}"
     default_command_set: "{{ merged_definitions.commands | default([]) }}"
@@ -51,7 +60,7 @@
   debug:
     msg: "{{ csv.systemSla }} gets {{ merged_command_set | length }} commands"
 
-- name: Generate commands for current csv row
+- name: "Generate commands for current csv row"
   include_tasks: process_command.yml
   loop: "{{ merged_command_set }}"
   loop_control:
