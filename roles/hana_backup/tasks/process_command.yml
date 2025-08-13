@@ -53,20 +53,81 @@
     apiConnection: "{{ apiConnection | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
   loop: "{{ merged_definitions.service_levels[csv.systemSla].variables | default({}) | dict2items }}"
 
-- name: "Replace each CSV variable in system, command, and apiConnection"
+- name: "Replace each CSV variable in system, command and apiConnection"
   set_fact:
     system: "{{ system | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
     command: "{{ command | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
     apiConnection: "{{ apiConnection | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
   loop: "{{ csv | default({}) | dict2items }}"
 
+- name: "Get cron expression parts"
+  set_fact:
+    _cron_parts:  "{{ command.schedule.cronExpression | default('') | split(' ') }}"
+    cron_second:  "{{ _cron_parts[0] | default('*') }}"
+    cron_minute:  "{{ _cron_parts[1] | default('*') }}"
+    cron_hour:    "{{ _cron_parts[2] | default('*') }}"
+    cron_day:     "{{ _cron_parts[3] | default('*') }}"
+    cron_month:   "{{ _cron_parts[4] | default('*') }}"
+    cron_weekday: "{{ _cron_parts[5] | default('*') }}"
+    cron_year:    "{{ _cron_parts[6] | default(omit) }}"
+
+- name: "Calculate new hour for cron expression by offsetting csv.magicNumber2"
+  # Only when: it's a cron expression, magicNumber2 in [1..59] and the expression fires at most once per day (fixed sec/min/hour)
+  when:
+    - command.schedule.period == "cron_expression"
+    - csv.magicNumber2 is defined
+    - csv.magicNumber2 | int > 0
+    - csv.magicNumber2 | int < 60
+    - (cron_second | string) is match('^([0-5]?\\d)$')          # 0..59
+    - (cron_minute | string) is match('^([0-5]?\\d)$')          # 0..59
+    - (cron_hour   | string) is match('^([01]?\\d|2[0-3])$')    # 0..23
+  set_fact:
+    # ({ Cron-Hour } + ({ magicNumber2 } / 60) × 24)
+    cron_hour_new: "{{ (cron_hour | int + (csv.magicNumber2 | int / 60) * 24) | int }}"
+
+- name: "Debug: Show cron expression parts including new hour and csv.magicNumber2"
+  when: cron_hour_new is defined and cron_hour_new != cron_hour and csv.magicNumber2 is defined
+  debug:
+    msg:
+      csv.magicNumber2: "{{ csv.magicNumber2 | default(omit) }}"
+      cron_hour_old: "{{ cron_hour | default(omit) }}"
+      cron_hour_new: "{{ cron_hour_new | default(omit) }}"
+      cron_minute: "{{ cron_minute | default(omit) }}"
+      cron_second: "{{ cron_second | default(omit) }}"
+      cron_day: "{{ cron_day | default(omit) }}"
+      cron_month: "{{ cron_month | default(omit) }}"
+      cron_weekday: "{{ cron_weekday | default(omit) }}"
+      cron_year: "{{ cron_year | default(omit) }}"
+    verbosity: 1
+
+- name: "Update command's cronExpression with new hour value"
+  set_fact:
+    command:
+      schedule:
+        cronExpression: "{{ cron_second }} {{ cron_minute }} {{ cron_hour_new }} {{ cron_day }} {{ cron_month }} {{ cron_weekday }}{{ ' ' + cron_year if cron_year is defined else '' }}"
+        period: "{{ command.schedule.period | default(omit)  }}"
+      agentName: "{{ command.agentName | default(omit) }}"
+      name: "{{ command.name | default(omit) }}"
+      state: "{{ command.state | default(omit) }}"
+      processId: "{{ command.processId | default(omit) }}"
+      processCentralId: "{{ command.processCentralId | default(omit) }}"
+      parameters: "{{ command.parameters | default(omit) }}"
+      parametersNeeded: "{{ command.parametersNeeded | default(omit) }}"
+      disabled: "{{ command.disabled | default(omit) }}"
+      critical: "{{ command.critical | default(omit) }}"
+      autoDeploy: "{{ command.autoDeploy | default(omit) }}"
+      history: "{{ command.history | default(omit) }}"
+      timeout: "{{ command.timeout | default(omit) }}"
+      escalation: "{{ command.escalation | default(omit) }}"
+  when: cron_hour_new is defined and cron_hour_new != cron_hour
+
 - name: "Debug: Show task content with actual variable values"
   debug:
     var: "{ 'system': system, 'command': command, 'apiConnection': apiConnection }"
     verbosity: 1
 
-- name: "Ensure command {{ command.name }} is configured"
-  pcg.alpaca_operator.alpaca_command:
-    system: "{{ system }}"
-    command: "{{ command }}"
-    apiConnection: "{{ apiConnection }}"
+# - name: "Ensure command {{ command.name }} is configured"
+#   pcg.alpaca_operator.alpaca_command:
+#     system: "{{ system }}"
+#     command: "{{ command }}"
+#     apiConnection: "{{ apiConnection }}"

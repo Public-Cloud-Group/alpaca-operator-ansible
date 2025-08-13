@@ -49,83 +49,83 @@ role_defaults:
         toRed: true
         toYellow: true
         toGreen: true
-  commands:
+  commands: []
     # A default command set for a service level
-    - name: "HANA BACKUP LOG"
-      processCentralId: 8990048
-      parameters: "-s <HANA_DB_SID> -n 4 -e blob -o <BKP_LB_LOG_01> -z $SKEY -r { blob_log_ret } -k { local_log_ret } -y -"
-    - name: "HANA RESTORE FILE"
-      processCentralId: 8990048
-      parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 1 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { systemName } -E 2 -B <BKP_LB_DATA_01> -P $SKEY -U -"
-    - name: "HANA RESTORE SNAP"
-      processCentralId: 8990048
-      parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 0 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { systemName } -E 2 -B <BKP_LB_DATA_01> -P $SKEY"
-    - name: "HANA BACKUP SNAP"
-      processCentralId: 8990048
-      parameters: "-s { systemName } -i <HANA_SYS_NR> -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
-    - name: "HANA BACKUP FILE DAILY"
-      processCentralId: 8990048
-      parameters: "-s { systemName } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
-    - name: "HANA BACKUP FILE MONTHLY"
-      processCentralId: 8990048
-      parameters: "-s { systemName } -d <BKP_DATA_DEST1_MONTHLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_monthly }"
-    - name: "HANA BACKUP FILE YEARLY"
-      processCentralId: 8990048
-      parameters: "-s { systemName } -d <BKP_DATA_DEST1_YEARLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_yearly }"
-    - name: "FS BACKUP INCR"
-      processCentralId: 8990048
-      parameters: "-a { systemName } -b <BKP_LB_FS_01> -c 1 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
-  service_levels:
-    SLA1:
-      variables:
-        local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_1>"
-        local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_1>"
-        local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_1>"
-        blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_1>"
-        blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_1>"
-        blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_1>"
-        blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_1>"
-      # command_defaults:
-      #   # SLA level command defaults (only applied if not set at command level)
-      #   critical: true
-      # commands:
-      #   - name: "HANA BACKUP LOG"
-      #     schedule:
-      #       period: fixed_time
-      #       time: "13:13:13"
-      #       # cronExpression: ""
-      #       daysOfWeek:
-      #         - monday
-      #         - tuesday
-      #         - wednesday
-      #         - thursday
-      #         - friday
-      #         - saturday
-      #         - sunday
-    SLA2:
-      variables:
-        local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_2>"
-        local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_2>"
-        local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_2>"
-        blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_2>"
-        blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_2>"
-        blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_2>"
-        blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_2>"
-    SLA3:
-      variables:
-        local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_3>"
-        local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_3>"
-        local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_3>"
-        blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_3>"
-        blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_3>"
-        blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_3>"
-        blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_3>"
-    SLA4:
-      variables:
-        local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_4>"
-        local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_4>"
-        local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_4>"
-        blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_4>"
-        blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_4>"
-        blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_4>"
-        blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_4>"
+    # - name: "HANA BACKUP LOG"
+    #   processCentralId: 8990048
+    #   parameters: "-s <HANA_DB_SID> -n 4 -e blob -o <BKP_LB_LOG_01> -z $SKEY -r { blob_log_ret } -k { local_log_ret } -y -"
+    # - name: "HANA RESTORE FILE"
+    #   processCentralId: 8990048
+    #   parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 1 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { systemName } -E 2 -B <BKP_LB_DATA_01> -P $SKEY -U -"
+    # - name: "HANA RESTORE SNAP"
+    #   processCentralId: 8990048
+    #   parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 0 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { systemName } -E 2 -B <BKP_LB_DATA_01> -P $SKEY"
+    # - name: "HANA BACKUP SNAP"
+    #   processCentralId: 8990048
+    #   parameters: "-s { systemName } -i <HANA_SYS_NR> -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
+    # - name: "HANA BACKUP FILE DAILY"
+    #   processCentralId: 8990048
+    #   parameters: "-s { systemName } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
+    # - name: "HANA BACKUP FILE MONTHLY"
+    #   processCentralId: 8990048
+    #   parameters: "-s { systemName } -d <BKP_DATA_DEST1_MONTHLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_monthly }"
+    # - name: "HANA BACKUP FILE YEARLY"
+    #   processCentralId: 8990048
+    #   parameters: "-s { systemName } -d <BKP_DATA_DEST1_YEARLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_yearly }"
+    # - name: "FS BACKUP INCR"
+    #   processCentralId: 8990048
+    #   parameters: "-a { systemName } -b <BKP_LB_FS_01> -c 1 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
+  service_levels: []
+    # SLA1:
+    #   variables:
+    #     local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_1>"
+    #     local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_1>"
+    #     local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_1>"
+    #     blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_1>"
+    #     blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_1>"
+    #     blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_1>"
+    #     blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_1>"
+    #   # command_defaults:
+    #   #   # SLA level command defaults (only applied if not set at command level)
+    #   #   critical: true
+    #   # commands:
+    #   #   - name: "HANA BACKUP LOG"
+    #   #     schedule:
+    #   #       period: fixed_time
+    #   #       time: "13:13:13"
+    #   #       # cronExpression: ""
+    #   #       daysOfWeek:
+    #   #         - monday
+    #   #         - tuesday
+    #   #         - wednesday
+    #   #         - thursday
+    #   #         - friday
+    #   #         - saturday
+    #   #         - sunday
+    # SLA2:
+    #   variables:
+    #     local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_2>"
+    #     local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_2>"
+    #     local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_2>"
+    #     blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_2>"
+    #     blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_2>"
+    #     blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_2>"
+    #     blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_2>"
+    # SLA3:
+    #   variables:
+    #     local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_3>"
+    #     local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_3>"
+    #     local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_3>"
+    #     blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_3>"
+    #     blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_3>"
+    #     blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_3>"
+    #     blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_3>"
+    # SLA4:
+    #   variables:
+    #     local_file_ret: "<CZ_LOCAL_FILE_RET_CLASS_4>"
+    #     local_snap_ret: "<CZ_LOCAL_SNAP_RET_CLASS_4>"
+    #     local_log_ret: "<CZ_LOCAL_LOG_RET_CLASS_4>"
+    #     blob_log_ret: "<CZ_BLOB_LOG_RET_CLASS_4>"
+    #     blob_file_ret: "<CZ_BLOB_FILE_RET_CLASS_4>"
+    #     blob_file_ret_monthly: "<CZ_BLOB_FILE_RET_MONTHLY_CLASS_4>"
+    #     blob_file_ret_yearly: "<CZ_BLOB_FILE_RET_YEARLY_CLASS_4>"

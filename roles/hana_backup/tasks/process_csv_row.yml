@@ -25,10 +25,47 @@
       backupShare: "{{ csv_row.backupshare | default(omit) }}"
       magicNumber2: "{{ csv_row.MagicNumber2 | default(omit) }}"
 
-- name: "Set system variables for system {{ csv.systemName }}"
+- name: "Debug: Show csv"
+  debug:
+    var: csv
+    verbosity: 1
+
+#  name: "Replace each SLA variable in system_variables"
+#  set_fact:
+#    system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+#  loop: "{{ merged_definitions.service_levels[csv.systemSla].variables | default({}) | dict2items }}"
+
+# - name: "Replace each CSV variable name in system_variables with actual value"
+#   set_fact:
+#     system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+#   loop: "{{ csv | default({}) | dict2items }}"
+
+# - name: "Replace each CSV variable name in system_variables with actual value"
+#   set_fact:
+#     system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value | string) | from_json }}"
+#   loop: "{{ csv | default({}) | dict2items }}"
+#   when: item.value is defined and item.value is not none
+
+- name: "Replace all CSV variables names in system_variables with actual values"
   set_fact:
-    system:
-      variables: "{{ system_variables[csv.systemName] | default([]) }}"
+    system_variables: "{{ system_variables | to_json | replace('{ ' + csv_item.key + ' }', csv_item.value | string) | from_json }}"
+  loop: "{{ csv | default({}) | dict2items }}"
+  loop_control:
+    loop_var: csv_item
+
+- name: "Debug: Show system_variables"
+  debug:
+    var: system_variables
+    verbosity: 1
+
+- name: "Debug: Exit here for testing and debugging reasons"
+  meta: end_play
+  when: true
+
+# - name: "Set system variables for system {{ csv.systemName }}"
+#   set_fact:
+#     system:
+#       variables: "{{ system_variables[csv.systemName] | default([]) }}"
 
 - name: "Generate commands for current csv row"
   include_tasks: process_system.yml
