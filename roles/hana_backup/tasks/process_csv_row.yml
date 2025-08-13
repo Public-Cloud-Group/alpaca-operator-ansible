@@ -22,6 +22,8 @@
       instanceNo: "{{ csv_row.Instance_no | default(omit) }}"
       alpacaExtPoolOld: "{{ csv_row.alpaca_ext_pool_old | default(omit) }}"
       alpacaExtPoolNew: "{{ csv_row.alpaca_ext_pool_new | default(omit) }}"
+      backupShare: "{{ csv_row.backupshare | default(omit) }}"
+      magicNumber2: "{{ csv_row.MagicNumber2 | default(omit) }}"
 
 - name: "Set system variables for system {{ csv.systemName }}"
   set_fact:

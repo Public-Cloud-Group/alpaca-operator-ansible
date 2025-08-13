@@ -56,8 +56,10 @@ The role automatically maps CSV columns to variables that can be used in command
 | `hdb_shared_min`      | `{ hdbSharedMin }`     | HANA shared minimum                | `"5"`                  |
 | `hdb_shared_max`      | `{ hdbSharedMax }`     | HANA shared maximum                | `"6"`                  |
 | `Instance_no`         | `{ instanceNo }`       | Instance number                    | `"05"`                 |
-| `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` |                                    | `"SomeValue"`          |
-| `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` |                                    | `"SomeValue"`          |
+| `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` | N/A                                | `"ag10_bkp001"`        |
+| `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` | N/A                                | `"ag10_bkp101"`        |
+| `backupshare`         | `{ backupShare }`      | N/A                                | `"bkp004"`             |
+| `MagicNumber2`        | `{ magicNumber2 }`     | N/A                                | `"6"`                  |
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in **single** curly braces `{ variableName }` when used in command parameters.
 
