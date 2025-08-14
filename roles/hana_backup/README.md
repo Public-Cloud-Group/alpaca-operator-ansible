@@ -63,6 +63,40 @@ The role automatically maps CSV columns to variables that can be used in command
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in **single** curly braces `{ variableName }` when used in command parameters.
 
+### Schedule Calculation with MagicNumber2
+
+The role supports dynamic schedule calculation using the `MagicNumber2` column from the CSV file. This feature automatically adjusts the execution time of cron-based schedules to distribute load across different systems.
+
+#### How It Works
+
+When a command uses a `cron_expression` schedule type, the role can automatically calculate a new hour based on the `MagicNumber2` value from the CSV file. The calculation follows this formula:
+
+```
+New Hour = (Original Hour + (MagicNumber2 / 60) × 24)
+```
+
+#### Conditions for Schedule Calculation
+
+The schedule calculation is only applied when **all** of the following conditions are met:
+
+1. **Schedule Type**: The command uses `cron_expression` as the schedule period
+2. **MagicNumber2 Value**: The CSV row contains a `MagicNumber2` value
+3. **Value Range**: The `MagicNumber2` value is between 0 and 60
+4. **Cron Expression Format**: The cron expression must have a fixed schedule that fires at most once per day:
+   - **Seconds**: Must be a single value (0-59)
+   - **Minutes**: Must be a single value (0-59)
+   - **Hours**: Must be a single value (0-23)
+
+#### Example
+
+If a command is scheduled to run at 02:00:00 and the CSV `MagicNumber2` value is 30, the new execution time would be:
+
+```
+New Hour = (2 + (30 / 60) × 24) % 24 = (2 + 12) % 24 = 14
+```
+
+Result: The command would now run at 14:00:00 instead of 02:00:00.
+
 ### CSV Filtering
 
 The role supports filtering CSV rows based on column name and expected value. This is useful for processing only specific systems or SLA levels.
@@ -202,6 +236,35 @@ override:
     - hana_backup
 ```
 
+```yaml
+---
+- name: HANA Backup with System Variables
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    csv_file: "/path/to/your/systems.csv"
+    ALPACA_Operator_API_Host: "alpaca.example.com"
+    ALPACA_Operator_API_Protocol: "https"
+    ALPACA_Operator_API_Port: 8443
+    ALPACA_Operator_API_Username: "admin"
+    ALPACA_Operator_API_Password: "{{ vault_alpaca_password }}"
+    ALPACA_Operator_API_Validate_Certs: true
+
+    # Define system-specific variables by making use of CSV variables
+    system_variables:
+      "{ systemName }":
+        - name: "<BKP_DATA_DEST1>"
+          value: "/bkp004/{ systemName }/data"
+        - name: "<BKP_DATA_DEST1_MONTHLY>"
+          value: "/bkp004/{ systemName }/data_monthly"
+        - name: "<BKP_DATA_DEST1_YEARLY>"
+          value: "/bkp004/{ systemName }/data_yearly"
+
+  roles:
+    - hana_backup
+```
+
 ## Comprehensive Configuration
 
 ### Complete Example with Override
@@ -244,6 +307,13 @@ override:
           value: "yearly-backup-mhp"
         - name: "<BKP_LB_FS_01>"
           value: "fs-backup-mhp"
+      "{ systemName }":
+        - name: "<BKP_DATA_DEST1>"
+          value: "/bkp004/{ systemName }/data"
+        - name: "<BKP_DATA_DEST1_MONTHLY>"
+          value: "/bkp004/{ systemName }/data_monthly"
+        - name: "<BKP_DATA_DEST1_YEARLY>"
+          value: "/bkp004/{ systemName }/data_yearly"
 
     # Override configuration
     override:

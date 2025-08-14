@@ -1,6 +1,7 @@
 ---
 - name: Set variables for current CSV row
   set_fact:
+    _system_variables: "{{ system_variables }}" # Copy system_variables to _system_variables because we cannot directly overwrite playbook-defined variables in Ansible
     csv:
       primarySystem: "{{ csv_row.primary_system | default(omit) }}"
       systemName: "{{ csv_row.hdb_nw_sid | default(omit) }}"
@@ -20,8 +21,24 @@
       hdbSharedMin: "{{ csv_row.hdb_shared_min | default(omit) }}"
       hdbSharedMax: "{{ csv_row.hdb_shared_max | default(omit) }}"
       instanceNo: "{{ csv_row.Instance_no | default(omit) }}"
-      alpacaExtPoolOld: "{{ csv_row.alpaca_ext_pool_old | default(omit) }}"
-      alpacaExtPoolNew: "{{ csv_row.alpaca_ext_pool_new | default(omit) }}"
+      alpacaExtPoolOld:
+        "{{ (csv_row.alpaca_ext_pool_old | length > 0) |
+          ternary(
+            csv_row.alpaca_ext_pool_old,
+            'ag10_bkp101' if csv_row.system_sla in ['SLA1', 'SLA2'] else
+            'ag10_bkp102' if csv_row.system_sla in ['SLA3', 'SLA4'] else
+            omit
+          )
+        }}"
+      alpacaExtPoolNew:
+        "{{ (csv_row.alpaca_ext_pool_new | length > 0) |
+          ternary(
+            csv_row.alpaca_ext_pool_new,
+            'ag10_bkp101' if csv_row.system_sla in ['SLA1', 'SLA2'] else
+            'ag10_bkp102' if csv_row.system_sla in ['SLA3', 'SLA4'] else
+            omit
+          )
+        }}"
       backupShare: "{{ csv_row.backupshare | default(omit) }}"
       magicNumber2: "{{ csv_row.MagicNumber2 | default(omit) }}"
 
@@ -30,30 +47,28 @@
     var: csv
     verbosity: 1
 
-- name: "Debug: Show system_variables"
-  debug:
-    var: system_variables
-    verbosity: 1
-
-- name: "Replace each CSV variable name in system_variables with actual value"
-  set_fact:
-    system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value | string) | from_json }}"
-  loop: "{{ csv | default({}) | dict2items }}"
-  when: item.value is defined and item.value is not none
-
-- name: "Debug: Show system_variables"
-  debug:
-    var: system_variables
-    verbosity: 1
-
 - name: "Debug: Exit here for testing and debugging reasons"
   meta: end_play
   when: true
 
+- name: "Replace each CSV variable name in system_variables with actual value"
+  set_fact:
+    _system_variables: "{{ _system_variables | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
+  loop: "{{ csv | default({}) | dict2items }}"
+
+- name: "Debug: Show _system_variables"
+  debug:
+    var: _system_variables
+    verbosity: 1
+
+# - name: "Debug: Exit here for testing and debugging reasons"
+#   meta: end_play
+#   when: true
+
 # - name: "Set system variables for system {{ csv.systemName }}"
 #   set_fact:
 #     system:
-#       variables: "{{ system_variables[csv.systemName] | default([]) }}"
+#       variables: "{{ _system_variables[csv.systemName] | default([]) }}"
 
 - name: "Generate commands for current csv row"
   include_tasks: process_system.yml

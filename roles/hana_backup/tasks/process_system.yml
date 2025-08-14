@@ -4,6 +4,10 @@
     var: system.variables
     verbosity: 1
 
+# - name: "Debug: Exit here for testing and debugging reasons"
+#   meta: end_play
+#   when: true
+
 - name: Prepare and configure ALPACA system for {{ csv.systemName }}
   set_fact:
     name: "{{ csv.systemName | default(omit) }}"
