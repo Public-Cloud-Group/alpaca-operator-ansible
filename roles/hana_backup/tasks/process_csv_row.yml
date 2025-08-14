@@ -30,28 +30,16 @@
     var: csv
     verbosity: 1
 
-#  name: "Replace each SLA variable in system_variables"
-#  set_fact:
-#    system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
-#  loop: "{{ merged_definitions.service_levels[csv.systemSla].variables | default({}) | dict2items }}"
+- name: "Debug: Show system_variables"
+  debug:
+    var: system_variables
+    verbosity: 1
 
-# - name: "Replace each CSV variable name in system_variables with actual value"
-#   set_fact:
-#     system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value) | from_json }}"
-#   loop: "{{ csv | default({}) | dict2items }}"
-
-# - name: "Replace each CSV variable name in system_variables with actual value"
-#   set_fact:
-#     system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value | string) | from_json }}"
-#   loop: "{{ csv | default({}) | dict2items }}"
-#   when: item.value is defined and item.value is not none
-
-- name: "Replace all CSV variables names in system_variables with actual values"
+- name: "Replace each CSV variable name in system_variables with actual value"
   set_fact:
-    system_variables: "{{ system_variables | to_json | replace('{ ' + csv_item.key + ' }', csv_item.value | string) | from_json }}"
+    system_variables: "{{ system_variables | to_json | replace('{ ' + item.key + ' }', item.value | string) | from_json }}"
   loop: "{{ csv | default({}) | dict2items }}"
-  loop_control:
-    loop_var: csv_item
+  when: item.value is defined and item.value is not none
 
 - name: "Debug: Show system_variables"
   debug:
