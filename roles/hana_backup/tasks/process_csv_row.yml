@@ -47,9 +47,9 @@
     var: csv
     verbosity: 1
 
-- name: "Debug: Exit here for testing and debugging reasons"
-  meta: end_play
-  when: true
+# - name: "Debug: Exit here for testing and debugging reasons"
+#   meta: end_play
+#   when: true
 
 - name: "Replace each CSV variable name in system_variables with actual value"
   set_fact:
