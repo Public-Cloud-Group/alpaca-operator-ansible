@@ -65,10 +65,10 @@
 #   meta: end_play
 #   when: true
 
-# - name: "Set system variables for system {{ csv.systemName }}"
-#   set_fact:
-#     system:
-#       variables: "{{ _system_variables[csv.systemName] | default([]) }}"
+- name: "Set system variables for system {{ csv.systemName }}"
+  set_fact:
+    system:
+      variables: "{{ _system_variables[csv.systemName] | default([]) }}"
 
 - name: "Generate commands for current csv row"
   include_tasks: process_system.yml

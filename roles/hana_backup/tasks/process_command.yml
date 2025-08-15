@@ -126,8 +126,8 @@
     var: "{ 'system': system, 'command': command, 'apiConnection': apiConnection }"
     verbosity: 1
 
-# - name: "Ensure command {{ command.name }} is configured"
-#   pcg.alpaca_operator.alpaca_command:
-#     system: "{{ system }}"
-#     command: "{{ command }}"
-#     apiConnection: "{{ apiConnection }}"
+- name: "Ensure command {{ command.name }} is configured"
+  pcg.alpaca_operator.alpaca_command:
+    system: "{{ system }}"
+    command: "{{ command }}"
+    apiConnection: "{{ apiConnection }}"
