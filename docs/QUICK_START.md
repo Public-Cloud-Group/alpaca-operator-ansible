@@ -277,7 +277,7 @@ The HANA backup role automatically maps CSV columns to variables that you can us
 | `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` | N/A         | `"ag10_bkp001"`        |
 | `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` | N/A         | `"ag10_bkp101"`        |
 | `backupshare`         | `{ backupShare }`      | N/A         | `"bkp004"`             |
-| `MagicNumber2`        | `{ magicNumber2 }`     | N/A         | `"6"`                  |
+| `magic_number`        | `{ magicNumber }`     | N/A         | `"6"`                  |
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in curly braces `{ variableName }` when used in command parameters. This is mandatory for proper variable substitution.
 

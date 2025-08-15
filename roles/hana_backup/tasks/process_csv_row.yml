@@ -40,7 +40,7 @@
           )
         }}"
       backupShare: "{{ csv_row.backupshare | default(omit) }}"
-      magicNumber2: "{{ csv_row.MagicNumber2 | default(omit) }}"
+      magicNumber: "{{ csv_row.magic_number | default(omit) }}"
 
 - name: "Debug: Show csv"
   debug:

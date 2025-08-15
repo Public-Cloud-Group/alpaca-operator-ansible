@@ -71,25 +71,25 @@
     cron_weekday: "{{ _cron_parts[5] | default('*') }}"
     cron_year:    "{{ _cron_parts[6] | default(omit) }}"
 
-- name: "Calculate new hour for cron expression by offsetting csv.magicNumber2"
-  # Only when: it's a cron expression, magicNumber2 in [1..59] and the expression fires at most once per day (fixed sec/min/hour)
+- name: "Calculate new hour for cron expression by offsetting csv.magicNumber"
+  # Only when: it's a cron expression, magicNumber in [1..59] and the expression fires at most once per day (fixed sec/min/hour)
   when:
     - command.schedule.period == "cron_expression"
-    - csv.magicNumber2 is defined
-    - csv.magicNumber2 | int > 0
-    - csv.magicNumber2 | int < 60
+    - csv.magicNumber is defined
+    - csv.magicNumber | int > 0
+    - csv.magicNumber | int < 60
     - (cron_second | string) is match('^([0-5]?\\d)$')          # 0..59
     - (cron_minute | string) is match('^([0-5]?\\d)$')          # 0..59
     - (cron_hour   | string) is match('^([01]?\\d|2[0-3])$')    # 0..23
   set_fact:
-    # ({ Cron-Hour } + ({ magicNumber2 } / 60) × 24)
-    cron_hour_new: "{{ (cron_hour | int + (csv.magicNumber2 | int / 60) * 24) | int }}"
+    # ({ Cron-Hour } + ({ magicNumber } / 60) × 24)
+    cron_hour_new: "{{ (cron_hour | int + (csv.magicNumber | int / 60) * 24) | int }}"
 
-- name: "Debug: Show cron expression parts including new hour and csv.magicNumber2"
-  when: cron_hour_new is defined and cron_hour_new != cron_hour and csv.magicNumber2 is defined
+- name: "Debug: Show cron expression parts including new hour and csv.magicNumber"
+  when: cron_hour_new is defined and cron_hour_new != cron_hour and csv.magicNumber is defined
   debug:
     msg:
-      csv.magicNumber2: "{{ csv.magicNumber2 | default(omit) }}"
+      csv.magicNumber: "{{ csv.magicNumber | default(omit) }}"
       cron_hour_old: "{{ cron_hour | default(omit) }}"
       cron_hour_new: "{{ cron_hour_new | default(omit) }}"
       cron_minute: "{{ cron_minute | default(omit) }}"

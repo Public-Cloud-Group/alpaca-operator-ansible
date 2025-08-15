@@ -59,20 +59,20 @@ The role automatically maps CSV columns to variables that can be used in command
 | `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` | N/A                                | `"ag10_bkp001"`        |
 | `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` | N/A                                | `"ag10_bkp101"`        |
 | `backupshare`         | `{ backupShare }`      | N/A                                | `"bkp004"`             |
-| `MagicNumber2`        | `{ magicNumber2 }`     | N/A                                | `"6"`                  |
+| `magic_number`        | `{ magicNumber }`     | N/A                                | `"6"`                  |
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in **single** curly braces `{ variableName }` when used in command parameters.
 
-### Schedule Calculation with MagicNumber2
+### Schedule Calculation with magic_number
 
-The role supports dynamic schedule calculation using the `MagicNumber2` column from the CSV file. This feature automatically adjusts the execution time of cron-based schedules to distribute load across different systems.
+The role supports dynamic schedule calculation using the `magic_number` column from the CSV file. This feature automatically adjusts the execution time of cron-based schedules to distribute load across different systems.
 
 #### How It Works
 
-When a command uses a `cron_expression` schedule type, the role can automatically calculate a new hour based on the `MagicNumber2` value from the CSV file. The calculation follows this formula:
+When a command uses a `cron_expression` schedule type, the role can automatically calculate a new hour based on the `magic_number` value from the CSV file. The calculation follows this formula:
 
 ```
-New Hour = (Original Hour + (MagicNumber2 / 60) × 24)
+New Hour = (Original Hour + (magic_number / 60) × 24)
 ```
 
 #### Conditions for Schedule Calculation
@@ -80,8 +80,8 @@ New Hour = (Original Hour + (MagicNumber2 / 60) × 24)
 The schedule calculation is only applied when **all** of the following conditions are met:
 
 1. **Schedule Type**: The command uses `cron_expression` as the schedule period
-2. **MagicNumber2 Value**: The CSV row contains a `MagicNumber2` value
-3. **Value Range**: The `MagicNumber2` value is between 0 and 60
+2. **magic_number Value**: The CSV row contains a `magic_number` value
+3. **Value Range**: The `magic_number` value is between 0 and 60
 4. **Cron Expression Format**: The cron expression must have a fixed schedule that fires at most once per day:
    - **Seconds**: Must be a single value (0-59)
    - **Minutes**: Must be a single value (0-59)
@@ -89,7 +89,7 @@ The schedule calculation is only applied when **all** of the following condition
 
 #### Example
 
-If a command is scheduled to run at 02:00:00 and the CSV `MagicNumber2` value is 30, the new execution time would be:
+If a command is scheduled to run at 02:00:00 and the CSV `magic_number` value is 30, the new execution time would be:
 
 ```
 New Hour = (2 + (30 / 60) × 24) % 24 = (2 + 12) % 24 = 14
