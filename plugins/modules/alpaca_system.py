@@ -170,6 +170,18 @@ options:
                 version_added: '1.0.0'
                 required: true
                 type: raw
+    variables_mode:
+        description: |
+            Controls how variables are handled when updating the system.
+
+            update: Add missing variables and update existing ones.
+            replace: Add missing variables, update existing ones, and remove variables not defined in the playbook.
+
+        version_added: '1.0.0'
+        required: false
+        default: update
+        choices: [update, replace]
+        type: str
     state:
         description: Desired state of the system
         version_added: '1.0.0'
@@ -421,6 +433,7 @@ def main():
                     value=dict(type='raw', required=True)
                 )
             ),
+            variables_mode=dict(type='str', required=False, default='update', choices=['update', 'replace']),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
             apiConnection=dict(
                 type='dict',
@@ -518,14 +531,29 @@ def main():
 
             # Check if variable assignments need to be updated
             if 'variables' in module.params and module.params['variables'] is not None:
-                desired_vars = sorted(
-                    [{"name": v['name'], "value": str(v['value'])} for v in module.params['variables']],
-                    key=lambda x: x['name']
-                ) if module.params.get('variables') else []
                 current_vars = sorted(
                     [{"name": v['name'], "value": str(v['value'])} for v in system_details.get('variables', [])],
                     key=lambda x: x['name']
                 )
+
+                if module.params['variables_mode'] == 'replace':
+                    # Replace mode: use only the variables from module.params
+                    desired_vars = sorted(
+                        [{"name": v['name'], "value": str(v['value'])} for v in module.params['variables']],
+                        key=lambda x: x['name']
+                    ) if module.params.get('variables') else []
+                else:
+                    # Update mode: merge current_vars with module.params['variables'], giving priority to module.params
+                    merged_vars = {var['name']: var['value'] for var in current_vars}
+
+                    if module.params.get('variables'):
+                        for var in module.params['variables']:
+                            merged_vars[var['name']] = str(var['value'])
+
+                    desired_vars = sorted(
+                        [{"name": name, "value": value} for name, value in merged_vars.items()],
+                        key=lambda x: x['name']
+                    )
 
                 if desired_vars != current_vars:
                     diff['variables'] = {
