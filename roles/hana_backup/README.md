@@ -59,7 +59,7 @@ The role automatically maps CSV columns to variables that can be used in command
 | `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` | N/A                                | `"ag10_bkp001"`        |
 | `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` | N/A                                | `"ag10_bkp101"`        |
 | `backupshare`         | `{ backupShare }`      | N/A                                | `"bkp004"`             |
-| `magic_number`        | `{ magicNumber }`     | N/A                                | `"6"`                  |
+| `magic_number`        | `{ magicNumber }`      | N/A                                | `"6"`                  |
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in **single** curly braces `{ variableName }` when used in command parameters.
 
