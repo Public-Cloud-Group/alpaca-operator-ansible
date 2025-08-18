@@ -378,9 +378,9 @@ def build_system_payload(params, current_system_details):
     return payload
 
 
-def build_variable_payload(api_url, headers, module):
+def build_variable_payload(api_url, headers, module, desired_vars):
     payload = []
-    for variable in module.params.get('variables', []) or []:
+    for variable in desired_vars or []:
         api_variable = lookup_resource(api_url, headers, "variables", "name", variable['name'], module.params['apiConnection']['tls_verify'])
         if not api_variable:
             module.fail_json(msg="Variable '{0}' not found. Please ensure variable exists first.".format(variable['name']))
@@ -611,7 +611,7 @@ def main():
 
                 # Update variables
                 if 'variables' in diff:
-                    variable_payload = build_variable_payload(api_url, headers, module)
+                    variable_payload = build_variable_payload(api_url, headers, module, desired_vars)
                     api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=variable_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign variables to system.")
 
                 module.exit_json(changed=True, msg="System updated.", api_response=current_system, changes=diff)
