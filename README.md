@@ -32,14 +32,6 @@ All modules require API connection parameters and support both `present` and `ab
 
 Additionally, a shared utility (`_alpaca_api.py`) is available under `module_utils` for internal use, handling REST API logic and token management.
 
-## Included Roles
-
-This collection also includes the following role:
-
-| Role Name     | Description                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hana_backup` | Automate command creation in ALPACA Operator. For detailed configuration options and advanced usage, see the role's [README](roles/hana_backup/README.md). |
-
 ## Requirements
 
 - Python >= 3.8

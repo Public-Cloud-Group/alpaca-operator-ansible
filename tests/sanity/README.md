@@ -14,6 +14,7 @@ Ansible sanity tests are automated checks that validate code quality, documentat
 - `ignore-2.15.txt` - Ignore rules for Ansible 2.15
 - `ignore-2.16.txt` - Ignore rules for Ansible 2.16
 - `ignore-2.17.txt` - Ignore rules for Ansible 2.17
+- `ignore-2.18.txt` - Ignore rules for Ansible 2.18
 
 ## Content
 
@@ -21,7 +22,6 @@ The ignore files contain entries for:
 - **PEP8 violations**: Code style issues that are intentionally kept for readability
 - **Documentation validation**: Module documentation issues that are handled differently by design
 - **License validation**: Apache-2.0 license usage instead of GPLv3
-- **Script files**: Internal development scripts that don't require shebang lines
 
 ## Usage
 
