@@ -66,11 +66,9 @@ jobs:
           ls -la pcg-alpaca_operator-*.tar.gz
 
       - name: Publish to Ansible Galaxy
-        env:
-          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
         run: |
           # Publish the collection to Ansible Galaxy
-          ansible-galaxy collection publish pcg-alpaca_operator-${{ steps.release.outputs.version }}.tar.gz
+          ansible-galaxy collection publish pcg-alpaca_operator-${{ steps.release.outputs.version }}.tar.gz --token ${{ secrets.GALAXY_API_KEY }}
 
           echo "Successfully published pcg.alpaca_operator version ${{ steps.release.outputs.version }} to Ansible Galaxy"
 
