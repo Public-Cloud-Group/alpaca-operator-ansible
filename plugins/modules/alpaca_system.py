@@ -231,6 +231,8 @@ options:
                 default: true
                 type: bool
 
+supports_check_mode: true
+
 author:
     - Jan-Karsten Hansmeyer (@pcg)
 '''
