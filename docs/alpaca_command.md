@@ -13,7 +13,7 @@ Each command is uniquely identified by the combination of its name (description)
 - **Version Added**: 1.0.0
 - **Requirements**:
   - Python >= 3.8
-  - Ansible >= 2.12
+  - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
 ## Update Behavior

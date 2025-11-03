@@ -272,12 +272,6 @@ options:
                 required: false
                 default: true
                 type: bool
-
-requirements:
-    - Python >= 3.6
-    - Ansible >= 2.11, < 2.17
-    - ALPACA Operator >= 5.5.1 instance reachable via API
-
 author:
     - Jan-Karsten Hansmeyer (@pcg)
 '''

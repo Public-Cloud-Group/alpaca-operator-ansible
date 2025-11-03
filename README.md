@@ -35,14 +35,14 @@ Additionally, a shared utility (`_alpaca_api.py`) is available under `module_uti
 ## Requirements
 
 - Python >= 3.8
-- Ansible >= 2.12
+- ansible-core >= 2.12
 - ALPACA Operator >= 5.6.0
 
 ### Support Matrix
 
 <!-- support-matrix:start -->
 
-|             | Ansible 2.12.* | Ansible 2.13.* | Ansible 2.14.* | Ansible 2.15.* | Ansible 2.16.* | Ansible 2.17.* | Ansible 2.18.* |
+|             | ansible-core 2.12.* | ansible-core 2.13.* | ansible-core 2.14.* | ansible-core 2.15.* | ansible-core 2.16.* | ansible-core 2.17.* | ansible-core 2.18.* |
 | ----------- | -------------- | -------------- | -------------- | -------------- | -------------- | -------------- | -------------- |
 | Python 3.8 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | Python 3.9 | ✅ | ✅ | ✅ | ❌ | ⬜ | ⬜ | ⬜ |

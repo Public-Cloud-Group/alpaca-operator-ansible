@@ -11,7 +11,7 @@ The `alpaca_agent` module allows you to create, update, or delete ALPACA Operato
 - **Version Added**: 1.0.0
 - **Requirements**:
   - Python >= 3.8
-  - Ansible >= 2.12
+  - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
 ## Parameters

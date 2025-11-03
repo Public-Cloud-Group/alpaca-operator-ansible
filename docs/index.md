@@ -26,7 +26,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 ### Prerequisites
 
 - Python >= 3.8
-- Ansible >= 2.12
+- ansible-core >= 2.12
 - ALPACA Operator >= 5.6.0
 
 ### Basic Usage

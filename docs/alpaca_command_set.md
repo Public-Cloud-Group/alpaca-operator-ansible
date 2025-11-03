@@ -15,7 +15,7 @@ Use this module when you need to apply or remove multiple commands at once on a 
 - **Version Added**: 1.0.0
 - **Requirements**:
   - Python >= 3.8
-  - Ansible >= 2.12
+  - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
 ## Parameters
