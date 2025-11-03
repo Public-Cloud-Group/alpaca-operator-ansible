@@ -21,7 +21,7 @@ description: This module allows you to create, rename or delete ALPACA Operator 
 
 options:
     name:
-        description: Name of the group
+        description: Name of the group.
         version_added: '1.0.0'
         required: true
         type: str
@@ -34,49 +34,49 @@ options:
         required: false
         type: str
     state:
-        description: Desired state of the group
+        description: Desired state of the group.
         version_added: '1.0.0'
         required: false
         default: present
         choices: [present, absent]
         type: str
     apiConnection:
-        description: Connection details for accessing the ALPACA Operator API
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             username:
-                description: Username for authentication against the ALPACA Operator API
+                description: Username for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             password:
-                description: Password for authentication against the ALPACA Operator API
+                description: Password for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https)
+                description: Protocol to use (http or https).
                 version_added: '1.0.0'
                 required: false
                 default: https
                 choices: [http, https]
                 type: str
             host:
-                description: Hostname of the ALPACA Operator server
+                description: Hostname of the ALPACA Operator server.
                 version_added: '1.0.0'
                 required: false
                 default: localhost
                 type: str
             port:
-                description: Port of the ALPACA Operator API
+                description: Port of the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: false
                 default: 8443
                 type: int
             tls_verify:
-                description: Validate SSL certificates
+                description: Validate SSL certificates.
                 version_added: '1.0.0'
                 required: false
                 default: true

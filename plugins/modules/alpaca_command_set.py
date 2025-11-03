@@ -50,12 +50,12 @@ options:
         default: []
         suboptions:
             name:
-                description: Name or description of the command
+                description: Name or description of the command.
                 version_added: '1.0.0'
                 required: false
                 type: str
             state:
-                description: Desired state of the command
+                description: Desired state of the command.
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -88,7 +88,7 @@ options:
                 required: false
                 type: int
             parameters:
-                description: Parameters for the process
+                description: Parameters for the process.
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -108,13 +108,13 @@ options:
                 required: false
                 type: bool
             schedule:
-                description: Scheduling configuration
+                description: Scheduling configuration.
                 version_added: '1.0.0'
                 required: false
                 type: dict
                 suboptions:
                     period:
-                        description: Scheduling period
+                        description: Scheduling period.
                         version_added: '1.0.0'
                         type: str
                         required: false
@@ -130,25 +130,25 @@ options:
                         type: str
                         required: false
                     daysOfWeek:
-                        description: List of weekdays for execution
+                        description: List of weekdays for execution.
                         version_added: '1.0.0'
                         type: list
                         elements: str
                         required: false
                         choices: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
             history:
-                description: Command history retention settings
+                description: Command history retention settings.
                 version_added: '1.0.0'
                 required: false
                 type: dict
                 suboptions:
                     documentAllRuns:
-                        description: Whether to document all executions
+                        description: Whether to document all executions.
                         version_added: '1.0.0'
                         type: bool
                         required: false
                     retention:
-                        description: Retention time in seconds
+                        description: Retention time in seconds.
                         version_added: '1.0.0'
                         type: int
                         required: false
@@ -175,38 +175,38 @@ options:
                         type: int
                         required: false
             escalation:
-                description: Escalation configuration
+                description: Escalation configuration.
                 version_added: '1.0.0'
                 required: false
                 type: dict
                 suboptions:
                     mailEnabled:
-                        description: Whether email alerts are enabled
+                        description: Whether email alerts are enabled.
                         version_added: '1.0.0'
                         type: bool
                         required: false
                     smsEnabled:
-                        description: Whether SMS alerts are enabled
+                        description: Whether SMS alerts are enabled.
                         version_added: '1.0.0'
                         type: bool
                         required: false
                     mailAddress:
-                        description: Email address for alerts
+                        description: Email address for alerts.
                         version_added: '1.0.0'
                         type: str
                         required: false
                     smsAddress:
-                        description: SMS number for alerts
+                        description: SMS number for alerts.
                         version_added: '1.0.0'
                         type: str
                         required: false
                     minFailureCount:
-                        description: Minimum number of failures before escalation
+                        description: Minimum number of failures before escalation.
                         version_added: '1.0.0'
                         type: int
                         required: false
                     triggers:
-                        description: Trigger types for escalation
+                        description: Trigger types for escalation.
                         version_added: '1.0.0'
                         type: dict
                         required: false
@@ -232,42 +232,42 @@ options:
                                 type: bool
                                 required: false
     apiConnection:
-        description: Connection details for accessing the ALPACA Operator API
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             username:
-                description: Username for authentication against the ALPACA Operator API
+                description: Username for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             password:
-                description: Password for authentication against the ALPACA Operator API
+                description: Password for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https)
+                description: Protocol to use (http or https).
                 version_added: '1.0.0'
                 required: false
                 default: https
                 choices: [http, https]
                 type: str
             host:
-                description: Hostname of the ALPACA Operator server
+                description: Hostname of the ALPACA Operator server.
                 version_added: '1.0.0'
                 required: false
                 default: localhost
                 type: str
             port:
-                description: Port of the ALPACA Operator API
+                description: Port of the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: false
                 default: 8443
                 type: int
             tls_verify:
-                description: Validate SSL certificates
+                description: Validate SSL certificates.
                 version_added: '1.0.0'
                 required: false
                 default: true

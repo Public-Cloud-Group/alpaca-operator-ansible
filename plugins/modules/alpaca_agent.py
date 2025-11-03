@@ -21,7 +21,7 @@ description: This module allows you to create, update or delete ALPACA Operator 
 
 options:
     name:
-        description: Unique name (hostname) of the agent
+        description: Unique name (hostname) of the agent.
         version_added: '1.0.0'
         required: true
         type: str
@@ -34,108 +34,108 @@ options:
         required: false
         type: str
     description:
-        description: Unique description of the agent
+        description: Unique description of the agent.
         version_added: '1.0.0'
         required: false
         type: str
     escalation:
-        description: Escalation configuration
+        description: Escalation configuration.
         version_added: '1.0.0'
         required: false
         type: dict
         suboptions:
             failuresBeforeReport:
-                description: Number of failures before reporting
+                description: Number of failures before reporting.
                 version_added: '1.0.0'
                 required: false
                 type: int
                 default: 0
             mailEnabled:
-                description: Whether mail notification is enabled
+                description: Whether mail notification is enabled.
                 version_added: '1.0.0'
                 required: false
                 type: bool
                 default: false
             mailAddress:
-                description: Mail address for notifications
+                description: Mail address for notifications.
                 version_added: '1.0.0'
                 required: false
                 type: str
                 default: ""
             smsEnabled:
-                description: Whether SMS notification is enabled
+                description: Whether SMS notification is enabled.
                 version_added: '1.0.0'
                 required: false
                 type: bool
                 default: false
             smsAddress:
-                description: SMS address for notifications
+                description: SMS address for notifications.
                 version_added: '1.0.0'
                 required: false
                 type: str
                 default: ""
     ipAddress:
-        description: IP address of the agent
+        description: IP address of the agent.
         version_added: '1.0.0'
         required: false
         type: str
     location:
-        description: Location of the agent (virtual, local1, local2, remote)
+        description: Location of the agent (virtual, local1, local2, remote).
         version_added: '1.0.0'
         required: false
         type: str
         choices: [virtual, local1, local2, remote]
         default: virtual
     scriptGroupId:
-        description: Script Group ID
+        description: Script Group ID.
         version_added: '1.0.0'
         required: false
         type: int
         default: -1
     state:
-        description: Desired state of the agent
+        description: Desired state of the agent.
         version_added: '1.0.0'
         required: false
         default: present
         choices: [present, absent]
         type: str
     apiConnection:
-        description: Connection details for accessing the ALPACA Operator API
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             username:
-                description: Username for authentication against the ALPACA Operator API
+                description: Username for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             password:
-                description: Password for authentication against the ALPACA Operator API
+                description: Password for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https)
+                description: Protocol to use (http or https).
                 version_added: '1.0.0'
                 required: false
                 default: https
                 choices: [http, https]
                 type: str
             host:
-                description: Hostname of the ALPACA Operator server
+                description: Hostname of the ALPACA Operator server.
                 version_added: '1.0.0'
                 required: false
                 default: localhost
                 type: str
             port:
-                description: Port of the ALPACA Operator API
+                description: Port of the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: false
                 default: 8443
                 type: int
             tls_verify:
-                description: Validate SSL certificates
+                description: Validate SSL certificates.
                 version_added: '1.0.0'
                 required: false
                 default: true

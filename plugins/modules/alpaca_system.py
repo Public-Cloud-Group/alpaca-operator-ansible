@@ -24,7 +24,7 @@ description: >
 
 options:
     name:
-        description: Unique name (hostname) of the system
+        description: Unique name (hostname) of the system.
         version_added: '1.0.0'
         required: true
         type: str
@@ -66,7 +66,7 @@ options:
         required: false
         type: int
     rfcConnection:
-        description: Connection details for accessing the ALPACA Operator API
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: false
         type: dict
@@ -143,7 +143,7 @@ options:
         elements: dict
         suboptions:
             name:
-                description: Name of the agent
+                description: Name of the agent.
                 version_added: '1.0.0'
                 required: true
                 type: str
@@ -161,12 +161,12 @@ options:
         elements: dict
         suboptions:
             name:
-                description: Name of variable
+                description: Name of variable.
                 version_added: '1.0.0'
                 required: true
                 type: str
             value:
-                description: Value of variable
+                description: Value of variable.
                 version_added: '1.0.0'
                 required: true
                 type: raw
@@ -183,49 +183,49 @@ options:
         choices: [update, replace]
         type: str
     state:
-        description: Desired state of the system
+        description: Desired state of the system.
         version_added: '1.0.0'
         required: false
         default: present
         choices: [present, absent]
         type: str
     apiConnection:
-        description: Connection details for accessing the ALPACA Operator API
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             username:
-                description: Username for authentication against the ALPACA Operator API
+                description: Username for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             password:
-                description: Password for authentication against the ALPACA Operator API
+                description: Password for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https)
+                description: Protocol to use (http or https).
                 version_added: '1.0.0'
                 required: false
                 default: https
                 choices: [http, https]
                 type: str
             host:
-                description: Hostname of the ALPACA Operator server
+                description: Hostname of the ALPACA Operator server.
                 version_added: '1.0.0'
                 required: false
                 default: localhost
                 type: str
             port:
-                description: Port of the ALPACA Operator API
+                description: Port of the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: false
                 default: 8443
                 type: int
             tls_verify:
-                description: Validate SSL certificates
+                description: Validate SSL certificates.
                 version_added: '1.0.0'
                 required: false
                 default: true
