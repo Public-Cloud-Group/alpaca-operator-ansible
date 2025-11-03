@@ -201,21 +201,21 @@ EXAMPLES = r'''
 
 RETURN = r'''
 msg:
-    description: Status message indicating the result of the operation.
+    description: Status message indicating the result of the operation
     returned: always
     type: str
     version_added: '1.0.0'
     sample: Agent created
 
 changed:
-    description: Indicates whether any change was made.
+    description: Indicates whether any change was made
     returned: always
     type: bool
     version_added: '1.0.0'
     sample: true
 
 agent_config:
-    description: Details of the created, updated, or deleted agent configuration.
+    description: Details of the created, updated, or deleted agent configuration
     returned: when state is present or absent
     type: dict
     version_added: '1.0.0'
@@ -234,7 +234,7 @@ agent_config:
             smsAddress: ""
 
 changes:
-    description: Dictionary showing differences between the current and desired configuration.
+    description: Dictionary showing differences between the current and desired configuration
     returned: when state is present and a change occurred
     type: dict
     version_added: '1.0.0'

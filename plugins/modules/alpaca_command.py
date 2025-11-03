@@ -348,14 +348,14 @@ EXAMPLES = r'''
 
 RETURN = r'''
 msg:
-    description: Status message describing what the module did.
+    description: Status message describing what the module did
     version_added: '1.0.0'
     returned: always
     type: str
     sample: Command updated in system 42.
 
 changed:
-    description: Whether any changes were made.
+    description: Whether any changes were made
     version_added: '1.0.0'
     returned: always
     type: bool
@@ -369,14 +369,14 @@ changes:
     type: dict
     contains:
         parameters:
-            description: Changed parameters of the command (if any).
+            description: Changed parameters of the command (if any)
             version_added: '1.0.0'
             type: dict
             sample:
               current: "-p foo -s A -d B"
               desired: "-p foo -s A -d B -t X"
         schedule:
-            description: Changed schedule section (if any).
+            description: Changed schedule section (if any)
             version_added: '1.0.0'
             type: dict
             sample:
@@ -384,7 +384,7 @@ changes:
                 current: "manually"
                 desired: "every_minute"
         escalation:
-            description: Changed escalation section (if any).
+            description: Changed escalation section (if any)
             version_added: '1.0.0'
             type: dict
             sample:
@@ -393,13 +393,13 @@ changes:
                 desired: 1
 
 payload:
-    description: Full payload that would be sent to the API (in check_mode) or that was sent (when changed).
+    description: Full payload that would be sent to the API (in check_mode) or that was sent (when changed)
     version_added: '1.0.0'
     returned: when state is present and change occurred or would occur
     type: dict
 
 command:
-    description: Information about the deleted command.
+    description: Information about the deleted command
     version_added: '1.0.0'
     returned: when state=absent and command was deleted
     type: dict

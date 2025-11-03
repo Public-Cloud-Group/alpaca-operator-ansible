@@ -132,28 +132,28 @@ EXAMPLES = r'''
 
 RETURN = r'''
 changed:
-    description: Indicates whether any change was made to the group.
+    description: Indicates whether any change was made to the group
     version_added: '1.0.0'
     returned: always
     type: bool
     sample: true
 
 msg:
-    description: Human-readable message describing the outcome.
+    description: Human-readable message describing the outcome
     version_added: '1.0.0'
     returned: always
     type: str
     sample: Group created
 
 id:
-    description: Numeric ID of the group (if known or newly created).
+    description: Numeric ID of the group (if known or newly created)
     version_added: '1.0.0'
     returned: when state is present or absent and group exists
     type: int
     sample: 42
 
 name:
-    description: Name of the group (new or existing).
+    description: Name of the group (new or existing)
     version_added: '1.0.0'
     returned: always
     type: str
