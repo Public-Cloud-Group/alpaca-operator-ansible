@@ -2,13 +2,13 @@
 
 ## Overview
 
-The `alpaca_command` module manages a single ALPACA Operator command. It provides fine-grained control over individual command properties. Use this module when you need to configure or modify one specific command, such as changing its timeout, toggling disabled, or setting a new schedule.
+The `pcg.alpaca_operator.alpaca_command` module manages a single ALPACA Operator command. It provides fine-grained control over individual command properties. Use this module when you need to configure or modify one specific command, such as changing its timeout, toggling disabled, or setting a new schedule.
 
 Each command is uniquely identified by the combination of its name (description) and the assigned agentHostname. Note that renaming a command or reassigning it to a different agent is not supported by this module, as these properties are used for identification.
 
 ## Module Information
 
-- **Module Name**: `alpaca_command`
+- **Module Name**: `pcg.alpaca_operator.alpaca_command`
 - **Short Description**: Manage a single ALPACA Operator command via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
@@ -151,7 +151,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create command
-      alpaca_command:
+      pcg.alpaca_operator.alpaca_command:
         system:
           systemName: system01
         command:

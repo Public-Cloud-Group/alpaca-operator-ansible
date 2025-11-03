@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `alpaca_command_set` module manages an entire set of ALPACA Operator commands associated with a system using a REST API. It is designed to apply bulk changes, for example, deploying multiple commands at once or cleaning up an existing command set.
+The `pcg.alpaca_operator.alpaca_command_set` module manages an entire set of ALPACA Operator commands associated with a system using a REST API. It is designed to apply bulk changes, for example, deploying multiple commands at once or cleaning up an existing command set.
 
 Use this module when you need to apply or remove multiple commands at once on a given ALPACA system. It simplifies large-scale system updates and is optimal for automation scenarios.
 
@@ -10,7 +10,7 @@ Use this module when you need to apply or remove multiple commands at once on a 
 
 ## Module Information
 
-- **Module Name**: `alpaca_command_set`
+- **Module Name**: `pcg.alpaca_operator.alpaca_command_set`
 - **Short Description**: Manage all ALPACA Operator commands of a specific system via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
@@ -154,7 +154,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Configure commands
-      alpaca_command_set:
+      pcg.alpaca_operator.alpaca_command_set:
         system:
           systemName: system01
         commands:
@@ -240,7 +240,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Remove all commands
-      alpaca_command_set:
+      pcg.alpaca_operator.alpaca_command_set:
         system:
           systemName: system01
         commands: []

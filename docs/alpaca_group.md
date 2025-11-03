@@ -2,11 +2,11 @@
 
 ## Overview
 
-The `alpaca_group` module allows you to create, rename, or delete ALPACA Operator groups using the REST API. This module provides basic group management capabilities for organizing systems within the ALPACA Operator environment.
+The `pcg.alpaca_operator.alpaca_group` module allows you to create, rename, or delete ALPACA Operator groups using the REST API. This module provides basic group management capabilities for organizing systems within the ALPACA Operator environment.
 
 ## Module Information
 
-- **Module Name**: `alpaca_group`
+- **Module Name**: `pcg.alpaca_operator.alpaca_group`
 - **Short Description**: Manage ALPACA Operator groups via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
@@ -63,7 +63,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create group
-      alpaca_groups:
+      pcg.alpaca_operator.alpaca_group:
         name: testgroup01
         state: present
         apiConnection: "{{ apiConnection }}"
@@ -87,7 +87,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Delete group
-      alpaca_groups:
+      pcg.alpaca_operator.alpaca_group:
         name: testgroup01
         state: absent
         apiConnection: "{{ apiConnection }}"
@@ -111,7 +111,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Rename group
-      alpaca_groups:
+      pcg.alpaca_operator.alpaca_group:
         name: testgroup01
         new_name: testgroup_renamed
         state: present

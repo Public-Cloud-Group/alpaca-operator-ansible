@@ -90,7 +90,7 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure group exists
-  alpaca_groups:
+  pcg.alpaca_operator.alpaca_group:
     name: testgroup01
     state: present
     apiConnection:
@@ -102,7 +102,7 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Ensure group is absent
-  alpaca_groups:
+  pcg.alpaca_operator.alpaca_group:
     name: testgroup01
     state: absent
     apiConnection:
@@ -114,7 +114,7 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Rename an existing group
-  alpaca_groups:
+  pcg.alpaca_operator.alpaca_group:
     name: testgroup01
     new_name: testgroup_renamed
     state: present

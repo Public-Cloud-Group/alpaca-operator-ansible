@@ -19,13 +19,13 @@ If you encounter abusive behavior, please refer to the [policy violations](https
 
 This collection includes the following modules:
 
-| Module Name          | Description                                              |
-| -------------------- | -------------------------------------------------------- |
-| `alpaca_agent`       | Manage ALPACA Operator agents                            |
-| `alpaca_command_set` | Manage all ALPACA Operator commands of a specific system |
-| `alpaca_command`     | Manage a single ALPACA Operator command                  |
-| `alpaca_group`       | Manage ALPACA Operator groups                            |
-| `alpaca_system`      | Manage ALPACA Operator systems                           |
+| Module Name                           | Description                                              |
+| ------------------------------------- | -------------------------------------------------------- |
+| `pcg.alpaca_operator.alpaca_agent`       | Manage ALPACA Operator agents                            |
+| `pcg.alpaca_operator.alpaca_command_set` | Manage all ALPACA Operator commands of a specific system |
+| `pcg.alpaca_operator.alpaca_command`     | Manage a single ALPACA Operator command                  |
+| `pcg.alpaca_operator.alpaca_group`       | Manage ALPACA Operator groups                            |
+| `pcg.alpaca_operator.alpaca_system`      | Manage ALPACA Operator systems                           |
 
 
 All modules require API connection parameters and support both `present` and `absent` states where applicable.
@@ -85,7 +85,7 @@ For a complete setup guide including Ansible installation, collection setup, and
 
 ```yaml
 - name: Ensure group "ansible_testing_group_01" exists
-  alpaca_group:
+  pcg.alpaca_operator.alpaca_group:
     name: ansible_testing_group_01
     state: present
     apiConnection:
@@ -97,7 +97,7 @@ For a complete setup guide including Ansible installation, collection setup, and
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
 - name: Delete group ansible_testing_group_01
-  alpaca_group:
+  pcg.alpaca_operator.alpaca_group:
     name: ansible_testing_group_01
     state: absent
     apiConnection:
@@ -113,7 +113,7 @@ For a complete setup guide including Ansible installation, collection setup, and
 
 ```yaml
 - name: Ensure agent "ansible_testing_agent_01" exists
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: ansible_testing_agent_01
     description: My Test Agent 01
     ipAddress: 10.1.1.1
@@ -135,7 +135,7 @@ For a complete setup guide including Ansible installation, collection setup, and
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
 - name: Delete agent ansible_testing_agent_01
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: ansible_testing_agent_01
     state: absent
     apiConnection:
@@ -151,7 +151,7 @@ For a complete setup guide including Ansible installation, collection setup, and
 
 ```yaml
 - name: Ensure system "ansible01" exists
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: ansible01
     description: Ansible Test System 01
     magicNumber: 59
@@ -189,7 +189,7 @@ For a complete setup guide including Ansible installation, collection setup, and
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
 - name: Delete system ansible01
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: ansible01
     state: absent
     apiConnection:
@@ -205,11 +205,11 @@ For a complete setup guide including Ansible installation, collection setup, and
 
 **Warning**
 
-⚠️ When using the `alpaca_command_set` module, all existing commands on the target system that are not included in your playbook will be deleted. Use this module with care!
+⚠️ When using the `pcg.alpaca_operator.alpaca_command_set` module, all existing commands on the target system that are not included in your playbook will be deleted. Use this module with care!
 
 ```yaml
 - name: Ensure that exactly these system commands exist — no more, no fewer
-  alpaca_command_set:
+  pcg.alpaca_operator.alpaca_command_set:
     system:
       systemName: ansible01
     commands:
@@ -283,7 +283,7 @@ For a complete setup guide including Ansible installation, collection setup, and
             toGreen: true
 
 - name: Ensure a specific system command exist
-  alpaca_command:
+  pcg.alpaca_operator.alpaca_command:
     system:
       systemName: ansible01
     command:
@@ -331,7 +331,7 @@ For a complete setup guide including Ansible installation, collection setup, and
       tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
 
 - name: Delete all commands in system ansible01
-  alpaca_command_set:
+  pcg.alpaca_operator.alpaca_command_set:
     system:
       systemName: ansible01
     commands: []

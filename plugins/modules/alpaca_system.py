@@ -239,7 +239,7 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure system exists
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: system01
     description: My Test System
     magicNumber: 42
@@ -276,7 +276,7 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Ensure system is absent
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: system01
     state: absent
     apiConnection:
@@ -288,7 +288,7 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Rename an existing system
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: system01
     new_name: system_renamed
     apiConnection:

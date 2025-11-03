@@ -281,7 +281,7 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure that multiple commands are configured correctly on system01
-  alpaca_command_set:
+  pcg.alpaca_operator.alpaca_command_set:
     system:
       systemName: system01
     commands:
@@ -355,7 +355,7 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Remove all commands from system system01
-  alpaca_command_set:
+  pcg.alpaca_operator.alpaca_command_set:
     system:
       systemName: system01
     commands: []

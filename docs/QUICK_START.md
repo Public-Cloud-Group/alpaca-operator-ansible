@@ -180,11 +180,11 @@ cat > playbooks/test_connection.yml << 'EOF'
     - name: Test API connection using ALPACA module utilities
       block:
         - name: Import ALPACA API utilities
-          set_fact:
+          ansible.builtin.set_fact:
             api_url: "{{ ALPACA_Operator_API_Protocol }}://{{ ALPACA_Operator_API_Host }}:{{ ALPACA_Operator_API_Port }}/api"
 
         - name: Test authentication and API access
-          uri:
+          ansible.builtin.uri:
             url: "{{ api_url }}/auth/login"
             method: POST
             body_format: json
@@ -194,17 +194,17 @@ cat > playbooks/test_connection.yml << 'EOF'
           register: auth_test
 
         - name: Display authentication result
-          debug:
+          ansible.builtin.debug:
             msg: "Authentication test: {{ 'SUCCESS' if auth_test.status == 200 else 'FAILED' }} (Status: {{ auth_test.status }})"
 
         - name: Show API token (if authentication successful)
-          debug:
+          ansible.builtin.debug:
             msg: "API Token obtained: {{ auth_test.json.token | default('None') | truncate(20, true, '...') }}"
           when: auth_test.status == 200
 
       rescue:
         - name: Display connection error
-          debug:
+          ansible.builtin.debug:
             msg: "Connection failed: {{ ansible_failed_result.msg | default('Unknown error') }}"
           failed_when: true
 
@@ -247,7 +247,7 @@ Edit the playbook (the ALPACA API configuration is now in the inventory):
 
   tasks:
     - name: Execute hana_backup role
-      include_role:
+      ansible.builtin.include_role:
         name: pcg.alpaca_operator.hana_backup
 ```
 
@@ -294,7 +294,7 @@ The HANA backup role automatically maps CSV columns to variables that you can us
 
   tasks:
     - name: Execute hana_backup role with custom commands
-      include_role:
+      ansible.builtin.include_role:
         name: pcg.alpaca_operator.hana_backup
       vars:
         override:

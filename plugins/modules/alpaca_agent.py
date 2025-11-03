@@ -149,7 +149,7 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure agent exists
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: agent01
     ipAddress: 192.168.1.100
     location: virtual
@@ -171,7 +171,7 @@ EXAMPLES = r'''
       tls_verify: False
 
 - name: Ensure agent is absent
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: agent01
     state: absent
     apiConnection:
@@ -183,7 +183,7 @@ EXAMPLES = r'''
       tls_verify: False
 
 - name: Rename an existing agent
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: agent01
     new_name: agent_renamed
     state: present

@@ -2,11 +2,11 @@
 
 ## Overview
 
-The `alpaca_agent` module allows you to create, update, or delete ALPACA Operator agents using the REST API. This module provides comprehensive management capabilities for ALPACA Operator agents, including configuration of escalation settings, location settings, and other agent-specific properties.
+The `pcg.alpaca_operator.alpaca_agent` module allows you to create, update, or delete ALPACA Operator agents using the REST API. This module provides comprehensive management capabilities for ALPACA Operator agents, including configuration of escalation settings, location settings, and other agent-specific properties.
 
 ## Module Information
 
-- **Module Name**: `alpaca_agent`
+- **Module Name**: `pcg.alpaca_operator.alpaca_agent`
 - **Short Description**: Manage ALPACA Operator agents via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
@@ -80,7 +80,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create agent
-      alpaca_agent:
+      pcg.alpaca_operator.alpaca_agent:
         name: agent01
         ipAddress: 192.168.1.100
         location: virtual
@@ -114,7 +114,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Delete agent
-      alpaca_agent:
+      pcg.alpaca_operator.alpaca_agent:
         name: agent01
         state: absent
         apiConnection: "{{ apiConnection }}"
@@ -138,7 +138,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Rename agent
-      alpaca_agent:
+      pcg.alpaca_operator.alpaca_agent:
         name: agent01
         new_name: agent_renamed
         state: present

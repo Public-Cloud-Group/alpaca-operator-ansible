@@ -282,7 +282,7 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure a specific system command exist
-  alpaca_command:
+  pcg.alpaca_operator.alpaca_command:
     system:
       systemName: system01
     command:

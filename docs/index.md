@@ -8,18 +8,18 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 
 ### Core Management Modules
 
-| Module                              | Description                    | Use Case                                                                              |
-| ----------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| [`alpaca_agent`](alpaca_agent.md)   | Manage ALPACA Operator agents  | Create, update, delete, and configure agents with escalation settings                 |
-| [`alpaca_system`](alpaca_system.md) | Manage ALPACA Operator systems | Create, update, delete systems with RFC connections, agent assignments, and variables |
-| [`alpaca_group`](alpaca_group.md)   | Manage ALPACA Operator groups  | Create, rename, and delete groups for organizing systems                              |
+| Module                                                       | Description                    | Use Case                                                                              |
+| ------------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------- |
+| [`pcg.alpaca_operator.alpaca_agent`](alpaca_agent.md)   | Manage ALPACA Operator agents  | Create, update, delete, and configure agents with escalation settings                 |
+| [`pcg.alpaca_operator.alpaca_system`](alpaca_system.md) | Manage ALPACA Operator systems | Create, update, delete systems with RFC connections, agent assignments, and variables |
+| [`pcg.alpaca_operator.alpaca_group`](alpaca_group.md)   | Manage ALPACA Operator groups  | Create, rename, and delete groups for organizing systems                              |
 
 ### Command Management Modules
 
-| Module                                        | Description                                | Use Case                                                 |
-| --------------------------------------------- | ------------------------------------------ | -------------------------------------------------------- |
-| [`alpaca_command`](alpaca_command.md)         | Manage individual ALPACA Operator commands | Fine-grained control over single command properties      |
-| [`alpaca_command_set`](alpaca_command_set.md) | Manage command sets for systems            | Bulk management of all commands associated with a system |
+| Module                                                            | Description                                | Use Case                                                 |
+| ----------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------- |
+| [`pcg.alpaca_operator.alpaca_command`](alpaca_command.md)         | Manage individual ALPACA Operator commands | Fine-grained control over single command properties      |
+| [`pcg.alpaca_operator.alpaca_command_set`](alpaca_command_set.md) | Manage command sets for systems            | Bulk management of all commands associated with a system |
 
 ## Quick Start
 
@@ -241,9 +241,9 @@ playbooks/
    - Ensure TLS certificate validation settings are correct
 
 2. **Command Set Module Removes Commands**
-   - The `alpaca_command_set` module takes full control of the command set
+   - The `pcg.alpaca_operator.alpaca_command_set` module takes full control of the command set
    - Any commands not defined in your playbook will be removed
-   - Use `alpaca_command` for individual command management
+   - Use `pcg.alpaca_operator.alpaca_command` for individual command management
 
 3. **RFC Password Not Applied**
    - RFC passwords cannot be retrieved via API

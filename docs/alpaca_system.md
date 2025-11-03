@@ -2,11 +2,11 @@
 
 ## Overview
 
-The `alpaca_system` module allows you to create, update, or delete ALPACA Operator systems using the REST API. In addition to general system properties, it supports assigning agents and variables. Communication is handled using token-based authentication.
+The `pcg.alpaca_operator.alpaca_system` module allows you to create, update, or delete ALPACA Operator systems using the REST API. In addition to general system properties, it supports assigning agents and variables. Communication is handled using token-based authentication.
 
 ## Module Information
 
-- **Module Name**: `alpaca_system`
+- **Module Name**: `pcg.alpaca_operator.alpaca_system`
 - **Short Description**: Manage ALPACA Operator systems via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
@@ -114,7 +114,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create system
-      alpaca_system:
+      pcg.alpaca_operator.alpaca_system:
         name: system01
         description: My Test System
         magicNumber: 42
@@ -163,7 +163,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Delete system
-      alpaca_system:
+      pcg.alpaca_operator.alpaca_system:
         name: system01
         state: absent
         apiConnection: "{{ apiConnection }}"
@@ -187,7 +187,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Rename system
-      alpaca_system:
+      pcg.alpaca_operator.alpaca_system:
         name: system01
         new_name: system_renamed
         apiConnection: "{{ apiConnection }}"
@@ -211,7 +211,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create SAP system
-      alpaca_system:
+      pcg.alpaca_operator.alpaca_system:
         name: sap-system-01
         description: SAP Production System
         rfcConnection:
@@ -244,7 +244,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create configuration system
-      alpaca_system:
+      pcg.alpaca_operator.alpaca_system:
         name: config-system-01
         description: Configuration System
         variables:
