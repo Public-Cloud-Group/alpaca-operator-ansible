@@ -30,7 +30,7 @@ options:
         type: str
     new_name:
         description: >
-            Optional new name for the system. If the system specified in `name` exists,
+            Optional new name for the system. If the system specified in O(name) exists,
             it will be renamed to this value. If the system does not exist, a new system will
             be created using this value.
         version_added: '1.0.0'
@@ -61,7 +61,7 @@ options:
         required: false
         type: str
     groupId:
-        description: ID of the group (used if `groupName` is not provided).
+        description: ID of the group (used if O(groupName) is not provided).
         version_added: '1.0.0'
         required: false
         type: int
@@ -72,7 +72,7 @@ options:
         type: dict
         suboptions:
             type:
-                description: Type of RFC connection.
+                description: Type of RFC connection. Can be V(none), V(instance), or V(messageServer).
                 version_added: '1.0.0'
                 required: false
                 choices: [none, instance, messageServer]
@@ -98,7 +98,7 @@ options:
                 required: false
                 type: str
             logonGroup:
-                description: Logon group (used with message server type).
+                description: Logon group (used with V(messageServer) type).
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -174,8 +174,8 @@ options:
         description: |
             Controls how variables are handled when updating the system.
 
-            update: Add missing variables and update existing ones.
-            replace: Add missing variables, update existing ones, and remove variables not defined in the playbook.
+            V(update): Add missing variables and update existing ones.
+            V(replace): Add missing variables, update existing ones, and remove variables not defined in the playbook.
 
         version_added: '1.0.0'
         required: false
@@ -206,7 +206,7 @@ options:
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https).
+                description: Protocol to use. Can be V(http) or V(https).
                 version_added: '1.0.0'
                 required: false
                 default: https

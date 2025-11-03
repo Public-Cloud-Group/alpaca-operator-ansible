@@ -30,12 +30,12 @@ options:
         type: dict
         suboptions:
             systemId:
-                description: Numeric ID of the target system. Optional if `systemName` is provided.
+                description: Numeric ID of the target system. Optional if O(systemName) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
             systemName:
-                description: Name of the target system. Optional if `systemId` is provided.
+                description: Name of the target system. Optional if O(systemId) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -63,27 +63,27 @@ options:
                 choices: [present, absent]
             agentId:
                 description: >
-                    Numeric ID of the agent. Optional if `agentName` is provided.
+                    Numeric ID of the agent. Optional if O(agentName) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
                 version_added: '1.0.0'
                 required: false
                 type: int
             agentName:
                 description: >
-                    Name of the agent. Optional if `agentId` is provided.
+                    Name of the agent. Optional if O(agentId) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
                 version_added: '1.0.0'
                 required: false
                 type: str
             processId:
                 description: >
-                    ID of the process to be executed. Optional if `processCentralId` is provided.
+                    ID of the process to be executed. Optional if O(processCentralId) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
             processCentralId:
                 description: >
-                    Central ID / Global ID of the process to be executed. Optional if `processId` is provided.
+                    Central ID / Global ID of the process to be executed. Optional if O(processId) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
@@ -120,12 +120,12 @@ options:
                         required: false
                         choices: [every_5min, one_per_day, hourly, manually, fixed_time, hourly_with_mn, every_minute, even_hours_with_mn, odd_hours_with_mn, even_hours, odd_hours, fixed_time_once, fixed_time_immediate, cron_expression, disabled, start_fixed_time_and_hourly_mn]
                     time:
-                        description: Execution time in HH:mm:ss. Required when period is 'fixed_time', 'fixed_time_once' or 'start_fixed_time_and_hourly_mn'.
+                        description: Execution time in HH:mm:ss. Required when O(period) is V(fixed_time), V(fixed_time_once), or V(start_fixed_time_and_hourly_mn).
                         version_added: '1.0.0'
                         type: str
                         required: false
                     cronExpression:
-                        description: Quartz-compatible cron expression. Required when period is 'cron_expression'.
+                        description: Quartz-compatible cron expression. Required when O(period) is V(cron_expression).
                         version_added: '1.0.0'
                         type: str
                         required: false
@@ -153,24 +153,24 @@ options:
                         type: int
                         required: false
             autoDeploy:
-                description: "Whether to automatically deploy the command"
+                description: Whether to automatically deploy the command.
                 version_added: '1.0.0'
                 required: false
                 type: bool
             timeout:
-                description: "Timeout configuration for command execution"
+                description: Timeout configuration for command execution.
                 version_added: '1.0.0'
                 required: false
                 type: dict
                 suboptions:
                     type:
-                        description: "Type of timeout (none, default, or custom)"
+                        description: Type of timeout. Can be V(none), V(default), or V(custom).
                         version_added: '1.0.0'
                         type: str
                         required: false
                         choices: [none, default, custom]
                     value:
-                        description: "Timeout value in seconds (for custom type)"
+                        description: Timeout value in seconds (for V(custom) type).
                         version_added: '1.0.0'
                         type: int
                         required: false
@@ -248,7 +248,7 @@ options:
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https).
+                description: Protocol to use. Can be V(http) or V(https).
                 version_added: '1.0.0'
                 required: false
                 default: https

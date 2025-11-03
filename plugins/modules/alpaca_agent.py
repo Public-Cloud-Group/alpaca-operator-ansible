@@ -27,7 +27,7 @@ options:
         type: str
     new_name:
         description: >
-            Optional new name for the agent. If the agent specified in `name` exists,
+            Optional new name for the agent. If the agent specified in O(name) exists,
             it will be renamed to this value. If the agent does not exist, a new agent will
             be created using this value.
         version_added: '1.0.0'
@@ -80,7 +80,7 @@ options:
         required: false
         type: str
     location:
-        description: Location of the agent (virtual, local1, local2, remote).
+        description: Location of the agent. Can be V(virtual), V(local1), V(local2), or V(remote).
         version_added: '1.0.0'
         required: false
         type: str
@@ -116,7 +116,7 @@ options:
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https).
+                description: Protocol to use. Can be V(http) or V(https).
                 version_added: '1.0.0'
                 required: false
                 default: https
