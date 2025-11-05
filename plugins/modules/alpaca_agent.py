@@ -272,11 +272,11 @@ def build_payload(desired_agent_config, current_agent_config):
     payload = {
         "description":              desired_agent_config.get('description', None)                                           if desired_agent_config.get('description', None)                                            is not None else current_agent_config.get('description', ''),
         "escalation": {
-            "failuresBeforeReport": desired_agent_config.get('escalation', {}).get('failuresBeforeReport', None)            if desired_agent_config.get('escalation', {}).get('failuresBeforeReport', None)             is not None else current_agent_config.get('escalation', {}).get('failuresBeforeReport', 0),
-            "mailAddress":          desired_agent_config.get('escalation', {}).get('mailAddress', None)                     if desired_agent_config.get('escalation', {}).get('mailAddress', None)                      is not None else current_agent_config.get('escalation', {}).get('mailAddress', ''),
-            "mailEnabled":          desired_agent_config.get('escalation', {}).get('mailEnabled', None)                     if desired_agent_config.get('escalation', {}).get('mailEnabled', None)                      is not None else current_agent_config.get('escalation', {}).get('mailEnabled', False),
-            "smsAddress":           desired_agent_config.get('escalation', {}).get('smsAddress', None)                      if desired_agent_config.get('escalation', {}).get('smsAddress', None)                       is not None else current_agent_config.get('escalation', {}).get('smsAddress', ''),
-            "smsEnabled":           desired_agent_config.get('escalation', {}).get('smsEnabled', None)                      if desired_agent_config.get('escalation', {}).get('smsEnabled', None)                       is not None else current_agent_config.get('escalation', {}).get('smsEnabled', False),
+            "failuresBeforeReport": (desired_agent_config.get('escalation') or {}).get('failuresBeforeReport', None)        if (desired_agent_config.get('escalation') or {}).get('failuresBeforeReport', None)         is not None else current_agent_config.get('escalation', {}).get('failuresBeforeReport', 0),
+            "mailAddress":          (desired_agent_config.get('escalation') or {}).get('mailAddress', None)                 if (desired_agent_config.get('escalation') or {}).get('mailAddress', None)                  is not None else current_agent_config.get('escalation', {}).get('mailAddress', ''),
+            "mailEnabled":          (desired_agent_config.get('escalation') or {}).get('mailEnabled', None)                 if (desired_agent_config.get('escalation') or {}).get('mailEnabled', None)                  is not None else current_agent_config.get('escalation', {}).get('mailEnabled', False),
+            "smsAddress":           (desired_agent_config.get('escalation') or {}).get('smsAddress', None)                  if (desired_agent_config.get('escalation') or {}).get('smsAddress', None)                   is not None else current_agent_config.get('escalation', {}).get('smsAddress', ''),
+            "smsEnabled":           (desired_agent_config.get('escalation') or {}).get('smsEnabled', None)                  if (desired_agent_config.get('escalation') or {}).get('smsEnabled', None)                   is not None else current_agent_config.get('escalation', {}).get('smsEnabled', False),
         },
         "hostname":                 desired_agent_config.get('new_name', None) or desired_agent_config.get('name', None)    if desired_agent_config.get('new_name', None) or desired_agent_config.get('name', None)     is not None else current_agent_config.get('hostname', ''),
         "ipAddress":                desired_agent_config.get('ipAddress', None)                                             if desired_agent_config.get('ipAddress', None)                                              is not None else current_agent_config.get('ipAddress', ''),
@@ -293,10 +293,10 @@ def main():
             name=dict(type='str', required=True),       # = hostname
             new_name=dict(type='str', required=False),  # = hostname
             description=dict(type='str', required=False),
-            escalation=dict(type='dict', required=False, default={}),
+            escalation=dict(type='dict', required=False),
             ipAddress=dict(type='str', required=False),
-            location=dict(type='str', required=False, choices=['virtual', 'local1', 'local2', 'remote']),
-            scriptGroupId=dict(type='int', required=False),
+            location=dict(type='str', required=False, default='virtual', choices=['virtual', 'local1', 'local2', 'remote']),
+            scriptGroupId=dict(type='int', required=False, default=-1),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
             apiConnection=dict(
                 type='dict',

@@ -638,7 +638,7 @@ def main():
                     api_call(method="POST", url="{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, json={'id': api_agent['id']}, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign agent to system.")
 
             # Assign variables
-            variable_payload = build_variable_payload(api_url, headers, module)
+            variable_payload = build_variable_payload(api_url, headers, module, module.params.get('variables'))
             api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=variable_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign variables to system.")
 
             module.exit_json(changed=True, msg="System created.", api_response=current_system)
