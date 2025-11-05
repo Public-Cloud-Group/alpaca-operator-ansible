@@ -274,6 +274,9 @@ options:
                 default: true
                 type: bool
 
+requirements:
+    - ALPACA Operator >= 5.6.0
+
 attributes:
     check_mode:
         description: Can run in check_mode and return changed status prediction without modifying target.
