@@ -77,7 +77,7 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
 
 ### Quick Start Guide
 
-For a complete setup guide including Ansible installation, collection setup, and first playbook execution, see the [Quick Start Guide](docs/QUICK_START.md).
+For a complete setup guide including Ansible installation, collection setup, and first playbook execution, see the [Quick Start Guide](docs/index.md).
 
 ## Example Usage
 

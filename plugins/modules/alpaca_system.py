@@ -109,9 +109,15 @@ options:
                 type: str
             password:
                 description: >
-                    Password for the RFC connection. Note that the currently configured password cannot be retrieved or compared via the API.
-                    To ensure the new password is actually applied, you must change at least one additional attribute (e.g., the system description),
-                    otherwise Ansible will assume no changes are needed and skip the update.
+                    Password for the RFC connection.
+
+                    IMPORTANT: If you specify the password in your playbook, the module will ALWAYS report a change (changed=true) on every run,
+                    even if nothing has changed. This happens because the API does not return the current password for security reasons,
+                    making it impossible to compare the desired password with the current one. The module cannot determine if the password
+                    needs to be updated or not.
+
+                    To maintain idempotency, comment out or remove the O(rfc_connection.password) parameter after the initial setup, and only uncomment it
+                    when you actually need to change the password.
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -236,7 +242,10 @@ requirements:
 
 attributes:
     check_mode:
-        description: Can run in check_mode and return changed status prediction without modifying target.
+        description: >
+            Can run in check_mode and return changed status prediction without modifying target.
+            Note: If O(rfc_connection.password) is specified, the module will always report changed=true,
+            even in check mode, because the current password cannot be retrieved for comparison.
         support: full
 
 author:

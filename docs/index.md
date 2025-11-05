@@ -21,153 +21,264 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 | [`pcg.alpaca_operator.alpaca_command`](alpaca_command.md)         | Manage individual ALPACA Operator commands | Fine-grained control over single command properties      |
 | [`pcg.alpaca_operator.alpaca_command_set`](alpaca_command_set.md) | Manage command sets for systems            | Bulk management of all commands associated with a system |
 
-## Quick Start
+## Installation
 
 ### Prerequisites
 
+- SLES 15 SP4 or later (or compatible Linux distribution)
 - Python >= 3.8
 - ansible-core >= 2.12
 - ALPACA Operator >= 5.6.0
+- Root or sudo access for system-level installation
+- Internet connectivity for package installation
 
-### Basic Usage
+### Step 1: Check Python Version
 
-1. **Install the Collection**
-   ```bash
-   ansible-galaxy collection install pcg.alpaca_operator
-   ```
+First, determine your Python version to select the appropriate Ansible version:
 
-2. **Configure API Connection in Inventory**
-   ```ini
-   # inventories/alpaca.ini
-   [local]
-   localhost ansible_connection=local ansible_python_interpreter=python3
-
-   [local:vars]
-   ALPACA_Operator_API_Host='your-alpaca-server'
-   ALPACA_Operator_API_Protocol='https'
-   ALPACA_Operator_API_Port='8443'
-   ALPACA_Operator_API_Username='your-username'
-   ALPACA_Operator_API_Password='your-password'
-   ALPACA_Operator_API_Validate_Certs=False
-   ```
-
-3. **Create a Basic Playbook**
-   ```yaml
-   - name: Manage ALPACA Operator Environment
-     hosts: local
-     gather_facts: false
-
-     vars:
-       api_connection:
-         host: "{{ ALPACA_Operator_API_Host }}"
-         protocol: "{{ ALPACA_Operator_API_Protocol }}"
-         port: "{{ ALPACA_Operator_API_Port }}"
-         username: "{{ ALPACA_Operator_API_Username }}"
-         password: "{{ ALPACA_Operator_API_Password }}"
-         tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
-
-     tasks:
-       - name: Create a group
-         pcg.alpaca_operator.alpaca_group:
-           name: production
-           state: present
-           api_connection: "{{ api_connection }}"
-
-## Common Patterns
-
-### 1. Agent Management
-```yaml
-- name: Create agent with escalation
-  pcg.alpaca_operator.alpaca_agent:
-    name: backup-agent-01
-    description: Backup Agent for Production
-    ip_address: 192.168.1.100
-    location: virtual
-    escalation:
-      failures_before_report: 3
-      mail_enabled: true
-      mail_address: monitoring@company.com
-    state: present
-    api_connection: "{{ api_connection }}"
+```bash
+ls /usr/bin/python*
+python3 --version
 ```
 
-### 2. System Management with RFC Connection
-```yaml
-- name: Create SAP system
-  pcg.alpaca_operator.alpaca_system:
-    name: sap-prod-01
-    description: SAP Production System
-    group_name: production
-    rfc_connection:
-      type: instance
-      host: sap-prod-server
-      instanceNumber: 00
-      sid: PRD
-      username: rfc_user
-      password: rfc_password
-      client: 100
-    agents:
-      - name: backup-agent-01
-    variables:
-      - name: "BACKUP_PATH"
-        value: "/backup/sap"
-    state: present
-    api_connection: "{{ api_connection }}"
+Refer to the [Support Matrix](../README.md#support-matrix) in the main README to determine which Ansible version is compatible with your Python version.
+
+### Step 2: Install Ansible
+
+#### Option A: Install via Zypper (Recommended for SLES)
+
+```bash
+# Add the Ansible repository
+sudo zypper addrepo https://download.opensuse.org/repositories/systemsmanagement:/ansible/SLE_15_SP4/ ansible
+
+# Refresh repositories
+sudo zypper refresh
+
+# Install Ansible (replace X.Y with your chosen version, e.g., 2.17)
+sudo zypper install ansible-2.17
 ```
 
-### 3. Command Management
-```yaml
-- name: Configure backup command
-  pcg.alpaca_operator.alpaca_command:
-    system:
-      system_name: sap-prod-01
-    command:
-      name: "Daily Backup"
-      agent_name: backup-agent-01
-      process_central_id: 8990048
-      parameters: "-p PRD -s /backup/sap"
-      schedule:
-        period: fixed_time
-        time: "02:00:00"
-        days_of_week:
-          - monday
-          - tuesday
-          - wednesday
-          - thursday
-          - friday
-      critical: true
-      escalation:
-        mail_enabled: true
-        mail_address: monitoring@company.com
-        min_failure_count: 1
-    api_connection: "{{ api_connection }}"
+#### Option B: Install via pip
+
+```bash
+# Install pip if not available
+sudo zypper install python3-pip
+
+# Install specific Ansible version (replace X.Y.Z with your chosen version)
+pip3 install ansible==2.17.0
 ```
 
-### 4. Bulk Command Management
+#### Verify Installation
+
+```bash
+ansible --version
+```
+
+### Step 3: Install ALPACA Operator Collection
+
+#### Option A: Install from Ansible Galaxy (Recommended)
+
+```bash
+ansible-galaxy collection install pcg.alpaca_operator
+```
+
+#### Option B: Install from Git Repository
+
+```bash
+ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator-ansible.git
+```
+
+#### Option C: Manual Installation from Release
+
+1. Download the latest release from [GitHub Releases](https://github.com/pcg-sap/alpaca-operator-ansible/releases)
+2. Extract the archive
+3. Install manually:
+
+```bash
+# Navigate to the extracted directory
+cd alpaca-operator-ansible-*
+
+# Install the collection
+ansible-galaxy collection install .
+
+# Verify collection was installed
+ansible-galaxy collection list
+```
+
+### Step 4: Install Python Dependencies
+
+After installing the collection, install the required Python packages:
+
+```bash
+# Install pip if not available (if not already installed)
+sudo zypper install python3-pip
+
+# Install required packages from the collection
+pip3 install -r ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/requirements.txt
+```
+
+**Note**: If you installed the collection manually, the path might be different. Adjust the path to where you extracted the collection.
+
+## Getting Started
+
+### Step 1: Create Project Directory
+
+Create a working directory for your Ansible automation:
+
+```bash
+mkdir -p ~/alpaca-ansible-automation
+cd ~/alpaca-ansible-automation
+```
+
+### Step 2: Configure Ansible
+
+Create an Ansible configuration file:
+
+```bash
+cat > ansible.cfg << 'EOF'
+[defaults]
+inventory = ./inventory.ini
+host_key_checking = False
+EOF
+```
+
+### Step 3: Create Inventory
+
+Create an inventory file with your ALPACA API configuration:
+
+```bash
+cat > inventory.ini << 'EOF'
+[local]
+localhost ansible_connection=local
+
+[local:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+# ALPACA API Configuration
+ALPACA_Operator_API_Host='localhost'
+ALPACA_Operator_API_Protocol='https'
+ALPACA_Operator_API_Port='8443'
+ALPACA_Operator_API_Username='<username>'
+ALPACA_Operator_API_Password='<password>'
+ALPACA_Operator_API_Validate_Certs=False
+EOF
+```
+
+**Important Notes:**
+- Customize API username and password according to your environment
+- If you have multiple Python versions installed, specify the exact interpreter path
+- Available Python versions can be checked with: `ls /usr/bin/python*`
+- Avoid using generic `python3` if multiple Python 3.x versions are installed
+
+**Python interpreter examples:**
+- `/usr/bin/python3.9` - Python 3.9
+- `/usr/bin/python3.10` - Python 3.10
+- `/usr/bin/python3.11` - Python 3.11
+- `/usr/bin/python3.12` - Python 3.12
+
+### Step 4: Test ALPACA API Connection
+
+Create and run a test playbook to verify API connectivity:
+
+```bash
+mkdir playbooks
+cat > playbooks/test_connection.yml << 'EOF'
+---
+- name: Test ALPACA API Connection
+  hosts: local
+  gather_facts: false
+
+  tasks:
+    - name: Test API connection using ALPACA module utilities
+      block:
+        - name: Import ALPACA API utilities
+          ansible.builtin.set_fact:
+            api_url: "{{ ALPACA_Operator_API_Protocol }}://{{ ALPACA_Operator_API_Host }}:{{ ALPACA_Operator_API_Port }}/api"
+
+        - name: Test authentication and API access
+          ansible.builtin.uri:
+            url: "{{ api_url }}/auth/login"
+            method: POST
+            body_format: json
+            body: '{"username": "{{ ALPACA_Operator_API_Username }}", "password": "{{ ALPACA_Operator_API_Password }}"}'
+            validate_certs: "{{ ALPACA_Operator_API_Validate_Certs }}"
+            status_code: [200, 401, 403]
+          register: auth_test
+
+        - name: Display authentication result
+          ansible.builtin.debug:
+            msg: "Authentication test: {{ 'SUCCESS' if auth_test.status == 200 else 'FAILED' }} (Status: {{ auth_test.status }})"
+
+        - name: Show API token (if authentication successful)
+          ansible.builtin.debug:
+            msg: "API Token obtained: {{ auth_test.json.token | default('None') | truncate(20, true, '...') }}"
+          when: auth_test.status == 200
+
+      rescue:
+        - name: Display connection error
+          ansible.builtin.debug:
+            msg: "Connection failed: {{ ansible_failed_result.msg | default('Unknown error') }}"
+          failed_when: true
+
+EOF
+
+# Run the test
+ansible-playbook playbooks/test_connection.yml
+```
+
+### Step 5: Create Your First Playbook
+
+Create a basic playbook to manage your ALPACA environment:
+
 ```yaml
-- name: Configure all commands for system
-  pcg.alpaca_operator.alpaca_command_set:
-    system:
-      system_name: sap-prod-01
-    commands:
-      - name: "Daily Backup"
-        agent_name: backup-agent-01
-        process_central_id: 8990048
-        schedule:
-          period: fixed_time
-          time: "02:00:00"
-      - name: "Log Cleanup"
-        agent_name: backup-agent-01
-        process_central_id: 8990048
-        schedule:
-          period: cron_expression
-          cron_expression: '0 3 * * 0'
-    api_connection: "{{ api_connection }}"
+# playbooks/manage_environment.yml
+---
+- name: Manage ALPACA Operator Environment
+  hosts: local
+  gather_facts: false
+
+  vars:
+    api_connection:
+      host: "{{ ALPACA_Operator_API_Host }}"
+      protocol: "{{ ALPACA_Operator_API_Protocol }}"
+      port: "{{ ALPACA_Operator_API_Port }}"
+      username: "{{ ALPACA_Operator_API_Username }}"
+      password: "{{ ALPACA_Operator_API_Password }}"
+      tls_verify: "{{ ALPACA_Operator_API_Validate_Certs }}"
+
+  tasks:
+    - name: Create a group
+      pcg.alpaca_operator.alpaca_group:
+        name: production
+        state: present
+        api_connection: "{{ api_connection }}"
+
+    - name: Create an agent
+      pcg.alpaca_operator.alpaca_agent:
+        name: backup-agent-01
+        description: Backup Agent for Production
+        ip_address: 192.168.1.100
+        location: virtual
+        state: present
+        api_connection: "{{ api_connection }}"
+```
+
+### Step 6: Run Your Playbook
+
+Execute the playbook:
+
+```bash
+# Run in check mode first (dry run) with verbosity
+ansible-playbook playbooks/manage_environment.yml --check -v
+
+# Execute the playbook for real deployment
+ansible-playbook playbooks/manage_environment.yml
 ```
 
 ## Best Practices
 
 ### 1. Use Variables for API Connection
+
 Store your API connection details in the inventory file:
 
 ```ini
@@ -198,6 +309,7 @@ vars:
 ```
 
 ### 2. Use Check Mode for Testing
+
 Always test your playbooks in check mode first:
 
 ```bash
@@ -205,6 +317,7 @@ ansible-playbook your-playbook.yml --check
 ```
 
 ### 3. Organize by Environment
+
 Structure your playbooks to separate different environments:
 
 ```
@@ -221,46 +334,35 @@ playbooks/
     └── groups.yml
 ```
 
-### 4. Use Tags for Selective Execution
-```yaml
-- name: Create production agents
-  pcg.alpaca_operator.alpaca_agent:
-    # ... configuration
-  tags:
-    - agents
-    - production
-```
+### 4. Enable Verbose Output for Debugging
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Authentication Errors**
-   - Verify API credentials
-   - Check if the ALPACA Operator instance is accessible
-   - Ensure TLS certificate validation settings are correct
-
-2. **Command Set Module Removes Commands**
-   - The `pcg.alpaca_operator.alpaca_command_set` module takes full control of the command set
-   - Any commands not defined in your playbook will be removed
-   - Use `pcg.alpaca_operator.alpaca_command` for individual command management
-
-3. **RFC Password Not Applied**
-   - RFC passwords cannot be retrieved via API
-   - Change at least one additional attribute to ensure the password is applied
-
-### Debug Information
-
-Enable verbose output for debugging:
+Use different levels of verbosity when debugging issues:
 
 ```bash
-ansible-playbook your-playbook.yml -vvv
+ansible-playbook your-playbook.yml -v    # Basic verbose
+ansible-playbook your-playbook.yml -vv   # More verbose
+ansible-playbook your-playbook.yml -vvv  # Very verbose (debug level)
 ```
+
+### Getting Help
+
+If you encounter issues not covered in this troubleshooting guide:
+
+1. Check the [GitHub Issues](https://github.com/pcg-sap/alpaca-operator-ansible/issues) for similar problems
+2. Review module-specific documentation in the [docs](.) directory
+3. Enable verbose output (`-vvv`) to get detailed error information
+4. Create a new issue with:
+   - Ansible version (`ansible --version`)
+   - Collection version (`ansible-galaxy collection list pcg.alpaca_operator`)
+   - Python version (`python3 --version`)
+   - Error message and stack trace
+   - Minimal reproducible example
 
 ## Support
 
 For issues and questions:
 
+- **GitHub Issues**: [https://github.com/pcg-sap/alpaca-operator-ansible/issues](https://github.com/pcg-sap/alpaca-operator-ansible/issues)
 - **Author**: Jan-Karsten Hansmeyer (@pcg)
 
 ## License

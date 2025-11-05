@@ -64,6 +64,24 @@ The `rfc_connection` parameter accepts a dictionary with the following sub-optio
 
 **Instance Number Choices**: 0-99
 
+#### ⚠️ Important Note About RFC Password
+
+**IMPORTANT**: If you specify the `password` parameter in the `rfc_connection` block in your playbook, the module will **ALWAYS** report a change (`changed=true`) on every playbook run, even if nothing has actually changed.
+
+**Why does this happen?**
+- The ALPACA Operator API does not return the current RFC password for security reasons
+- The module cannot compare the desired password with the current password
+- Therefore, it cannot determine if the password actually needs to be updated
+- This breaks the idempotency of the module
+
+**Best Practice:**
+1. **Initial Setup**: Include the password when creating the system for the first time
+2. **After Setup**: Comment out or remove the `password` parameter from your playbook
+3. **Password Changes**: Only uncomment the password when you actually need to change it
+```
+
+This approach maintains idempotency while still allowing you to manage RFC passwords when needed.
+
 ### Agent Assignment
 
 The `agents` parameter accepts a list of dictionaries, where each dictionary must include:
