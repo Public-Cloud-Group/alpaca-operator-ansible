@@ -45,6 +45,7 @@ jobs:
       matrix:
         include:
           # Remember to update sanity ignore files in /tests/sanity/ if you add a new version pares to the test matrix!
+          # Refer to https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html for details on Ansible release and python version support.
           - ansible-version: "2.12"
             python-version: "3.8"
           - ansible-version: "2.12"
@@ -84,6 +85,12 @@ jobs:
           - ansible-version: "2.18"
             python-version: "3.12"
           - ansible-version: "2.18"
+            python-version: "3.13"
+          - ansible-version: "2.19"
+            python-version: "3.11"
+          - ansible-version: "2.19"
+            python-version: "3.12"
+          - ansible-version: "2.19"
             python-version: "3.13"
 
     name: Test ${{ matrix.python-version }} / Ansible ${{ matrix.ansible-version }}
