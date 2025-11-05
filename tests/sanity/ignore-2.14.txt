@@ -1,4 +1,3 @@
-plugins/modules/alpaca_agent.py validate-modules:doc-default-does-not-match-spec    # Defaults are handled different by design
 plugins/modules/alpaca_agent.py pep8:E241                                           # Multiple spaces after ':' - Keeping code readability
 plugins/modules/alpaca_agent.py pep8:E272                                           # Multiple spaces before keyword - Keeping code readability
 plugins/modules/alpaca_agent.py pep8:E501                                           # Line too long - Keeping code readability
