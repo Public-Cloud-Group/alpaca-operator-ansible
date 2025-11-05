@@ -231,7 +231,10 @@ options:
                 default: true
                 type: bool
 
-supports_check_mode: true
+attributes:
+    check_mode:
+        description: Can run in check_mode and return changed status prediction without modifying target.
+        support: full
 
 author:
     - Jan-Karsten Hansmeyer (@pcg)
