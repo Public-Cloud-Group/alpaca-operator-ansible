@@ -24,28 +24,28 @@ description: >
     Note: Renaming a command or reassigning it to a different agent is not supported by this module, as these properties are used for identification.
 
     Update behavior:
-    If the desired command already exists, only the fields required for unique identification need to be provided (i.e., either systemId or systemName, and either agentId or agentName).
+    If the desired command already exists, only the fields required for unique identification need to be provided (i.e., either O(system.systemId) or O(system.systemName), and either O(command.agentId) or O(command.agentName).
     Any options not explicitly set in the module call or the playbook will retain their existing values from the current configuration.
 
 options:
     system:
-        description: Dictionary containing system identification. Either `systemId` or `systemName` must be provided.
+        description: Dictionary containing system identification. Either O(system.systemId) or O(system.systemName) must be provided.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             systemId:
-                description: Numeric ID of the target system. Optional if O(systemName) is provided.
+                description: Numeric ID of the target system. Optional if O(system.systemName) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
             systemName:
-                description: Name of the target system. Optional if O(systemId) is provided.
+                description: Name of the target system. Optional if O(system.systemId) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: str
     command:
-        description: Definition of the desired command. The definition can include fields such as name, agentId or agentName, processId, parameters, schedule, history, escalation settings, etc.
+        description: Definition of the desired command. The definition can include fields such as O(command.name), O(command.agentId) or O(command.agentName), O(command.processId), O(command.parameters), O(command.schedule), O(command.history), O(command.escalation), etc.
         version_added: '1.0.0'
         required: true
         type: dict
@@ -64,27 +64,27 @@ options:
                 choices: [present, absent]
             agentId:
                 description: >
-                    Numeric ID of the agent. Optional if O(agentName) is provided.
+                    Numeric ID of the agent. Optional if O(command.agentName) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
                 version_added: '1.0.0'
                 required: false
                 type: int
             agentName:
                 description: >
-                    Name of the agent. Optional if O(agentId) is provided.
+                    Name of the agent. Optional if O(command.agentId) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
                 version_added: '1.0.0'
                 required: false
                 type: str
             processId:
                 description: >
-                    ID of the process to be executed. Optional if O(processCentralId) is provided.
+                    ID of the process to be executed. Optional if O(command.processCentralId) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
             processCentralId:
                 description: >
-                    Central ID / Global ID of the process to be executed. Optional if O(processId) is provided.
+                    Central ID / Global ID of the process to be executed. Optional if O(command.processId) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
@@ -121,12 +121,12 @@ options:
                         required: false
                         choices: [every_5min, one_per_day, hourly, manually, fixed_time, hourly_with_mn, every_minute, even_hours_with_mn, odd_hours_with_mn, even_hours, odd_hours, fixed_time_once, fixed_time_immediate, cron_expression, disabled, start_fixed_time_and_hourly_mn]
                     time:
-                        description: Execution time in HH:mm:ss. Required when O(period) is V(fixed_time), V(fixed_time_once), or V(start_fixed_time_and_hourly_mn).
+                        description: Execution time in HH:mm:ss. Required when O(command.schedule.period) is V(fixed_time), V(fixed_time_once), or V(start_fixed_time_and_hourly_mn).
                         version_added: '1.0.0'
                         type: str
                         required: false
                     cronExpression:
-                        description: Quartz-compatible cron expression. Required when O(period) is V(cron_expression).
+                        description: Quartz-compatible cron expression. Required when O(command.schedule.period) is V(cron_expression).
                         version_added: '1.0.0'
                         type: str
                         required: false
