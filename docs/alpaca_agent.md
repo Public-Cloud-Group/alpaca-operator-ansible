@@ -18,38 +18,38 @@ The `pcg.alpaca_operator.alpaca_agent` module allows you to create, update, or d
 
 ### Required Parameters
 
-| Parameter       | Type | Required | Description                                              |
-| --------------- | ---- | -------- | -------------------------------------------------------- |
-| `name`          | str  | Yes      | Unique name (hostname) of the agent                      |
-| `apiConnection` | dict | Yes      | Connection details for accessing the ALPACA Operator API |
+| Parameter        | Type | Required | Description                                              |
+| ---------------- | ---- | -------- | -------------------------------------------------------- |
+| `name`           | str  | Yes      | Unique name (hostname) of the agent                      |
+| `api_connection` | dict | Yes      | Connection details for accessing the ALPACA Operator API |
 
 ### Optional Parameters
 
-| Parameter       | Type | Required | Default | Description                                                                                                                                                                            |
-| --------------- | ---- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `new_name`      | str  | No       | -       | Optional new name for the agent. If the agent specified in `name` exists, it will be renamed to this value. If the agent does not exist, a new agent will be created using this value. |
-| `description`   | str  | No       | -       | Unique description of the agent                                                                                                                                                        |
-| `escalation`    | dict | No       | -       | Escalation configuration                                                                                                                                                               |
-| `ipAddress`     | str  | No       | -       | IP address of the agent                                                                                                                                                                |
-| `location`      | str  | No       | virtual | Location of the agent (virtual, local1, local2, remote)                                                                                                                                |
-| `scriptGroupId` | int  | No       | -1      | Script Group ID                                                                                                                                                                        |
-| `state`         | str  | No       | present | Desired state of the agent (present, absent)                                                                                                                                           |
+| Parameter         | Type | Required | Default | Description                                                                                                                                                                            |
+| ----------------- | ---- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `new_name`        | str  | No       | -       | Optional new name for the agent. If the agent specified in `name` exists, it will be renamed to this value. If the agent does not exist, a new agent will be created using this value. |
+| `description`     | str  | No       | -       | Unique description of the agent                                                                                                                                                        |
+| `escalation`      | dict | No       | -       | Escalation configuration                                                                                                                                                               |
+| `ip_address`      | str  | No       | -       | IP address of the agent                                                                                                                                                                |
+| `location`        | str  | No       | virtual | Location of the agent (virtual, local1, local2, remote)                                                                                                                                |
+| `script_group_id` | int  | No       | -1      | Script Group ID                                                                                                                                                                        |
+| `state`           | str  | No       | present | Desired state of the agent (present, absent)                                                                                                                                           |
 
 ### Escalation Configuration
 
 The `escalation` parameter accepts a dictionary with the following sub-options:
 
-| Parameter              | Type | Required | Default | Description                          |
-| ---------------------- | ---- | -------- | ------- | ------------------------------------ |
-| `failuresBeforeReport` | int  | No       | 0       | Number of failures before reporting  |
-| `mailEnabled`          | bool | No       | false   | Whether mail notification is enabled |
-| `mailAddress`          | str  | No       | ""      | Mail address for notifications       |
-| `smsEnabled`           | bool | No       | false   | Whether SMS notification is enabled  |
-| `smsAddress`           | str  | No       | ""      | SMS address for notifications        |
+| Parameter                | Type | Required | Default | Description                          |
+| ------------------------ | ---- | -------- | ------- | ------------------------------------ |
+| `failures_before_report` | int  | No       | 0       | Number of failures before reporting  |
+| `mail_enabled`           | bool | No       | false   | Whether mail notification is enabled |
+| `mail_address`           | str  | No       | ""      | Mail address for notifications       |
+| `sms_enabled`            | bool | No       | false   | Whether SMS notification is enabled  |
+| `sms_address`            | str  | No       | ""      | SMS address for notifications        |
 
 ### API Connection Configuration
 
-The `apiConnection` parameter requires a dictionary with the following sub-options:
+The `api_connection` parameter requires a dictionary with the following sub-options:
 
 | Parameter    | Type | Required | Default   | Description                                                 |
 | ------------ | ---- | -------- | --------- | ----------------------------------------------------------- |
@@ -70,7 +70,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -82,18 +82,18 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
     - name: Create agent
       pcg.alpaca_operator.alpaca_agent:
         name: agent01
-        ipAddress: 192.168.1.100
+        ip_address: 192.168.1.100
         location: virtual
         description: Test agent
         escalation:
-          failuresBeforeReport: 3
-          mailEnabled: true
-          mailAddress: my.mail@pcg.io
-          smsEnabled: true
-          smsAddress: 0123456789
-        scriptGroupId: 0
+          failures_before_report: 3
+          mail_enabled: true
+          mail_address: my.mail@pcg.io
+          sms_enabled: true
+          sms_address: 0123456789
+        script_group_id: 0
         state: present
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ### Delete an Agent
@@ -104,7 +104,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -117,7 +117,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
       pcg.alpaca_operator.alpaca_agent:
         name: agent01
         state: absent
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ### Rename an Agent
@@ -128,7 +128,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -142,7 +142,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
         name: agent01
         new_name: agent_renamed
         state: present
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ## Return Values
@@ -166,15 +166,15 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
     "id": 7,
     "hostname": "testagent",
     "description": "Test agent",
-    "ipAddress": "10.1.1.1",
+    "ip_address": "10.1.1.1",
     "location": "virtual",
-    "scriptGroupId": 2,
+    "script_group_id": 2,
     "escalation": {
-      "failuresBeforeReport": 3,
-      "mailEnabled": true,
-      "mailAddress": "monitoring@pcg.io",
-      "smsEnabled": false,
-      "smsAddress": ""
+      "failures_before_report": 3,
+      "mail_enabled": true,
+      "mail_address": "monitoring@pcg.io",
+      "sms_enabled": false,
+      "sms_address": ""
     }
   }
 }
@@ -187,12 +187,12 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   "msg": "Agent updated",
   "changed": true,
   "changes": {
-    "ipAddress": {
+    "ip_address": {
       "current": "10.1.1.1",
       "desired": "10.1.1.2"
     },
     "escalation": {
-      "mailEnabled": {
+      "mail_enabled": {
         "current": false,
         "desired": true
       }
@@ -207,9 +207,9 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - Agent names must be unique within the ALPACA Operator environment
 - When renaming an agent, the new name must not conflict with existing agent names
 - Escalation settings are optional and can be configured independently
-- The `scriptGroupId` parameter defaults to -1 if not specified
+- The `script_group_id` parameter defaults to -1 if not specified
 - Location options include: virtual, local1, local2, remote
-- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
+- API connection variables should be stored in the inventory file and referenced via `api_connection: "{{ api_connection }}"` in playbooks
 
 ## Author
 

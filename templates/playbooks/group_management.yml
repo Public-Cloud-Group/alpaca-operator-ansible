@@ -12,7 +12,7 @@
         state: present                                              # present | absent
 
         # --- API connection configuration ---
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"                    # Defined in the corresponding inventory
           protocol: "{{ ALPACA_Operator_API_Protocol }}"            # Defined in the corresponding inventory
           port: "{{ ALPACA_Operator_API_Port }}"                    # Defined in the corresponding inventory

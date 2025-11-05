@@ -4,9 +4,9 @@
     _system_variables: "{{ system_variables | default(omit) }}" # Copy system_variables to _system_variables because we cannot directly overwrite playbook-defined variables in Ansible
     csv:
       primarySystem: "{{ csv_row.primary_system | default(omit) }}"
-      systemName: "{{ csv_row.hdb_nw_sid | default(omit) }}"
+      system_name: "{{ csv_row.hdb_nw_sid | default(omit) }}"
       hdbTenant: "{{ csv_row.hdb_tenant | default(omit) }}"
-      agentName: "{{ csv_row.system_vdns | default(omit) }}"
+      agent_name: "{{ csv_row.system_vdns | default(omit) }}"
       systemSla: "{{ csv_row.system_sla | default(omit) }}"
       systemType: "{{ csv_row.system_type | default(omit) }}"
       systemStaging: "{{ csv_row.system_staging | default(omit) }}"
@@ -67,11 +67,11 @@
 #   meta: end_play
 #   when: true
 
-- name: "Set system variables for system {{ csv.systemName }}"
+- name: "Set system variables for system {{ csv.system_name }}"
   when: _system_variables is defined and _system_variables is not none and _system_variables | length > 0
   set_fact:
     system:
-      variables: "{{ _system_variables[csv.systemName] | default([]) }}"
+      variables: "{{ _system_variables[csv.system_name] | default([]) }}"
 
 - name: "Generate commands for current csv row"
   include_tasks: process_system.yml

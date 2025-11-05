@@ -40,9 +40,9 @@ The role automatically maps CSV columns to variables that can be used in command
 | CSV Column            | Variable Name          | Description                        | Example Value          |
 | --------------------- | ---------------------- | ---------------------------------- | ---------------------- |
 | `primary_system`      | `{ primarySystem }`    | Primary system identifier          | `"MUP"`                |
-| `hdb_nw_sid`          | `{ systemName }`       | HANA system SID                    | `"MHP"`                |
+| `hdb_nw_sid`          | `{ system_name }`       | HANA system SID                    | `"MHP"`                |
 | `hdb_tenant`          | `{ hdbTenant }`        | HANA tenant                        | `"MUP"`                |
-| `system_vdns`         | `{ agentName }`        | Agent name (used as default agent) | `"hdbmhpa"`            |
+| `system_vdns`         | `{ agent_name }`        | Agent name (used as default agent) | `"hdbmhpa"`            |
 | `system_sla`          | `{ systemSla }`        | Service Level Agreement            | `"SLA2"`               |
 | `system_type`         | `{ systemType }`       | System type                        | `"HDB"`                |
 | `system_staging`      | `{ systemStaging }`    | System staging environment         | `"rg-sap-010msb-prod"` |
@@ -253,13 +253,13 @@ override:
 
     # Define system-specific variables by making use of CSV variables
     system_variables:
-      "{ systemName }":
+      "{ system_name }":
         - name: "<BKP_DATA_DEST1>"
-          value: "/bkp004/{ systemName }/data"
+          value: "/bkp004/{ system_name }/data"
         - name: "<BKP_DATA_DEST1_MONTHLY>"
-          value: "/bkp004/{ systemName }/data_monthly"
+          value: "/bkp004/{ system_name }/data_monthly"
         - name: "<BKP_DATA_DEST1_YEARLY>"
-          value: "/bkp004/{ systemName }/data_yearly"
+          value: "/bkp004/{ system_name }/data_yearly"
 
   roles:
     - hana_backup
@@ -307,13 +307,13 @@ override:
           value: "yearly-backup-mhp"
         - name: "<BKP_LB_FS_01>"
           value: "fs-backup-mhp"
-      "{ systemName }":
+      "{ system_name }":
         - name: "<BKP_DATA_DEST1>"
-          value: "/bkp004/{ systemName }/data"
+          value: "/bkp004/{ system_name }/data"
         - name: "<BKP_DATA_DEST1_MONTHLY>"
-          value: "/bkp004/{ systemName }/data_monthly"
+          value: "/bkp004/{ system_name }/data_monthly"
         - name: "<BKP_DATA_DEST1_YEARLY>"
-          value: "/bkp004/{ systemName }/data_yearly"
+          value: "/bkp004/{ system_name }/data_yearly"
 
     # Override configuration
     override:
@@ -328,7 +328,7 @@ override:
         schedule:
           period: fixed_time
           time: "02:00:00"
-          daysOfWeek:
+          days_of_week:
             - monday
             - tuesday
             - wednesday
@@ -336,13 +336,13 @@ override:
             - friday
             - saturday
             - sunday
-        parametersNeeded: true
+        parameters_needed: true
         disabled: false
         critical: false
         history:
-          documentAllRuns: true
+          document_all_runs: true
           retention: 200
-        autoDeploy: false
+        auto_deploy: false
         timeout:
           type: custom
           value: 4000
@@ -351,38 +351,38 @@ override:
           smsEnabled: true
           mailAddress: "monitoring@pcg.io"
           smsAddress: "0123456789"
-          minFailureCount: 1
+          min_failure_count: 1
           triggers:
-            everyChange: true
-            toRed: true
-            toYellow: true
-            toGreen: true
+            every_change: true
+            to_red: true
+            to_yellow: true
+            to_green: true
 
       commands:
         - name: "HANA BACKUP LOG"
-          processCentralId: 8990048
+          process_central_id: 8990048
           parameters: "-s <HANA_DB_SID> -n 4 -e blob -o <BKP_LB_LOG_01> -z $SKEY -r { blob_log_ret } -k { local_log_ret } -y -"
         - name: "HANA RESTORE FILE"
-          processCentralId: 8990048
-          parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 1 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { systemName } -E 2 -B <BKP_LB_DATA_01> -P $SKEY -U -"
+          process_central_id: 8990048
+          parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 1 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { system_name } -E 2 -B <BKP_LB_DATA_01> -P $SKEY -U -"
         - name: "HANA RESTORE SNAP"
-          processCentralId: 8990048
-          parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 0 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { systemName } -E 2 -B <BKP_LB_DATA_01> -P $SKEY"
+          process_central_id: 8990048
+          parameters: "-q <HANA_DB_SID> -w <HANA_VHOST> -e <HANA_DB_SID> -j 0 -t AUTO -k 2021-06-16.10:00:00 -l <BKP_DATA_DEST1>/restore -g SYSTEMDB,<HANA_DB_SID>!<HANA_DB_SID> -A xxxx -Q 1 -T 0 -J BACKUP -W <HANA_VHOST> -X { system_name } -E 2 -B <BKP_LB_DATA_01> -P $SKEY"
         - name: "HANA BACKUP SNAP"
-          processCentralId: 8990048
-          parameters: "-s { systemName } -i <HANA_SYS_NR> -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
+          process_central_id: 8990048
+          parameters: "-s { system_name } -i <HANA_SYS_NR> -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
         - name: "HANA BACKUP FILE DAILY"
-          processCentralId: 8990048
-          parameters: "-s { systemName } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
+          process_central_id: 8990048
+          parameters: "-s { system_name } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
         - name: "HANA BACKUP FILE MONTHLY"
-          processCentralId: 8990048
-          parameters: "-s { systemName } -d <BKP_DATA_DEST1_MONTHLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_monthly }"
+          process_central_id: 8990048
+          parameters: "-s { system_name } -d <BKP_DATA_DEST1_MONTHLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_monthly }"
         - name: "HANA BACKUP FILE YEARLY"
-          processCentralId: 8990048
-          parameters: "-s { systemName } -d <BKP_DATA_DEST1_YEARLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_yearly }"
+          process_central_id: 8990048
+          parameters: "-s { system_name } -d <BKP_DATA_DEST1_YEARLY> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret_yearly }"
         - name: "FS BACKUP INCR"
-          processCentralId: 8990048
-          parameters: "-a { systemName } -b <BKP_LB_FS_01> -c 1 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
+          process_central_id: 8990048
+          parameters: "-a { system_name } -b <BKP_LB_FS_01> -c 1 -d $FSBKPBASE -e /backup -f localhost -g $SKEY -h <CZ_LOCAL_FILE_RET_CLASS_3> -i <CZ_BLOB_FILE_RET_CLASS_3>"
 
       service_levels:
         SLA1:
@@ -430,14 +430,14 @@ override:
 
 The role supports three types of variables:
 
-1. **CSV Variables** (from CSV file): `{ systemName }`, `{ instanceNo }`, `{ systemType }`, etc.
+1. **CSV Variables** (from CSV file): `{ system_name }`, `{ instanceNo }`, `{ systemType }`, etc.
 2. **SLA Variables** (from service_levels): `{ local_file_ret }`, `{ blob_file_ret }`, etc.
 
 ### Variable Substitution Examples
 
 ```yaml
 # CSV variables (single curly braces)
-parameters: "-s { systemName } -i { instanceNo }"
+parameters: "-s { system_name } -i { instanceNo }"
 # Result: "-s MHP -i 05"
 ```
 
@@ -454,27 +454,27 @@ By default, the role automatically uses the value from the `system_vdns` column 
 # Global override
 override:
   command_defaults:
-    agentName: "localhost"  # All commands use "localhost"
+    agent_name: "localhost"  # All commands use "localhost"
 
 # SLA-level override
 override:
   service_levels:
     SLA1:
       command_defaults:
-        agentName: "someagent01"  # All SLA1 commands use "someagent01"
+        agent_name: "someagent01"  # All SLA1 commands use "someagent01"
 
 # Command-level override
 override:
   commands:
     - name: "HANA BACKUP LOG"
-      agentName: "someagent02"  # This specific command uses "someagent02" (in all SLAs)
+      agent_name: "someagent02"  # This specific command uses "someagent02" (in all SLAs)
 ```
 
 #### Priority Order
 Agent name resolution follows this priority order (highest to lowest):
-1. **Command-specific** `agentName` setting
-2. **SLA-level** `command_defaults.agentName` setting
-3. **Global** `command_defaults.agentName` setting
+1. **Command-specific** `agent_name` setting
+2. **SLA-level** `command_defaults.agent_name` setting
+3. **Global** `command_defaults.agent_name` setting
 4. **CSV column** `system_vdns` value (default behavior)
 
 ## Default Configuration
@@ -534,10 +534,10 @@ The role follows a specific priority order when merging parameter values:
 
 #### Dictionary and List Behavior
 
-**Important**: When overriding dictionaries that contain lists (such as `commands` or `daysOfWeek`), the entire list is replaced, not merged. This means:
+**Important**: When overriding dictionaries that contain lists (such as `commands` or `days_of_week`), the entire list is replaced, not merged. This means:
 
 - If you define `commands` in your override, it will completely replace the default command set
-- If you define `daysOfWeek` in a schedule override, it will replace the default days
+- If you define `days_of_week` in a schedule override, it will replace the default days
 - To extend rather than replace, you must include all desired items in your override
 
 ### SLA Level Customization
@@ -565,8 +565,8 @@ override:
           value: 8000
       commands:
         - name: "SLA5 CUSTOM BACKUP"
-          processCentralId: 8990048
-          parameters: "-s { systemName } -d /backup/sla5 -r 30"
+          process_central_id: 8990048
+          parameters: "-s { system_name } -d /backup/sla5 -r 30"
 ```
 
 ## Role Tasks

@@ -12,26 +12,26 @@
         state: present                                              # present | absent
 
         description: "My Test System"                               # Optional description
-        magicNumber: 42                                             # Optional: integer between 0 and 59
-        checksDisabled: false                                       # Optional: disables automated system checks
+        magic_number: 42                                            # Optional: integer between 0 and 59
+        checks_disabled: false                                      # Optional: disables automated system checks
 
         # --- Group assignment (only one required) ---
-        # groupName: "test-group"                                   # Optional group assignment by name
-        # groupId: 17                                               # Optional group assignment by ID
+        # group_name: "test-group"                                  # Optional group assignment by name
+        # group_id: 17                                              # Optional group assignment by ID
 
         # --- RFC connection configuration (optional) ---
         # - If not specified, existing rfc connection will be used.
-        rfcConnection:
+        rfc_connection:
           type: instance                                            # none | instance | messageServer
           host: "sap-target-host"
-          instanceNumber: 30
+          instance_number: 30
           sid: "ABC"                                                # SAP system ID (3 uppercase letters)
-          logonGroup: "my-logon-group"                              # Optional for messageServer
+          logon_group: "my-logon-group"                             # Optional for messageServer
           username: "rfc_user"
           password: "rfc_password"
           client: "100"
-          sapRouterString: "/H/1.2.3.4/S/3299/H/5.6.7.8/"
-          sncEnabled: false
+          sap_router_string: "/H/1.2.3.4/S/3299/H/5.6.7.8/"
+          snc_enabled: false
 
         # --- Agent assignment (optional) ---
         # - If not specified, existing agents will be used.
@@ -57,7 +57,7 @@
             value: "this is a string"
 
         # --- API connection configuration ---
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"                    # Defined in the corresponding inventory
           protocol: "{{ ALPACA_Operator_API_Protocol }}"            # Defined in the corresponding inventory
           port: "{{ ALPACA_Operator_API_Port }}"                    # Defined in the corresponding inventory

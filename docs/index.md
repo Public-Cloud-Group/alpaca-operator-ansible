@@ -8,8 +8,8 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 
 ### Core Management Modules
 
-| Module                                                       | Description                    | Use Case                                                                              |
-| ------------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------- |
+| Module                                                  | Description                    | Use Case                                                                              |
+| ------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
 | [`pcg.alpaca_operator.alpaca_agent`](alpaca_agent.md)   | Manage ALPACA Operator agents  | Create, update, delete, and configure agents with escalation settings                 |
 | [`pcg.alpaca_operator.alpaca_system`](alpaca_system.md) | Manage ALPACA Operator systems | Create, update, delete systems with RFC connections, agent assignments, and variables |
 | [`pcg.alpaca_operator.alpaca_group`](alpaca_group.md)   | Manage ALPACA Operator groups  | Create, rename, and delete groups for organizing systems                              |
@@ -58,7 +58,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
      gather_facts: false
 
      vars:
-       apiConnection:
+       api_connection:
          host: "{{ ALPACA_Operator_API_Host }}"
          protocol: "{{ ALPACA_Operator_API_Protocol }}"
          port: "{{ ALPACA_Operator_API_Port }}"
@@ -71,7 +71,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
          pcg.alpaca_operator.alpaca_group:
            name: production
            state: present
-           apiConnection: "{{ apiConnection }}"
+           api_connection: "{{ api_connection }}"
 
 ## Common Patterns
 
@@ -81,14 +81,14 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
   pcg.alpaca_operator.alpaca_agent:
     name: backup-agent-01
     description: Backup Agent for Production
-    ipAddress: 192.168.1.100
+    ip_address: 192.168.1.100
     location: virtual
     escalation:
-      failuresBeforeReport: 3
-      mailEnabled: true
-      mailAddress: monitoring@company.com
+      failures_before_report: 3
+      mail_enabled: true
+      mail_address: monitoring@company.com
     state: present
-    apiConnection: "{{ apiConnection }}"
+    api_connection: "{{ api_connection }}"
 ```
 
 ### 2. System Management with RFC Connection
@@ -97,8 +97,8 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
   pcg.alpaca_operator.alpaca_system:
     name: sap-prod-01
     description: SAP Production System
-    groupName: production
-    rfcConnection:
+    group_name: production
+    rfc_connection:
       type: instance
       host: sap-prod-server
       instanceNumber: 00
@@ -112,7 +112,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
       - name: "BACKUP_PATH"
         value: "/backup/sap"
     state: present
-    apiConnection: "{{ apiConnection }}"
+    api_connection: "{{ api_connection }}"
 ```
 
 ### 3. Command Management
@@ -120,16 +120,16 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 - name: Configure backup command
   pcg.alpaca_operator.alpaca_command:
     system:
-      systemName: sap-prod-01
+      system_name: sap-prod-01
     command:
       name: "Daily Backup"
-      agentName: backup-agent-01
-      processCentralId: 8990048
+      agent_name: backup-agent-01
+      process_central_id: 8990048
       parameters: "-p PRD -s /backup/sap"
       schedule:
         period: fixed_time
         time: "02:00:00"
-        daysOfWeek:
+        days_of_week:
           - monday
           - tuesday
           - wednesday
@@ -137,10 +137,10 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
           - friday
       critical: true
       escalation:
-        mailEnabled: true
-        mailAddress: monitoring@company.com
-        minFailureCount: 1
-    apiConnection: "{{ apiConnection }}"
+        mail_enabled: true
+        mail_address: monitoring@company.com
+        min_failure_count: 1
+    api_connection: "{{ api_connection }}"
 ```
 
 ### 4. Bulk Command Management
@@ -148,21 +148,21 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 - name: Configure all commands for system
   pcg.alpaca_operator.alpaca_command_set:
     system:
-      systemName: sap-prod-01
+      system_name: sap-prod-01
     commands:
       - name: "Daily Backup"
-        agentName: backup-agent-01
-        processCentralId: 8990048
+        agent_name: backup-agent-01
+        process_central_id: 8990048
         schedule:
           period: fixed_time
           time: "02:00:00"
       - name: "Log Cleanup"
-        agentName: backup-agent-01
-        processCentralId: 8990048
+        agent_name: backup-agent-01
+        process_central_id: 8990048
         schedule:
           period: cron_expression
-          cronExpression: '0 3 * * 0'
-    apiConnection: "{{ apiConnection }}"
+          cron_expression: '0 3 * * 0'
+    api_connection: "{{ api_connection }}"
 ```
 
 ## Best Practices
@@ -188,7 +188,7 @@ Then reference them in your playbook:
 
 ```yaml
 vars:
-  apiConnection:
+  api_connection:
     host: "{{ ALPACA_Operator_API_Host }}"
     protocol: "{{ ALPACA_Operator_API_Protocol }}"
     port: "{{ ALPACA_Operator_API_Port }}"

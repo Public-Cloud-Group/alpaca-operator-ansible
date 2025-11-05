@@ -40,7 +40,7 @@ options:
         default: present
         choices: [present, absent]
         type: str
-    apiConnection:
+    api_connection:
         description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
@@ -99,7 +99,7 @@ EXAMPLES = r'''
   pcg.alpaca_operator.alpaca_group:
     name: testgroup01
     state: present
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -111,7 +111,7 @@ EXAMPLES = r'''
   pcg.alpaca_operator.alpaca_group:
     name: testgroup01
     state: absent
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -124,7 +124,7 @@ EXAMPLES = r'''
     name: testgroup01
     new_name: testgroup_renamed
     state: present
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -187,7 +187,7 @@ def main():
             name=dict(type='str', required=True),
             new_name=dict(type='str', required=False),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-            apiConnection=dict(
+            api_connection=dict(
                 type='dict',
                 required=True,
                 options=dict(
@@ -206,12 +206,12 @@ def main():
     name = module.params['name']
     new_name = module.params.get('new_name')
     state = module.params['state']
-    api_host = module.params['apiConnection']['host']
-    api_port = module.params['apiConnection']['port']
-    api_protocol = module.params['apiConnection']['protocol']
-    api_username = module.params['apiConnection']['username']
-    api_password = module.params['apiConnection']['password']
-    api_tls_verify = module.params['apiConnection']['tls_verify']
+    api_host = module.params['api_connection']['host']
+    api_port = module.params['api_connection']['port']
+    api_protocol = module.params['api_connection']['protocol']
+    api_username = module.params['api_connection']['username']
+    api_password = module.params['api_connection']['password']
+    api_tls_verify = module.params['api_connection']['tls_verify']
     api_url = "{0}://{1}:{2}/api".format(api_protocol, api_host, api_port)
     api_token = get_token(api_url, api_username, api_password, api_tls_verify)
 

@@ -88,7 +88,7 @@ For a complete setup guide including Ansible installation, collection setup, and
   pcg.alpaca_operator.alpaca_group:
     name: ansible_testing_group_01
     state: present
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -100,7 +100,7 @@ For a complete setup guide including Ansible installation, collection setup, and
   pcg.alpaca_operator.alpaca_group:
     name: ansible_testing_group_01
     state: absent
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -116,17 +116,17 @@ For a complete setup guide including Ansible installation, collection setup, and
   pcg.alpaca_operator.alpaca_agent:
     name: ansible_testing_agent_01
     description: My Test Agent 01
-    ipAddress: 10.1.1.1
+    ip_address: 10.1.1.1
     location: virtual
     escalation:
-      failuresBeforeReport: 1
-      mailEnabled: False
-      mailAddress: monitoring_1@pcg.io
-      smsEnabled: True
-      smsAddress: 0123456789
-    scriptGroupId: -1
+      failures_before_report: 1
+      mail_enabled: False
+      mail_address: monitoring_1@pcg.io
+      sms_enabled: True
+      sms_address: 0123456789
+    script_group_id: -1
     state: present
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -138,7 +138,7 @@ For a complete setup guide including Ansible installation, collection setup, and
   pcg.alpaca_operator.alpaca_agent:
     name: ansible_testing_agent_01
     state: absent
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -154,20 +154,20 @@ For a complete setup guide including Ansible installation, collection setup, and
   pcg.alpaca_operator.alpaca_system:
     name: ansible01
     description: Ansible Test System 01
-    magicNumber: 59
-    checksDisabled: False
-    groupName: ansible_testing_group_01
-    rfcConnection:
+    magic_number: 59
+    checks_disabled: False
+    group_name: ansible_testing_group_01
+    rfc_connection:
       type: instance
       host: ansible01-host
-      instanceNumber: 42
+      instance_number: 42
       sid: ABC
-      logonGroup: ansible01-lgroup
+      logon_group: ansible01-lgroup
       username: rfc_myUser
       password: rfc_myPasswd
       client: 123
-      sapRouterString: rfc_SAPRouter
-      sncEnabled: False
+      sap_router_string: rfc_SAPRouter
+      snc_enabled: False
     agents:
       - name: ansible_testing_agent_01
       - name: ansible_testing_agent_02
@@ -180,7 +180,7 @@ For a complete setup guide including Ansible installation, collection setup, and
       - name: <BKP_DATA_DEST2>
         value: "11"
     state: present
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -192,7 +192,7 @@ For a complete setup guide including Ansible installation, collection setup, and
   pcg.alpaca_operator.alpaca_system:
     name: ansible01
     state: absent
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -211,118 +211,118 @@ For a complete setup guide including Ansible installation, collection setup, and
 - name: Ensure that exactly these system commands exist — no more, no fewer
   pcg.alpaca_operator.alpaca_command_set:
     system:
-      systemName: ansible01
+      system_name: ansible01
     commands:
       - name: "BKP: DB log sync 1"
         state: present
-        agentName: ansible_testing_agent_01
+        agent_name: ansible_testing_agent_01
         parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-        processCentralId: 8990048
+        process_central_id: 8990048
         schedule:
           period: manually
           time: "11:11:11"
-          cronExpression: ""
-          daysOfWeek:
+          cron_expression: ""
+          days_of_week:
             - monday
             - sunday
-        parametersNeeded: false
+        parameters_needed: false
         disabled: true
         critical: true
         history:
-          documentAllRuns: false
+          document_all_runs: false
           retention: 100
-        autoDeploy: false
+        auto_deploy: false
         timeout:
           type: custom
           value: 10
         escalation:
-          mailEnabled: true
-          smsEnabled: true
-          mailAddress: "monitoring_1@pcg.io"
-          smsAddress: "0123456789-1"
-          minFailureCount: 1
+          mail_enabled: true
+          sms_enabled: true
+          mail_address: "monitoring_1@pcg.io"
+          sms_address: "0123456789-1"
+          min_failure_count: 1
           triggers:
-            everyChange: true
-            toRed: false
-            toYellow: false
-            toGreen: true
+            every_change: true
+            to_red: false
+            to_yellow: false
+            to_green: true
       - name: "BKP: DB log sync 2"
         state: present
-        agentName: ansible_testing_agent_02
+        agent_name: ansible_testing_agent_02
         parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-        processId: 801
+        process_id: 801
         schedule:
           period: manually
           time: "12:12:12"
-          cronExpression: ""
-          daysOfWeek:
+          cron_expression: ""
+          days_of_week:
             - monday
             - wednesday
             - friday
             - sunday
-        parametersNeeded: false
+        parameters_needed: false
         disabled: true
         critical: true
         history:
-          documentAllRuns: false
+          document_all_runs: false
           retention: 200
-        autoDeploy: false
+        auto_deploy: false
         timeout:
           type: custom
           value: 20
         escalation:
-          mailEnabled: true
-          smsEnabled: true
-          mailAddress: "monitoring_2@pcg.io"
-          smsAddress: "0123456789-2"
-          minFailureCount: 2
+          mail_enabled: true
+          sms_enabled: true
+          mail_address: "monitoring_2@pcg.io"
+          sms_address: "0123456789-2"
+          min_failure_count: 2
           triggers:
-            everyChange: true
-            toRed: false
-            toYellow: false
-            toGreen: true
+            every_change: true
+            to_red: false
+            to_yellow: false
+            to_green: true
 
 - name: Ensure a specific system command exist
   pcg.alpaca_operator.alpaca_command:
     system:
-      systemName: ansible01
+      system_name: ansible01
     command:
       name: "BKP: DB log sync 3"
       state: present
-      agentName: ansible_testing_agent_03
+      agent_name: ansible_testing_agent_03
       parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-      processId: 801
-      processCentralId: 8990048
+      process_id: 801
+      process_central_id: 8990048
       schedule:
         period: manually
         time: "13:13:13"
-        cronExpression: ""
-        daysOfWeek:
+        cron_expression: ""
+        days_of_week:
           - monday
           - sunday
           - wednesday
-      parametersNeeded: false
+      parameters_needed: false
       disabled: true
       critical: true
       history:
-        documentAllRuns: false
+        document_all_runs: false
         retention: 300
-      autoDeploy: false
+      auto_deploy: false
         timeout:
           type: custom
           value: 30
       escalation:
-        mailEnabled: true
-        smsEnabled: true
-        mailAddress: "monitoring_3@pcg.io"
-        smsAddress: "0123456789-3"
-        minFailureCount: 3
+        mail_enabled: true
+        sms_enabled: true
+        mail_address: "monitoring_3@pcg.io"
+        sms_address: "0123456789-3"
+        min_failure_count: 3
         triggers:
-          everyChange: true
-          toRed: false
-          toYellow: false
-          toGreen: true
-    apiConnection:
+          every_change: true
+          to_red: false
+          to_yellow: false
+          to_green: true
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -333,9 +333,9 @@ For a complete setup guide including Ansible installation, collection setup, and
 - name: Delete all commands in system ansible01
   pcg.alpaca_operator.alpaca_command_set:
     system:
-      systemName: ansible01
+      system_name: ansible01
     commands: []
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -346,12 +346,12 @@ For a complete setup guide including Ansible installation, collection setup, and
 - name: Delete a specific command
   pcg.alpaca_operator.alpaca_command:
     system:
-      systemName: ansible01
+      system_name: ansible01
     command:
       name: "BKP: DB log sync 3"
-      agentName: "ansible_testing_agent_03"
+      agent_name: "ansible_testing_agent_03"
       state: absent
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"

@@ -12,9 +12,9 @@
     - name: "1. Ensure ALL commands for {{ system_name }} are deleted"
       pcg.alpaca_operator.alpaca_command_set:
         system:
-          systemName: "{{ system_name }}"
+          system_name: "{{ system_name }}"
         commands: []
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
@@ -26,7 +26,7 @@
       pcg.alpaca_operator.alpaca_system:
         name: "{{ system_name }}"
         state: absent
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
@@ -38,7 +38,7 @@
       pcg.alpaca_operator.alpaca_agent:
         name: "{{ agent_name_2 }}"
         state: absent
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
@@ -50,7 +50,7 @@
       pcg.alpaca_operator.alpaca_agent:
         name: "{{ agent_name_1 }}"
         state: absent
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"
@@ -62,7 +62,7 @@
       pcg.alpaca_operator.alpaca_group:
         name: "{{ group_name }}"
         state: absent
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"
           protocol: "{{ ALPACA_Operator_API_Protocol }}"
           port: "{{ ALPACA_Operator_API_Port }}"

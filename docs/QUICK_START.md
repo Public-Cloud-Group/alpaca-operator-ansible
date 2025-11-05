@@ -258,9 +258,9 @@ The HANA backup role automatically maps CSV columns to variables that you can us
 | CSV Column            | Variable Name          | Description | Example Value          |
 | --------------------- | ---------------------- | ----------- | ---------------------- |
 | `primary_system`      | `{ primarySystem }`    | N/A         | `"MUP"`                |
-| `hdb_nw_sid`          | `{ systemName }`       | N/A         | `"MHP"`                |
+| `hdb_nw_sid`          | `{ system_name }`      | N/A         | `"MHP"`                |
 | `hdb_tenant`          | `{ hdbTenant }`        | N/A         | `"MUP"`                |
-| `system_vdns`         | `{ agentName }`        | N/A         | `"hdbmhpa"`            |
+| `system_vdns`         | `{ agent_name }`       | N/A         | `"hdbmhpa"`            |
 | `system_sla`          | `{ systemSla }`        | N/A         | `"SLA2"`               |
 | `system_type`         | `{ systemType }`       | N/A         | `"HDB"`                |
 | `system_staging`      | `{ systemStaging }`    | N/A         | `"rg-sap-010msb-prod"` |
@@ -277,7 +277,7 @@ The HANA backup role automatically maps CSV columns to variables that you can us
 | `alpaca_ext_pool_old` | `{ alpacaExtPoolOld }` | N/A         | `"ag10_bkp001"`        |
 | `alpaca_ext_pool_new` | `{ alpacaExtPoolNew }` | N/A         | `"ag10_bkp101"`        |
 | `backupshare`         | `{ backupShare }`      | N/A         | `"bkp004"`             |
-| `magic_number`        | `{ magicNumber }`     | N/A         | `"6"`                  |
+| `magic_number`        | `{ magic_number }`     | N/A         | `"6"`                  |
 
 **⚠️ IMPORTANT**: CSV variables must be enclosed in curly braces `{ variableName }` when used in command parameters. This is mandatory for proper variable substitution.
 
@@ -300,11 +300,11 @@ The HANA backup role automatically maps CSV columns to variables that you can us
         override:
           commands:
             - name: "HANA BACKUP SNAP"
-              processCentralId: 8990048
-              parameters: "-s { systemName } -i { hdbTenant } -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
+              process_central_id: 8990048
+              parameters: "-s { system_name } -i { hdbTenant } -m pms_onl_cons -c localhost -t 3 -p $LOCAL_SNAP_RET -u BACKUP"
             - name: "HANA BACKUP FILE DAILY"
-              processCentralId: 8990048
-              parameters: "-s { systemName } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
+              process_central_id: 8990048
+              parameters: "-s { system_name } -d <BKP_DATA_DEST1> -r - -b { local_file_ret } -t ALL -m file -p full -u BACKUP -A blob -B <BKP_LB_DATA_01> -C $SKEY -D { blob_file_ret }"
 ```
 
 ## Step 11: Run Your First Playbook

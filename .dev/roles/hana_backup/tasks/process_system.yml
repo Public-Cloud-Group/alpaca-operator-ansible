@@ -1,5 +1,5 @@
 ---
-- name: "Debug: System variables defined for system {{ csv.systemName }}"
+- name: "Debug: System variables defined for system {{ csv.system_name }}"
   debug:
     var: system.variables
     verbosity: 1
@@ -8,9 +8,9 @@
 #   meta: end_play
 #   when: true
 
-- name: Prepare and configure ALPACA system for {{ csv.systemName }}
+- name: Prepare and configure ALPACA system for {{ csv.system_name }}
   set_fact:
-    name: "{{ csv.systemName | default(omit) }}"
+    name: "{{ csv.system_name | default(omit) }}"
     variables: "{{ system.variables | default(omit) }}"
     apiConnection:
       host: "{{ ALPACA_Operator_API_Host }}"
@@ -25,7 +25,7 @@
     var: "{ 'name': name, 'variables': variables, 'apiConnection': apiConnection }"
     verbosity: 1
 
-- name: "Ensure system {{ csv.systemName }} is configured"
+- name: "Ensure system {{ csv.system_name }} is configured"
   pcg.alpaca_operator.alpaca_system:
     name: "{{ name }}"
     variables: "{{ variables }}"

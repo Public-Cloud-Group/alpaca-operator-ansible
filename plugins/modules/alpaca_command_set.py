@@ -24,24 +24,24 @@ description: >
 
 options:
     system:
-        description: Dictionary containing system identification. Either O(system.systemId) or O(system.systemName) must be provided.
+        description: Dictionary containing system identification. Either O(system.system_id) or O(system.system_name) must be provided.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
-            systemId:
-                description: Numeric ID of the target system. Optional if O(system.systemName) is provided.
+            system_id:
+                description: Numeric ID of the target system. Optional if O(system.system_name) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
-            systemName:
-                description: Name of the target system. Optional if O(system.systemId) is provided.
+            system_name:
+                description: Name of the target system. Optional if O(system.system_id) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: str
     commands:
         description: >
-            List of desired commands to manage. Each command can include fields such as O(commands.name), O(commands.agentId) or O(commands.agentName), O(commands.processId),
+            List of desired commands to manage. Each command can include fields such as O(commands.name), O(commands.agent_id) or O(commands.agent_name), O(commands.process_id),
             O(commands.parameters), O(commands.schedule), O(commands.history), O(commands.escalation), etc.
         version_added: '1.0.0'
         required: false
@@ -61,29 +61,29 @@ options:
                 type: str
                 default: present
                 choices: [present, absent]
-            agentId:
+            agent_id:
                 description: >
-                    Numeric ID of the agent. Optional if O(commands.agentName) is provided.
+                    Numeric ID of the agent. Optional if O(commands.agent_name) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
                 version_added: '1.0.0'
                 required: false
                 type: int
-            agentName:
+            agent_name:
                 description: >
-                    Name of the agent. Optional if O(commands.agentId) is provided.
+                    Name of the agent. Optional if O(commands.agent_id) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
                 version_added: '1.0.0'
                 required: false
                 type: str
-            processId:
+            process_id:
                 description: >
-                    ID of the process to be executed. Optional if O(commands.processCentralId) is provided.
+                    ID of the process to be executed. Optional if O(commands.process_central_id) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
-            processCentralId:
+            process_central_id:
                 description: >
-                    Central ID / Global ID of the process to be executed. Optional if O(commands.processId) is provided.
+                    Central ID / Global ID of the process to be executed. Optional if O(commands.process_id) is provided.
                 version_added: '1.0.0'
                 required: false
                 type: int
@@ -92,7 +92,7 @@ options:
                 version_added: '1.0.0'
                 required: false
                 type: str
-            parametersNeeded:
+            parameters_needed:
                 description: Whether the execution of the command requires additional parameters.
                 version_added: '1.0.0'
                 required: false
@@ -124,12 +124,12 @@ options:
                         version_added: '1.0.0'
                         type: str
                         required: false
-                    cronExpression:
+                    cron_expression:
                         description: Quartz-compatible cron expression. Required when O(commands.schedule.period) is V(cron_expression).
                         version_added: '1.0.0'
                         type: str
                         required: false
-                    daysOfWeek:
+                    days_of_week:
                         description: List of weekdays for execution.
                         version_added: '1.0.0'
                         type: list
@@ -142,7 +142,7 @@ options:
                 required: false
                 type: dict
                 suboptions:
-                    documentAllRuns:
+                    document_all_runs:
                         description: Whether to document all executions.
                         version_added: '1.0.0'
                         type: bool
@@ -152,7 +152,7 @@ options:
                         version_added: '1.0.0'
                         type: int
                         required: false
-            autoDeploy:
+            auto_deploy:
                 description: Whether to automatically deploy the command.
                 version_added: '1.0.0'
                 required: false
@@ -180,27 +180,27 @@ options:
                 required: false
                 type: dict
                 suboptions:
-                    mailEnabled:
+                    mail_enabled:
                         description: Whether email alerts are enabled.
                         version_added: '1.0.0'
                         type: bool
                         required: false
-                    smsEnabled:
+                    sms_enabled:
                         description: Whether SMS alerts are enabled.
                         version_added: '1.0.0'
                         type: bool
                         required: false
-                    mailAddress:
+                    mail_address:
                         description: Email address for alerts.
                         version_added: '1.0.0'
                         type: str
                         required: false
-                    smsAddress:
+                    sms_address:
                         description: SMS number for alerts.
                         version_added: '1.0.0'
                         type: str
                         required: false
-                    minFailureCount:
+                    min_failure_count:
                         description: Minimum number of failures before escalation.
                         version_added: '1.0.0'
                         type: int
@@ -211,27 +211,27 @@ options:
                         type: dict
                         required: false
                         suboptions:
-                            everyChange:
+                            every_change:
                                 description: Currently no description available
                                 version_added: '1.0.0'
                                 type: bool
                                 required: false
-                            toRed:
+                            to_red:
                                 description: Currently no description available
                                 version_added: '1.0.0'
                                 type: bool
                                 required: false
-                            toYellow:
+                            to_yellow:
                                 description: Currently no description available
                                 version_added: '1.0.0'
                                 type: bool
                                 required: false
-                            toGreen:
+                            to_green:
                                 description: Currently no description available
                                 version_added: '1.0.0'
                                 type: bool
                                 required: false
-    apiConnection:
+    api_connection:
         description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
@@ -289,70 +289,70 @@ EXAMPLES = r'''
 - name: Ensure that multiple commands are configured correctly on system01
   pcg.alpaca_operator.alpaca_command_set:
     system:
-      systemName: system01
+      system_name: system01
     commands:
       - name: "BKP: DB log sync"
         state: present
-        agentName: agent01
+        agent_name: agent01
         parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-        processId: 801
+        process_id: 801
         schedule:
           period: manually
           time: "01:00:00"
-          daysOfWeek:
+          days_of_week:
             - monday
             - sunday
-        parametersNeeded: false
+        parameters_needed: false
         disabled: false
         critical: true
         history:
-          documentAllRuns: true
+          document_all_runs: true
           retention: 900
-        autoDeploy: false
+        auto_deploy: false
         timeout:
           type: default
           value: 30
         escalation:
-          mailEnabled: true
-          smsEnabled: true
-          mailAddress: "monitoring@pcg.io"
-          smsAddress: "0123456789"
-          minFailureCount: 1
+          mail_enabled: true
+          sms_enabled: true
+          mail_address: "monitoring@pcg.io"
+          sms_address: "0123456789"
+          min_failure_count: 1
           triggers:
-            everyChange: true
-            toRed: false
-            toYellow: false
-            toGreen: true
+            every_change: true
+            to_red: false
+            to_yellow: false
+            to_green: true
       - name: "BKP: DB log sync 2"
         state: present
-        agentName: agent02
+        agent_name: agent02
         parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-        processId: 801
+        process_id: 801
         schedule:
           period: cron_expression
-          cronExpression: '0 */5 * * * ?'
-        parametersNeeded: false
+          cron_expression: '0 */5 * * * ?'
+        parameters_needed: false
         disabled: false
         critical: true
         history:
-          documentAllRuns: true
+          document_all_runs: true
           retention: 900
-        autoDeploy: false
+        auto_deploy: false
         timeout:
           type: default
           value: 30
         escalation:
-          mailEnabled: true
-          smsEnabled: true
-          mailAddress: "monitoring@pcg.io"
-          smsAddress: "0123456789"
-          minFailureCount: 1
+          mail_enabled: true
+          sms_enabled: true
+          mail_address: "monitoring@pcg.io"
+          sms_address: "0123456789"
+          min_failure_count: 1
           triggers:
-            everyChange: true
-            toRed: false
-            toYellow: false
-            toGreen: true
-    apiConnection:
+            every_change: true
+            to_red: false
+            to_yellow: false
+            to_green: true
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -363,9 +363,9 @@ EXAMPLES = r'''
 - name: Remove all commands from system system01
   pcg.alpaca_operator.alpaca_command_set:
     system:
-      systemName: system01
+      system_name: system01
     commands: []
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -397,7 +397,7 @@ changes:
     type: dict
     version_added: '1.0.0'
     contains:
-        commandIndex_000:
+        command_index_000:
             description: >
                 Diff of the command at index 0. Contains changed fields with current and desired values.
             type: dict
@@ -422,7 +422,7 @@ changes:
             sample:
               - id: 123
                 name: "Old Command"
-                processId: 456
+                process_id: 456
                 agentHostname: "my-agent-01"
 '''
 
@@ -446,41 +446,41 @@ def build_payload(desired_command, system_command):
 
     payload = {
         "name":                 desired_command.get('name', None)                                                                                                                               if desired_command.get('name')                                                                                                                                              is not None else system_command.get('name', None),
-        "agentId":              desired_command.get('agentId', None)                                                                                                                            if desired_command.get('agentId')                                                                                                                                           is not None else system_command.get('agentId', 0),
-        "processId":            desired_command.get('processId', None)                                                                                                                          if desired_command.get('processId')                                                                                                                                         is not None else system_command.get('processId', 0),
+        "agentId":              desired_command.get('agent_id', None)                                                                                                                           if desired_command.get('agent_id')                                                                                                                                          is not None else system_command.get('agentId', 0),
+        "processId":            desired_command.get('process_id', None)                                                                                                                         if desired_command.get('process_id')                                                                                                                                        is not None else system_command.get('processId', 0),
         "parameters":           desired_command.get('parameters', None)                                                                                                                         if desired_command.get('parameters')                                                                                                                                        is not None else system_command.get('parameters', None),
         "schedule": {
             "period":           desired_command.get('schedule', {}).get('period', None)                                                                                                         if desired_command.get('schedule', {}).get('period', None)                                                                                                                  is not None else system_command.get('schedule', {}).get('period', 'undefined'),
             "time":             desired_command.get('schedule', {}).get('time', None)                                                                                                           if desired_command.get('schedule', {}).get('time', None)                                                                                                                    is not None else system_command.get('schedule', {}).get('time', None),
-            "cronExpression":   desired_command.get('schedule', {}).get('cronExpression', None)                                                                                                 if desired_command.get('schedule', {}).get('cronExpression', None) and desired_command.get('schedule', {}).get('period', None) == 'cron_expression'                                     else system_command.get('schedule', {}).get('cronExpression', ''),
+            "cronExpression":   desired_command.get('schedule', {}).get('cron_expression', None)                                                                                                if desired_command.get('schedule', {}).get('cron_expression', None) and desired_command.get('schedule', {}).get('period', None) == 'cron_expression'                                  else system_command.get('schedule', {}).get('cronExpression', ''),
             "daysOfWeek":       sorted(
-                                    desired_command.get('schedule', {}).get('daysOfWeek', [])                                                                                                   if desired_command.get('schedule', {}).get('daysOfWeek', None)                                                                                                              is not None else system_command.get('schedule', {}).get('daysOfWeek', []),
+                                    desired_command.get('schedule', {}).get('days_of_week', [])                                                                                                 if desired_command.get('schedule', {}).get('days_of_week', None)                                                                                                            is not None else system_command.get('schedule', {}).get('daysOfWeek', []),
                                     key=lambda x: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].index(x.lower())
                                 )
         },
-        "parametersNeeded":     desired_command.get('parametersNeeded', None)                                                                                                                   if desired_command.get('parametersNeeded')                                                                                                                                  is not None else system_command.get('parametersNeeded', True),
+        "parametersNeeded":     desired_command.get('parameters_needed', None)                                                                                                                  if desired_command.get('parameters_needed')                                                                                                                                 is not None else system_command.get('parametersNeeded', True),
         "disabled":             desired_command.get('disabled', None)                                                                                                                           if desired_command.get('disabled')                                                                                                                                          is not None else system_command.get('disabled', True),
         "critical":             desired_command.get('critical', None)                                                                                                                           if desired_command.get('critical')                                                                                                                                          is not None else system_command.get('critical', True),
         "history": {
-            "documentAllRuns":  desired_command.get('history', {}).get('documentAllRuns', None)                                                                                                 if desired_command.get('history', {}).get('documentAllRuns', None)                                                                                                          is not None else system_command.get('history', {}).get('documentAllRuns', True),
+            "documentAllRuns":  desired_command.get('history', {}).get('document_all_runs', None)                                                                                               if desired_command.get('history', {}).get('document_all_runs', None)                                                                                                        is not None else system_command.get('history', {}).get('documentAllRuns', True),
             "retention":        desired_command.get('history', {}).get('retention', None)                                                                                                       if desired_command.get('history', {}).get('retention', None)                                                                                                                is not None else system_command.get('history', {}).get('retention', 0)
         },
-        "autoDeploy":           desired_command.get('autoDeploy', None)                                                                                                                         if desired_command.get('autoDeploy')                                                                                                                                        is not None else system_command.get('autoDeploy', True),
+        "autoDeploy":           desired_command.get('auto_deploy', None)                                                                                                                        if desired_command.get('auto_deploy')                                                                                                                                       is not None else system_command.get('autoDeploy', True),
         "timeout": {
             "type":             desired_command.get('timeout', {}).get('type', None).upper()                                                                                                    if desired_command.get('timeout', {}).get('type', None)                                                                                                                     is not None else system_command.get('timeout', {}).get('type', 'None').upper(),
             "value":            desired_command.get('timeout', {}).get('value', None)                                                                                                           if desired_command.get('timeout', {}).get('value', None)                                                                                                                    is not None else system_command.get('timeout', {}).get('value', 0)
         },
         "escalation": {
-            "mailEnabled":      desired_command.get('escalation', {}).get('mailEnabled', None)                                                                                                  if desired_command.get('escalation', {}).get('mailEnabled', None)                                                                                                           is not None else system_command.get('escalation', {}).get('mailEnabled', False),
-            "smsEnabled":       desired_command.get('escalation', {}).get('smsEnabled', None)                                                                                                   if desired_command.get('escalation', {}).get('smsEnabled', None)                                                                                                            is not None else system_command.get('escalation', {}).get('smsEnabled', False),
-            "mailAddress":      desired_command.get('escalation', {}).get('mailAddress', None)                                                                                                  if desired_command.get('escalation', {}).get('mailAddress', None)                                                                                                           is not None else system_command.get('escalation', {}).get('mailAddress', None),
-            "smsAddress":       desired_command.get('escalation', {}).get('smsAddress', None)                                                                                                   if desired_command.get('escalation', {}).get('smsAddress', None)                                                                                                            is not None else system_command.get('escalation', {}).get('smsAddress', None),
-            "minFailureCount":  desired_command.get('escalation', {}).get('minFailureCount', None)                                                                                              if desired_command.get('escalation', {}).get('minFailureCount', None)                                                                                                       is not None else system_command.get('escalation', {}).get('minFailureCount', 0),
+            "mailEnabled":      desired_command.get('escalation', {}).get('mail_enabled', None)                                                                                                  if desired_command.get('escalation', {}).get('mail_enabled', None)                                                                                                           is not None else system_command.get('escalation', {}).get('mailEnabled', False),
+            "smsEnabled":       desired_command.get('escalation', {}).get('sms_enabled', None)                                                                                                   if desired_command.get('escalation', {}).get('sms_enabled', None)                                                                                                            is not None else system_command.get('escalation', {}).get('smsEnabled', False),
+            "mailAddress":      desired_command.get('escalation', {}).get('mail_address', None)                                                                                                  if desired_command.get('escalation', {}).get('mail_address', None)                                                                                                           is not None else system_command.get('escalation', {}).get('mailAddress', None),
+            "smsAddress":       desired_command.get('escalation', {}).get('sms_address', None)                                                                                                   if desired_command.get('escalation', {}).get('sms_address', None)                                                                                                            is not None else system_command.get('escalation', {}).get('smsAddress', None),
+            "minFailureCount":  desired_command.get('escalation', {}).get('min_failure_count', None)                                                                                             if desired_command.get('escalation', {}).get('min_failure_count', None)                                                                                                      is not None else system_command.get('escalation', {}).get('minFailureCount', 0),
             "triggers": {
-                "everyChange":  desired_command.get('escalation', {}).get('triggers', {}).get('everyChange', None)                                                                              if desired_command.get('escalation', {}).get('triggers', {}).get('everyChange', None)                                                                                       is not None else system_command.get('escalation', {}).get('triggers', {}).get('everyChange', True),
-                "toRed":        desired_command.get('escalation', {}).get('triggers', {}).get('toRed', None)                                                                                    if desired_command.get('escalation', {}).get('triggers', {}).get('toRed', None)                                                                                             is not None else system_command.get('escalation', {}).get('triggers', {}).get('toRed', True),
-                "toYellow":     desired_command.get('escalation', {}).get('triggers', {}).get('toYellow', None)                                                                                 if desired_command.get('escalation', {}).get('triggers', {}).get('toYellow', None)                                                                                          is not None else system_command.get('escalation', {}).get('triggers', {}).get('toYellow', True),
-                "toGreen":      desired_command.get('escalation', {}).get('triggers', {}).get('toGreen', None)                                                                                  if desired_command.get('escalation', {}).get('triggers', {}).get('toGreen', None)                                                                                           is not None else system_command.get('escalation', {}).get('triggers', {}).get('toGreen', True)
+                "everyChange":  desired_command.get('escalation', {}).get('triggers', {}).get('every_change', None)                                                                             if desired_command.get('escalation', {}).get('triggers', {}).get('every_change', None)                                                                                      is not None else system_command.get('escalation', {}).get('triggers', {}).get('everyChange', True),
+                "toRed":        desired_command.get('escalation', {}).get('triggers', {}).get('to_red', None)                                                                                   if desired_command.get('escalation', {}).get('triggers', {}).get('to_red', None)                                                                                            is not None else system_command.get('escalation', {}).get('triggers', {}).get('toRed', True),
+                "toYellow":     desired_command.get('escalation', {}).get('triggers', {}).get('to_yellow', None)                                                                                if desired_command.get('escalation', {}).get('triggers', {}).get('to_yellow', None)                                                                                         is not None else system_command.get('escalation', {}).get('triggers', {}).get('toYellow', True),
+                "toGreen":      desired_command.get('escalation', {}).get('triggers', {}).get('to_green', None)                                                                                 if desired_command.get('escalation', {}).get('triggers', {}).get('to_green', None)                                                                                          is not None else system_command.get('escalation', {}).get('triggers', {}).get('toGreen', True)
             }
         }
     }
@@ -498,8 +498,8 @@ def main():
                 type='dict',
                 required=True,
                 options=dict(
-                    systemId=dict(type='int', required=False),
-                    systemName=dict(type='str', required=False)
+                    system_id=dict(type='int', required=False),
+                    system_name=dict(type='str', required=False)
                 )
             ),
             commands=dict(
@@ -510,10 +510,10 @@ def main():
                 options=dict(
                     name=dict(type='str', required=False),
                     state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-                    agentId=dict(type='int', required=False),
-                    agentName=dict(type='str', required=False),
-                    processId=dict(type='int', required=False),
-                    processCentralId=dict(type='int', required=False),
+                    agent_id=dict(type='int', required=False),
+                    agent_name=dict(type='str', required=False),
+                    process_id=dict(type='int', required=False),
+                    process_central_id=dict(type='int', required=False),
                     parameters=dict(type='str', required=False),
                     schedule=dict(
                         type='dict',
@@ -526,24 +526,24 @@ def main():
                                 'cron_expression', 'disabled', 'start_fixed_time_and_hourly_mn'
                             ]),
                             time=dict(type='str', required=False),
-                            cronExpression=dict(type='str', required=False),
-                            daysOfWeek=dict(type='list', required=False, elements='str', choices=[
+                            cron_expression=dict(type='str', required=False),
+                            days_of_week=dict(type='list', required=False, elements='str', choices=[
                                 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
                             ])
                         )
                     ),
-                    parametersNeeded=dict(type='bool', required=False),
+                    parameters_needed=dict(type='bool', required=False),
                     disabled=dict(type='bool', required=False),
                     critical=dict(type='bool', required=False),
                     history=dict(
                         type='dict',
                         required=False,
                         options=dict(
-                            documentAllRuns=dict(type='bool', required=False),
+                            document_all_runs=dict(type='bool', required=False),
                             retention=dict(type='int', required=False)
                         )
                     ),
-                    autoDeploy=dict(type='bool', required=False),
+                    auto_deploy=dict(type='bool', required=False),
                     timeout=dict(
                         type='dict',
                         required=False,
@@ -558,26 +558,26 @@ def main():
                         type='dict',
                         required=False,
                         options=dict(
-                            mailEnabled=dict(type='bool', required=False),
-                            smsEnabled=dict(type='bool', required=False),
-                            mailAddress=dict(type='str', required=False),
-                            smsAddress=dict(type='str', required=False),
-                            minFailureCount=dict(type='int', required=False),
+                            mail_enabled=dict(type='bool', required=False),
+                            sms_enabled=dict(type='bool', required=False),
+                            mail_address=dict(type='str', required=False),
+                            sms_address=dict(type='str', required=False),
+                            min_failure_count=dict(type='int', required=False),
                             triggers=dict(
                                 type='dict',
                                 required=False,
                                 options=dict(
-                                    everyChange=dict(type='bool', required=False),
-                                    toRed=dict(type='bool', required=False),
-                                    toYellow=dict(type='bool', required=False),
-                                    toGreen=dict(type='bool', required=False)
+                                    every_change=dict(type='bool', required=False),
+                                    to_red=dict(type='bool', required=False),
+                                    to_yellow=dict(type='bool', required=False),
+                                    to_green=dict(type='bool', required=False)
                                 )
                             )
                         )
                     )
                 )
             ),
-            apiConnection=dict(
+            api_connection=dict(
                 type='dict',
                 required=True,
                 options=dict(
@@ -593,35 +593,35 @@ def main():
         supports_check_mode=True,
     )
 
-    api_url = "{0}://{1}:{2}/api".format(module.params['apiConnection']['protocol'], module.params['apiConnection']['host'], module.params['apiConnection']['port'])
-    token = get_token(api_url, module.params['apiConnection']['username'], module.params['apiConnection']['password'], module.params['apiConnection']['tls_verify'])
+    api_url = "{0}://{1}:{2}/api".format(module.params['api_connection']['protocol'], module.params['api_connection']['host'], module.params['api_connection']['port'])
+    token = get_token(api_url, module.params['api_connection']['username'], module.params['api_connection']['password'], module.params['api_connection']['tls_verify'])
     headers = {"Authorization": "Bearer {0}".format(token)}
     desired_commands = [command for command in module.params['commands'] if command.get('state') == 'present']
     diffs = {}
     removed = []
 
     # Check if either a system ID or a system name is provided
-    if not module.params['system'].get('systemName', None) and not module.params['system'].get('systemId', None):
-        module.fail_json(msg="Either a systemName or systemId must be provided")
+    if not module.params['system'].get('system_name', None) and not module.params['system'].get('system_id', None):
+        module.fail_json(msg="Either a system_name or system_id must be provided")
 
     # Resolve system id if needed
-    if module.params['system'].get('systemName', None):
-        system = lookup_resource(api_url, headers, "systems", "name", module.params['system']['systemName'], module.params['apiConnection']['tls_verify'])
+    if module.params['system'].get('system_name', None):
+        system = lookup_resource(api_url, headers, "systems", "name", module.params['system']['system_name'], module.params['api_connection']['tls_verify'])
         if not system and desired_commands:
-            module.fail_json(msg="System '{0}' not found".format(module.params['system']['systemName']))
-        module.params['system']['systemId'] = system['id'] if system else None
+            module.fail_json(msg="System '{0}' not found".format(module.params['system']['system_name']))
+        module.params['system']['system_id'] = system['id'] if system else None
 
-    # Check if systemId is valid
-    if module.params['system'].get('systemId', None):
-        system = lookup_resource(api_url, headers, "systems", "id", module.params['system']['systemId'], module.params['apiConnection']['tls_verify'])
+    # Check if system_id is valid
+    if module.params['system'].get('system_id', None):
+        system = lookup_resource(api_url, headers, "systems", "id", module.params['system']['system_id'], module.params['api_connection']['tls_verify'])
         if not system and desired_commands:
-            module.fail_json(msg="System with ID '{0}' not found - Please ensure system is created first".format(module.params['system']['systemId']))
+            module.fail_json(msg="System with ID '{0}' not found - Please ensure system is created first".format(module.params['system']['system_id']))
 
     # Get currently configured system commands
     system_commands = {}
-    if module.params['system'].get('systemId', None):
-        # system_commands = api_call("GET", "{0}/systems/{1}/commands".format(api_url, module.params['system']['systemId']), headers=headers, verify=module.params['apiConnection']['tls_verify']).json()                                        # unsorted list
-        system_commands = sorted(api_call("GET", "{0}/systems/{1}/commands".format(api_url, module.params['system']['systemId']), headers=headers, verify=module.params['apiConnection']['tls_verify']).json(), key=lambda x: x.get("id", 0))    # sorted by id
+    if module.params['system'].get('system_id', None):
+        # system_commands = api_call("GET", "{0}/systems/{1}/commands".format(api_url, module.params['system']['system_id']), headers=headers, verify=module.params['api_connection']['tls_verify']).json()                                        # unsorted list
+        system_commands = sorted(api_call("GET", "{0}/systems/{1}/commands".format(api_url, module.params['system']['system_id']), headers=headers, verify=module.params['api_connection']['tls_verify']).json(), key=lambda x: x.get("id", 0))    # sorted by id
 
     # Delete excess commands
     desired_commands_count = len([cmd for cmd in module.params['commands'] if cmd.get('state') == 'present'])
@@ -631,48 +631,48 @@ def main():
             command = system_commands[index]
             command_id = command.get('id')
             if command_id is not None:
-                api_call("DELETE", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['systemId'], command_id), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to delete excess command with id {0}".format(command_id))
+                api_call("DELETE", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['system_id'], command_id), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to delete excess command with id {0}".format(command_id))
                 removed.append({"id": command_id, "name": command.get("name"), "processId": command.get("processId"), "agentHostname": command.get("agentHostname")})
 
     # Add removed commands to diffs for logging
     if removed:
         diffs["removed_commands"] = removed
         # Update list of currently configured system commands
-        # system_commands = sorted(api_call("GET", "{0}/systems/{1}/commands".format(api_url, module.params['system']['systemId']), headers=headers, verify=module.params['apiConnection']['tls_verify']).json(), key=lambda x: x.get("id", 0)) # sorted by id
+        # system_commands = sorted(api_call("GET", "{0}/systems/{1}/commands".format(api_url, module.params['system']['system_id']), headers=headers, verify=module.params['api_connection']['tls_verify']).json(), key=lambda x: x.get("id", 0)) # sorted by id
 
     for desired_command_index, desired_command in enumerate(desired_commands):
 
         # Check if either an agent ID or a agent name is provided
-        if not desired_command.get('agentName', None) and not desired_command.get('agentId', None):
-            module.fail_json(msg="Either agentName or agentId must be provided")
+        if not desired_command.get('agent_name', None) and not desired_command.get('agent_id', None):
+            module.fail_json(msg="Either agent_name or agent_id must be provided")
 
         # Resolve agent id if needed
-        if desired_command.get('agentName', None):
-            agent = lookup_resource(api_url, headers, "agents", "hostname", desired_command['agentName'], module.params['apiConnection']['tls_verify'])
+        if desired_command.get('agent_name', None):
+            agent = lookup_resource(api_url, headers, "agents", "hostname", desired_command['agent_name'], module.params['api_connection']['tls_verify'])
             if not agent:
-                module.fail_json(msg="Agent '{0}' defined in system command index {1} not found".format(desired_command['agentName'], desired_command_index))
-            desired_command['agentId'] = agent['id']
+                module.fail_json(msg="Agent '{0}' defined in system command index {1} not found".format(desired_command['agent_name'], desired_command_index))
+            desired_command['agent_id'] = agent['id']
 
-        # Check if agentId is valid
-        if desired_command.get('agentId', None):
-            agent = lookup_resource(api_url, headers, "agents", "id", desired_command['agentId'], module.params['apiConnection']['tls_verify'])
+        # Check if agent_id is valid
+        if desired_command.get('agent_id', None):
+            agent = lookup_resource(api_url, headers, "agents", "id", desired_command['agent_id'], module.params['api_connection']['tls_verify'])
             if not agent:
-                module.fail_json(msg="Agent with ID '{0}' defined in system command index {1} not found - Please ensure agent is created first".format(desired_command['agentId'], desired_command_index))
+                module.fail_json(msg="Agent with ID '{0}' defined in system command index {1} not found - Please ensure agent is created first".format(desired_command['agent_id'], desired_command_index))
 
         # Check if either a process ID or the processes central ID is provided
-        if not desired_command.get('processCentralId', None) and not desired_command.get('processId', None):
-            module.fail_json(msg="Either processCentralId or processId must be provided")
+        if not desired_command.get('process_central_id', None) and not desired_command.get('process_id', None):
+            module.fail_json(msg="Either process_central_id or process_id must be provided")
 
-        # Resolve processId if needed
-        if desired_command.get('processCentralId', None) and not desired_command.get('processId', None):
-            processId = lookup_processId(api_url, headers, "globalId", desired_command['processCentralId'], module.params['apiConnection']['tls_verify'])
-            if not processId:
-                module.fail_json(msg="Process ID lookup for Central ID '{0}' defined in system command index {1} not found".format(desired_command['processCentralId'], desired_command_index))
-            desired_command['processId'] = processId
+        # Resolve process_id if needed
+        if desired_command.get('process_central_id', None) and not desired_command.get('process_id', None):
+            process_id = lookup_processId(api_url, headers, "globalId", desired_command['process_central_id'], module.params['api_connection']['tls_verify'])
+            if not process_id:
+                module.fail_json(msg="Process ID lookup for Central ID '{0}' defined in system command index {1} not found".format(desired_command['process_central_id'], desired_command_index))
+            desired_command['process_id'] = process_id
 
         # Get currently configured system command at the same index as the desired command defined in ansible yaml
         try:
-            system_command = api_call("GET", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['systemId'], system_commands[desired_command_index]['id']), headers=headers, verify=module.params['apiConnection']['tls_verify']).json()
+            system_command = api_call("GET", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['system_id'], system_commands[desired_command_index]['id']), headers=headers, verify=module.params['api_connection']['tls_verify']).json()
         except Exception:
             system_command = {}
 
@@ -715,19 +715,19 @@ def main():
                 diffs['commandIndex_{0:03d}'.format(desired_command_index)] = diff
                 if not module.check_mode:
                     # Update command
-                    api_call("PUT", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['systemId'], system_command['id']), headers=headers, json=command_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to update command {0}".format(system_command['id']))
+                    api_call("PUT", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['system_id'], system_command['id']), headers=headers, json=command_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to update command {0}".format(system_command['id']))
 
         else:
             # Create command if it does not exist already
             diffs['commandIndex_{0:03d}'.format(desired_command_index)] = {'new_command_payload': command_payload}
             if not module.check_mode:
-                api_call("POST", "{0}/systems/{1}/commands".format(api_url, module.params['system']['systemId']), headers=headers, json=command_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to create command")
+                api_call("POST", "{0}/systems/{1}/commands".format(api_url, module.params['system']['system_id']), headers=headers, json=command_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to create command")
 
     if diffs:
         if module.check_mode:
-            module.exit_json(changed=True, msg="One or multiple commands would be created, updated or deleted in system {0}".format(module.params['system']['systemId']), changes=diffs)
+            module.exit_json(changed=True, msg="One or multiple commands would be created, updated or deleted in system {0}".format(module.params['system']['system_id']), changes=diffs)
 
-        module.exit_json(changed=True, msg="One or multiple commands have been created, updated or deleted in system {0}".format(module.params['system']['systemId']), changes=diffs)
+        module.exit_json(changed=True, msg="One or multiple commands have been created, updated or deleted in system {0}".format(module.params['system']['system_id']), changes=diffs)
 
     module.exit_json(changed=False, msg="Command state processed")
 

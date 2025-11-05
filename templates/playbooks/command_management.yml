@@ -5,24 +5,24 @@
   tasks:
     - name: Ensure a specific command is configured
       pcg.alpaca_operator.alpaca_command:
-        # --- System identification (either systemName or systemId is required) ---
+        # --- System identification (either system_name or system_id is required) ---
         system:
-          # systemName: "My System"                                 # Optional if systemId is used
-          # systemId: 1                                             # Optional if systemName is used
+          # system_name: "My System"                                # Optional if system_id is used
+          # system_id: 1                                            # Optional if system_name is used
 
         command:
-          name: "BKP: DB log sync"                                  # Required: command description (acts as identifier in combination with the agentName or agentId)
+          name: "BKP: DB log sync"                                  # Required: command description (acts as identifier in combination with the agent_name or agent_id)
 
           # --- Desired state ---
           state: present                                            # present | absent
 
-          # --- Agent assignment (either agentName or agentId is required) ---
-          # agentName: "ansible_testing_agent_03"                   # Optional if agentId is used
-          # agentId: 123                                            # Optional if agentName is used
+          # --- Agent assignment (either agent_name or agent_id is required) ---
+          # agent_name: "ansible_testing_agent_03"                  # Optional if agent_id is used
+          # agent_id: 123                                           # Optional if agent_name is used
 
           # --- Process configuration ---
-          # processId: 801                                          # Optional if processCentralId is used
-          # processCentralId: 8990048                               # Optional if processId is used
+          # process_id: 801                                         # Optional if process_central_id is used
+          # process_central_id: 8990048                             # Optional if process_id is used
 
           # --- Command parameters definition ---
           parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
@@ -31,21 +31,21 @@
           schedule:
             period: manually                                        # Options: manually, cron_expression, every_5min, fixed_time, etc.
             time: "12:12:12"                                        # Required for fixed_time or fixed_time_once
-            cronExpression: ""                                      # Required if period is 'cron_expression'
-            daysOfWeek:                                             # Optional: days when the command should run
+            cron_expression: ""                                     # Required if period is 'cron_expression'
+            days_of_week:                                           # Optional: days when the command should run
               - monday
               - sunday
               - wednesday
 
           # --- Command flags ---
-          parametersNeeded: false
+          parameters_needed: false
           disabled: true                                            # Set to true to disable the command
           critical: true                                            # Indicates if command is critical
-          autoDeploy: false
+          auto_deploy: false
 
           # --- Command history retention ---
           history:
-            documentAllRuns: false                                  # Whether to log all executions
+            document_all_runs: false                                # Whether to log all executions
             retention: 200
 
           # --- Timeout configuration ---
@@ -55,19 +55,19 @@
 
           # --- Escalation configuration ---
           escalation:
-            mailEnabled: true
-            smsEnabled: true
-            mailAddress: "monitoring@pcg.io"
-            smsAddress: "0123456789"
-            minFailureCount: 1
+            mail_enabled: true
+            sms_enabled: true
+            mail_address: "monitoring@pcg.io"
+            sms_address: "0123456789"
+            min_failure_count: 1
             triggers:
-              everyChange: true
-              toRed: false
-              toYellow: false
-              toGreen: true
+              every_change: true
+              to_red: false
+              to_yellow: false
+              to_green: true
 
         # --- API connection configuration ---
-        apiConnection:
+        api_connection:
           host: "{{ ALPACA_Operator_API_Host }}"                    # Defined in the corresponding inventory
           protocol: "{{ ALPACA_Operator_API_Protocol }}"            # Defined in the corresponding inventory
           port: "{{ ALPACA_Operator_API_Port }}"                    # Defined in the corresponding inventory
