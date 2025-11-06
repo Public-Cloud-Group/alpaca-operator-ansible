@@ -304,8 +304,23 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add README.md
-          git commit -m "Update support matrix [ci skip]" || echo "No changes to commit"
-          git push
+          
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "ℹ️  No changes to commit"
+          else
+            # Pull latest changes before pushing (in case changelog was committed)
+            echo "📥 Pulling latest changes from remote..."
+            git pull --rebase origin main
+            
+            echo "💾 Committing README.md update..."
+            git commit -m "Update support matrix [ci skip]"
+            
+            echo "📤 Pushing changes..."
+            git push
+            
+            echo "✅ README.md successfully updated and pushed!"
+          fi
 
   release:
     # Only create release if:
