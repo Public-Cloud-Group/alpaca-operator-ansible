@@ -24,13 +24,13 @@ description: >
 
 options:
     name:
-        description: Unique name (hostname) of the system
+        description: Unique name (hostname) of the system.
         version_added: '1.0.0'
         required: true
         type: str
     new_name:
         description: >
-            Optional new name for the system. If the system specified in `name` exists,
+            Optional new name for the system. If the system specified in O(name) exists,
             it will be renamed to this value. If the system does not exist, a new system will
             be created using this value.
         version_added: '1.0.0'
@@ -41,7 +41,7 @@ options:
         version_added: '1.0.0'
         required: false
         type: str
-    magicNumber:
+    magic_number:
         description: >
             Custom numeric field between 0 and 59. Can be used for arbitrary logic in your setup.
         version_added: '1.0.0'
@@ -50,29 +50,29 @@ options:
         choices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
             20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
             40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
-    checksDisabled:
+    checks_disabled:
         description: Disable automatic system health checks.
         version_added: '1.0.0'
         required: false
         type: bool
-    groupName:
+    group_name:
         description: Name of the group to which the system should belong.
         version_added: '1.0.0'
         required: false
         type: str
-    groupId:
-        description: ID of the group (used if `groupName` is not provided).
+    group_id:
+        description: ID of the group (used if O(group_name) is not provided).
         version_added: '1.0.0'
         required: false
         type: int
-    rfcConnection:
-        description: Connection details for accessing the ALPACA Operator API
+    rfc_connection:
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: false
         type: dict
         suboptions:
             type:
-                description: Type of RFC connection.
+                description: Type of RFC connection. Can be V(none), V(instance), or V(messageServer).
                 version_added: '1.0.0'
                 required: false
                 choices: [none, instance, messageServer]
@@ -82,7 +82,7 @@ options:
                 version_added: '1.0.0'
                 required: false
                 type: str
-            instanceNumber:
+            instance_number:
                 description: Instance number of the RFC connection.
                 version_added: '1.0.0'
                 required: false
@@ -97,8 +97,8 @@ options:
                 version_added: '1.0.0'
                 required: false
                 type: str
-            logonGroup:
-                description: Logon group (used with message server type).
+            logon_group:
+                description: Logon group (used with V(messageServer) type).
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -109,9 +109,15 @@ options:
                 type: str
             password:
                 description: >
-                    Password for the RFC connection. Note that the currently configured password cannot be retrieved or compared via the API.
-                    To ensure the new password is actually applied, you must change at least one additional attribute (e.g., the system description),
-                    otherwise Ansible will assume no changes are needed and skip the update.
+                    Password for the RFC connection.
+
+                    IMPORTANT: If you specify the password in your playbook, the module will ALWAYS report a change (changed=true) on every run,
+                    even if nothing has changed. This happens because the API does not return the current password for security reasons,
+                    making it impossible to compare the desired password with the current one. The module cannot determine if the password
+                    needs to be updated or not.
+
+                    To maintain idempotency, comment out or remove the O(rfc_connection.password) parameter after the initial setup, and only uncomment it
+                    when you actually need to change the password.
                 version_added: '1.0.0'
                 required: false
                 type: str
@@ -120,12 +126,12 @@ options:
                 version_added: '1.0.0'
                 required: false
                 type: str
-            sapRouterString:
+            sap_router_string:
                 description: SAProuter string used to establish the RFC connection.
                 version_added: '1.0.0'
                 required: false
                 type: str
-            sncEnabled:
+            snc_enabled:
                 description: Enable or disable SNC.
                 version_added: '1.0.0'
                 required: false
@@ -143,7 +149,7 @@ options:
         elements: dict
         suboptions:
             name:
-                description: Name of the agent
+                description: Name of the agent.
                 version_added: '1.0.0'
                 required: true
                 type: str
@@ -161,12 +167,12 @@ options:
         elements: dict
         suboptions:
             name:
-                description: Name of variable
+                description: Name of variable.
                 version_added: '1.0.0'
                 required: true
                 type: str
             value:
-                description: Value of variable
+                description: Value of variable.
                 version_added: '1.0.0'
                 required: true
                 type: raw
@@ -174,8 +180,8 @@ options:
         description: |
             Controls how variables are handled when updating the system.
 
-            update: Add missing variables and update existing ones.
-            replace: Add missing variables, update existing ones, and remove variables not defined in the playbook.
+            V(update): Add missing variables and update existing ones.
+            V(replace): Add missing variables, update existing ones, and remove variables not defined in the playbook.
 
         version_added: '1.0.0'
         required: false
@@ -183,58 +189,64 @@ options:
         choices: [update, replace]
         type: str
     state:
-        description: Desired state of the system
+        description: Desired state of the system.
         version_added: '1.0.0'
         required: false
         default: present
         choices: [present, absent]
         type: str
-    apiConnection:
-        description: Connection details for accessing the ALPACA Operator API
+    api_connection:
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             username:
-                description: Username for authentication against the ALPACA Operator API
+                description: Username for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             password:
-                description: Password for authentication against the ALPACA Operator API
+                description: Password for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https)
+                description: Protocol to use. Can be V(http) or V(https).
                 version_added: '1.0.0'
                 required: false
                 default: https
                 choices: [http, https]
                 type: str
             host:
-                description: Hostname of the ALPACA Operator server
+                description: Hostname of the ALPACA Operator server.
                 version_added: '1.0.0'
                 required: false
                 default: localhost
                 type: str
             port:
-                description: Port of the ALPACA Operator API
+                description: Port of the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: false
                 default: 8443
                 type: int
             tls_verify:
-                description: Validate SSL certificates
+                description: Validate SSL certificates.
                 version_added: '1.0.0'
                 required: false
                 default: true
                 type: bool
 
 requirements:
-    - Python >= 3.6
-    - Ansible >= 2.11, < 2.17
-    - ALPACA Operator >= 5.5.1 instance reachable via API
+    - ALPACA Operator >= 5.6.0
+
+attributes:
+    check_mode:
+        description: >
+            Can run in check_mode and return changed status prediction without modifying target.
+            Note: If O(rfc_connection.password) is specified, the module will always report changed=true,
+            even in check mode, because the current password cannot be retrieved for comparison.
+        support: full
 
 author:
     - Jan-Karsten Hansmeyer (@pcg)
@@ -242,23 +254,23 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure system exists
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: system01
     description: My Test System
-    magicNumber: 42
-    checksDisabled: false
-    groupName: test-group
-    rfcConnection:
+    magic_number: 42
+    checks_disabled: false
+    group_name: test-group
+    rfc_connection:
       type: instance
       host: test-host
-      instanceNumber: 30
+      instance_number: 30
       sid: ABC
-      logonGroup: my-logon-group
+      logon_group: my-logon-group
       username: rfc_myUser
       password: rfc_myPasswd
       client: 123
-      sapRouterString: rfc_SAPRouter
-      sncEnabled: false
+      sap_router_string: rfc_SAPRouter
+      snc_enabled: false
     agents:
       - name: localhost
       - name: testjan01-agent
@@ -270,7 +282,7 @@ EXAMPLES = r'''
       - name: "<BKP_DATA_DEST2>"
         value: "11"
     state: present
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -279,10 +291,10 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Ensure system is absent
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: system01
     state: absent
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -291,10 +303,10 @@ EXAMPLES = r'''
       tls_verify: false
 
 - name: Rename an existing system
-  alpaca_system:
+  pcg.alpaca_operator.alpaca_system:
     name: system01
     new_name: system_renamed
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -353,27 +365,27 @@ def build_system_payload(params, current_system_details):
     payload = {
         "name":                 params.get('new_name', None) or params.get('name', None),
         "description":          params.get('description', '').strip()                           if params.get('description', None)                              is not None else current_system_details.get('general', {}).get('description', '').strip()                           if current_system_details else None, #0001
-        "magicNumber":          params.get('magicNumber', None)                                 if params.get('magicNumber', None)                              is not None else current_system_details.get('general', {}).get('magicNumber', None)                                 if current_system_details else None,
-        "schedulingDisabled":   params.get('schedulingDisabled', None)                          if params.get('schedulingDisabled', None)                       is not None else current_system_details.get('general', {}).get('schedulingDisabled', None)                          if current_system_details else None,
-        "groupId":              params.get('groupId', None)                                     if params.get('groupId', None)                                  is not None else current_system_details.get('general', {}).get('groupId', None)                                     if current_system_details else None,
+        "magicNumber":          params.get('magic_number', None)                                if params.get('magic_number', None)                             is not None else current_system_details.get('general', {}).get('magicNumber', None)                                 if current_system_details else None,
+        "schedulingDisabled":   params.get('checks_disabled', None)                             if params.get('checks_disabled', None)                          is not None else current_system_details.get('general', {}).get('schedulingDisabled', None)                          if current_system_details else None,
+        "groupId":              params.get('group_id', None)                                    if params.get('group_id', None)                                 is not None else current_system_details.get('general', {}).get('groupId', None)                                     if current_system_details else None,
         "rfcConnection": {
-            "type":             params.get('rfcConnection', {}).get('type', None)               if params.get('rfcConnection', {}).get('type', None)            is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('type', None)               if current_system_details else None,
-            "host":             params.get('rfcConnection', {}).get('host', None)               if params.get('rfcConnection', {}).get('host', None)            is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('host', None)               if current_system_details else None,
-            "instanceNumber":   params.get('rfcConnection', {}).get('instanceNumber', None)     if params.get('rfcConnection', {}).get('instanceNumber', None)  is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('instanceNumber', None)     if current_system_details else None,
-            "sid":              params.get('rfcConnection', {}).get('sid', None)                if params.get('rfcConnection', {}).get('sid', None)             is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sid', None)                if current_system_details else None,
-            "logonGroup":       params.get('rfcConnection', {}).get('logonGroup', None)         if params.get('rfcConnection', {}).get('logonGroup', None)      is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('logonGroup', None)         if current_system_details else None,
-            "username":         params.get('rfcConnection', {}).get('username', None)           if params.get('rfcConnection', {}).get('username', None)        is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('username', None)           if current_system_details else None,
-            "client":           params.get('rfcConnection', {}).get('client', None)             if params.get('rfcConnection', {}).get('client', None)          is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('client', None)             if current_system_details else None,
-            "sapRouterString":  params.get('rfcConnection', {}).get('sapRouterString', None)    if params.get('rfcConnection', {}).get('sapRouterString', None) is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sapRouterString', None)    if current_system_details else None,
-            "sncEnabled":       params.get('rfcConnection', {}).get('sncEnabled', None)         if params.get('rfcConnection', {}).get('sncEnabled', None)      is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sncEnabled', None)         if current_system_details else None
+            "type":             params.get('rfc_connection', {}).get('type', None)              if params.get('rfc_connection', {}).get('type', None)           is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('type', None)               if current_system_details else None,
+            "host":             params.get('rfc_connection', {}).get('host', None)              if params.get('rfc_connection', {}).get('host', None)           is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('host', None)               if current_system_details else None,
+            "instanceNumber":   params.get('rfc_connection', {}).get('instance_number', None)   if params.get('rfc_connection', {}).get('instance_number', None) is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('instanceNumber', None)     if current_system_details else None,
+            "sid":              params.get('rfc_connection', {}).get('sid', None)               if params.get('rfc_connection', {}).get('sid', None)            is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sid', None)                if current_system_details else None,
+            "logonGroup":       params.get('rfc_connection', {}).get('logon_group', None)       if params.get('rfc_connection', {}).get('logon_group', None)    is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('logonGroup', None)         if current_system_details else None,
+            "username":         params.get('rfc_connection', {}).get('username', None)          if params.get('rfc_connection', {}).get('username', None)       is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('username', None)           if current_system_details else None,
+            "client":           params.get('rfc_connection', {}).get('client', None)            if params.get('rfc_connection', {}).get('client', None)         is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('client', None)             if current_system_details else None,
+            "sapRouterString":  params.get('rfc_connection', {}).get('sap_router_string', None) if params.get('rfc_connection', {}).get('sap_router_string', None) is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sapRouterString', None)    if current_system_details else None,
+            "sncEnabled":       params.get('rfc_connection', {}).get('snc_enabled', None)       if params.get('rfc_connection', {}).get('snc_enabled', None)    is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sncEnabled', None)         if current_system_details else None
         }
     }
 
     # Only include 'password' if its present in params to avoid unwanted emptying #0002
-    if params.get('rfcConnection', {}).get('password', None) is not None:
+    if params.get('rfc_connection', {}).get('password', None) is not None:
         if 'rfcConnection' not in payload:
             payload['rfcConnection'] = {}
-        payload['rfcConnection']['password'] = params['rfcConnection']['password']
+        payload['rfcConnection']['password'] = params['rfc_connection']['password']
 
     return payload
 
@@ -381,7 +393,7 @@ def build_system_payload(params, current_system_details):
 def build_variable_payload(api_url, headers, module, desired_vars):
     payload = []
     for variable in desired_vars or []:
-        api_variable = lookup_resource(api_url, headers, "variables", "name", variable['name'], module.params['apiConnection']['tls_verify'])
+        api_variable = lookup_resource(api_url, headers, "variables", "name", variable['name'], module.params['api_connection']['tls_verify'])
         if not api_variable:
             module.fail_json(msg="Variable '{0}' not found. Please ensure variable exists first.".format(variable['name']))
 
@@ -396,24 +408,24 @@ def main():
             name=dict(type='str', required=True),
             new_name=dict(type='str', required=False),
             description=dict(type='str', required=False),
-            magicNumber=dict(type='int', required=False, choices=list(range(0, 60))),
-            checksDisabled=dict(type='bool', required=False),
-            groupId=dict(type='int', required=False),
-            groupName=dict(type='str', required=False),
-            rfcConnection=dict(
+            magic_number=dict(type='int', required=False, choices=list(range(0, 60))),
+            checks_disabled=dict(type='bool', required=False),
+            group_id=dict(type='int', required=False),
+            group_name=dict(type='str', required=False),
+            rfc_connection=dict(
                 type='dict',
                 required=False,
                 options=dict(
                     type=dict(type='str', required=False, choices=["none", "instance", "messageServer"]),
                     host=dict(type='str', required=False),
-                    instanceNumber=dict(type='int', required=False, choices=list(range(0, 100))),
+                    instance_number=dict(type='int', required=False, choices=list(range(0, 100))),
                     sid=dict(type='str', required=False),
-                    logonGroup=dict(type='str', required=False),
+                    logon_group=dict(type='str', required=False),
                     username=dict(type='str', required=False, no_log=True),
                     password=dict(type='str', required=False, no_log=True),
                     client=dict(type='str', required=False),
-                    sapRouterString=dict(type='str', required=False),
-                    sncEnabled=dict(type='bool', required=False),
+                    sap_router_string=dict(type='str', required=False),
+                    snc_enabled=dict(type='bool', required=False),
                 )
             ),
             agents=dict(
@@ -435,7 +447,7 @@ def main():
             ),
             variables_mode=dict(type='str', required=False, default='update', choices=['update', 'replace']),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-            apiConnection=dict(
+            api_connection=dict(
                 type='dict',
                 required=True,
                 options=dict(
@@ -451,17 +463,17 @@ def main():
         supports_check_mode=True,
     )
 
-    api_url = "{0}://{1}:{2}/api".format(module.params['apiConnection']['protocol'], module.params['apiConnection']['host'], module.params['apiConnection']['port'])
-    token = get_token(api_url, module.params['apiConnection']['username'], module.params['apiConnection']['password'], module.params['apiConnection']['tls_verify'])
+    api_url = "{0}://{1}:{2}/api".format(module.params['api_connection']['protocol'], module.params['api_connection']['host'], module.params['api_connection']['port'])
+    token = get_token(api_url, module.params['api_connection']['username'], module.params['api_connection']['password'], module.params['api_connection']['tls_verify'])
     headers = {"Authorization": "Bearer {0}".format(token)}
 
     # Validate rfc SID against pattern
-    if 'rfcConnection' not in module.params or module.params['rfcConnection'] is None:
-        module.params['rfcConnection'] = {}
+    if 'rfc_connection' not in module.params or module.params['rfc_connection'] is None:
+        module.params['rfc_connection'] = {}
 
     try:
         import re
-        rfc_sid = module.params.get('rfcConnection', {}).get('sid') if module.params.get('rfcConnection') else None
+        rfc_sid = module.params.get('rfc_connection', {}).get('sid') if module.params.get('rfc_connection') else None
         if rfc_sid and not re.fullmatch(r'^[A-Z]{3}$', rfc_sid):
             module.fail_json(msg="Invalid value for 'sid'. Must be exactly 3 uppercase letters (A-Z).")
     except ImportError:
@@ -469,25 +481,25 @@ def main():
             module.fail_json(msg="Python module 're' could not be found")
         raise
 
-    current_system = lookup_resource(api_url, headers, "systems", "name", module.params['name'], module.params['apiConnection']['tls_verify'])
+    current_system = lookup_resource(api_url, headers, "systems", "name", module.params['name'], module.params['api_connection']['tls_verify'])
     if not current_system and module.params.get('new_name', None):
-        current_system = lookup_resource(api_url, headers, "systems", "name", module.params['new_name'], module.params['apiConnection']['tls_verify'])
+        current_system = lookup_resource(api_url, headers, "systems", "name", module.params['new_name'], module.params['api_connection']['tls_verify'])
 
-    system_details = get_system_details(api_url, headers, current_system['id'], module.params['apiConnection']['tls_verify']) if current_system else None
+    system_details = get_system_details(api_url, headers, current_system['id'], module.params['api_connection']['tls_verify']) if current_system else None
 
     if module.params['state'] == 'present':
         # Lookup group id if needed
-        if module.params.get('groupName'):
-            group = lookup_resource(api_url, headers, "groups", "name", module.params['groupName'], module.params['apiConnection']['tls_verify'])
+        if module.params.get('group_name'):
+            group = lookup_resource(api_url, headers, "groups", "name", module.params['group_name'], module.params['api_connection']['tls_verify'])
             if not group:
-                module.fail_json(msg="Group '{0}' not found.".format(module.params['groupName']))
-            module.params['groupId'] = group['id']
+                module.fail_json(msg="Group '{0}' not found.".format(module.params['group_name']))
+            module.params['group_id'] = group['id']
 
-        # Check if groupId is valid
-        if module.params.get('groupId'):
-            group = lookup_resource(api_url, headers, "groups", "id", module.params['groupId'], module.params['apiConnection']['tls_verify'])
+        # Check if group_id is valid
+        if module.params.get('group_id'):
+            group = lookup_resource(api_url, headers, "groups", "id", module.params['group_id'], module.params['api_connection']['tls_verify'])
             if not group:
-                module.fail_json(msg="Group with ID '{0}' not found. Please ensure group is created first.".format(module.params['groupId']))
+                module.fail_json(msg="Group with ID '{0}' not found. Please ensure group is created first.".format(module.params['group_id']))
 
         # Build payload for general system configuration
         system_payload = build_system_payload(module.params, system_details)
@@ -497,7 +509,7 @@ def main():
             # Compare current system configuration with the desired system configuration if it already exists)
             diff = {}
             for key in system_payload:
-                if key not in ['rfcConnection']:
+                if key not in ['rfc_connection']:
                     if system_payload.get(key, None) != system_details.get('general', {}).get(key, None):
                         if 'general' not in diff:
                             diff['general'] = {}
@@ -505,7 +517,7 @@ def main():
                             'current': system_details.get('general', {}).get(key, None),
                             'desired': system_payload.get(key, None)
                         }
-                if key in ['rfcConnection']:
+                if key in ['rfc_connection']:
                     for sub_key in system_payload.get(key, {}):
                         if sub_key not in ['password']: #0002
                             if system_payload.get(key, {}).get(sub_key, None) != system_details.get('general', {}).get(key, {}).get(sub_key, None):
@@ -567,22 +579,22 @@ def main():
 
                 # Update system
                 if 'general' in diff:
-                    current_system = api_call(method="PUT", url="{0}/systems/{1}".format(api_url, system_details['general']['id']), headers=headers, json=system_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to update system.").json()
+                    current_system = api_call(method="PUT", url="{0}/systems/{1}".format(api_url, system_details['general']['id']), headers=headers, json=system_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to update system.").json()
 
                 # Update agents
                 if 'agents' in diff:
                     # for system_agent in system_details['agents']: (When #0004 is resolved, this part can used again)
                     #     if system_agent['name'] not in desired_agents:
                     #         # Unassign agent if it's not in the desired list
-                    #         agent = lookup_resource(api_url, headers, "agents", "hostname", system_agent['name'], module.params['apiConnection']['tls_verify'])
+                    #         agent = lookup_resource(api_url, headers, "agents", "hostname", system_agent['name'], module.params['api_connection']['tls_verify'])
                     #         if not agent:
                     #             module.fail_json(msg="Agent '{0}' not found. Please ensure agent exists.".format(param_agent['name']))
-                    #         api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], agent['id']), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system.")
+                    #         api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], agent['id']), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system.")
 
                     # Try to unassign agents as long as needed. Workaround for #0004 ----
                     while True:
                         # Get currently assigned agents
-                        current_agents = api_call("GET", "{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, verify=module.params['apiConnection']['tls_verify']).json()
+                        current_agents = api_call("GET", "{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, verify=module.params['api_connection']['tls_verify']).json()
 
                         # Filter agents that should be unassigned
                         agents_to_remove = [agent for agent in current_agents if agent['name'] not in desired_agents]
@@ -593,10 +605,10 @@ def main():
 
                         # Unassign agents
                         for agent in agents_to_remove:
-                            api_agent = lookup_resource(api_url, headers, "agents", "hostname", agent['name'], module.params['apiConnection']['tls_verify'])
+                            api_agent = lookup_resource(api_url, headers, "agents", "hostname", agent['name'], module.params['api_connection']['tls_verify'])
                             if not api_agent:
                                 module.fail_json(msg="Agent '{0}' not found. Please ensure agent exists.".format(agent['name']))
-                            api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], api_agent['id']), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system.")
+                            api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], api_agent['id']), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system.")
                     # End of workaround for #0004 ---------------------------------------
 
                     # Assign agents
@@ -604,15 +616,15 @@ def main():
                         for agent in module.params.get('agents', []) or []:
                             if agent not in current_agents:
                                 # Assign desired agent
-                                api_agent = lookup_resource(api_url, headers, "agents", "hostname", agent['name'], module.params['apiConnection']['tls_verify'])
+                                api_agent = lookup_resource(api_url, headers, "agents", "hostname", agent['name'], module.params['api_connection']['tls_verify'])
                                 if not api_agent:
                                     module.fail_json(msg="Agent '{0}' not found. Please ensure agent exists first.".format(agent['name']))
-                                api_call(method="POST", url="{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, json={'id': api_agent['id']}, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign agent to system.")
+                                api_call(method="POST", url="{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, json={'id': api_agent['id']}, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to assign agent to system.")
 
                 # Update variables
                 if 'variables' in diff:
                     variable_payload = build_variable_payload(api_url, headers, module, desired_vars)
-                    api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=variable_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign variables to system.")
+                    api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=variable_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to assign variables to system.")
 
                 module.exit_json(changed=True, msg="System updated.", api_response=current_system, changes=diff)
 
@@ -623,20 +635,20 @@ def main():
                 module.exit_json(changed=True, msg="System would be created.")
 
             # Create system
-            current_system = api_call(method="POST", url="{0}/systems".format(api_url), headers=headers, json=system_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to create system.").json()
+            current_system = api_call(method="POST", url="{0}/systems".format(api_url), headers=headers, json=system_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to create system.").json()
 
             # Assign agents
             if module.params.get('agents'):
                 for agent in module.params.get('agents', []) or []:
                     # Assign desired agent
-                    api_agent = lookup_resource(api_url, headers, "agents", "hostname", agent['name'], module.params['apiConnection']['tls_verify'])
+                    api_agent = lookup_resource(api_url, headers, "agents", "hostname", agent['name'], module.params['api_connection']['tls_verify'])
                     if not api_agent:
                         module.fail_json(msg="Agent '{0}' not found. Please ensure agent exists first.".format(agent['name']))
-                    api_call(method="POST", url="{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, json={'id': api_agent['id']}, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign agent to system.")
+                    api_call(method="POST", url="{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, json={'id': api_agent['id']}, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to assign agent to system.")
 
             # Assign variables
-            variable_payload = build_variable_payload(api_url, headers, module)
-            api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=variable_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to assign variables to system.")
+            variable_payload = build_variable_payload(api_url, headers, module, module.params.get('variables'))
+            api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=variable_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to assign variables to system.")
 
             module.exit_json(changed=True, msg="System created.", api_response=current_system)
 
@@ -649,30 +661,30 @@ def main():
 
         # Unassign all agents (When #0004 is resolved, this part can used again)
         # for system_agent in system_details['agents']:
-        #     agent = lookup_resource(api_url, headers, "agents", "hostname", system_agent['name'], module.params['apiConnection']['tls_verify'])
+        #     agent = lookup_resource(api_url, headers, "agents", "hostname", system_agent['name'], module.params['api_connection']['tls_verify'])
         #     if not agent:
         #         module.fail_json(msg="Agent '{0}' not found. Please ensure agent exists.".format(param_agent['name']))
-        #     api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], agent['id']), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system")
+        #     api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], agent['id']), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system")
 
         # Try to unassign agents as long as needed. Workaround for #0004 ----
         while True:
-            agents = api_call("GET", "{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, verify=module.params['apiConnection']['tls_verify']).json()
+            agents = api_call("GET", "{0}/systems/{1}/agents".format(api_url, current_system['id']), headers=headers, verify=module.params['api_connection']['tls_verify']).json()
 
             if not agents:
                 break
 
             for system_agent in agents:
-                agent = lookup_resource(api_url, headers, "agents", "hostname", system_agent['name'], module.params['apiConnection']['tls_verify'])
+                agent = lookup_resource(api_url, headers, "agents", "hostname", system_agent['name'], module.params['api_connection']['tls_verify'])
                 if not agent:
                     module.fail_json(msg="Agent '{0}' not found. Please ensure agent exists.".format(system_agent['name']))
-                api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], agent['id']), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system")
+                api_call(method="DELETE", url="{0}/systems/{1}/agents/{2}".format(api_url, current_system['id'], agent['id']), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to unassign agent from system")
         # End of workaround for #0004 ---------------------------------------
 
         # Unassign all variables
-        api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=[], verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to unassign variables from system.")
+        api_call(method="POST", url="{0}/systems/{1}/variables".format(api_url, current_system['id']), headers=headers, json=[], verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to unassign variables from system.")
 
         # Delete system
-        api_call(method="DELETE", url="{0}/systems/{1}".format(api_url, current_system['id']), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to delete system")
+        api_call(method="DELETE", url="{0}/systems/{1}".format(api_url, current_system['id']), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to delete system")
 
         module.exit_json(changed=True, msg="System deleted.", system_details=system_details)
 

@@ -2,26 +2,26 @@
 
 ## Overview
 
-The `alpaca_group` module allows you to create, rename, or delete ALPACA Operator groups using the REST API. This module provides basic group management capabilities for organizing systems within the ALPACA Operator environment.
+The `pcg.alpaca_operator.alpaca_group` module allows you to create, rename, or delete ALPACA Operator groups using the REST API. This module provides basic group management capabilities for organizing systems within the ALPACA Operator environment.
 
 ## Module Information
 
-- **Module Name**: `alpaca_group`
+- **Module Name**: `pcg.alpaca_operator.alpaca_group`
 - **Short Description**: Manage ALPACA Operator groups via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
   - Python >= 3.8
-  - Ansible >= 2.12
+  - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
 ## Parameters
 
 ### Required Parameters
 
-| Parameter       | Type | Required | Description                                              |
-| --------------- | ---- | -------- | -------------------------------------------------------- |
-| `name`          | str  | Yes      | Name of the group                                        |
-| `apiConnection` | dict | Yes      | Connection details for accessing the ALPACA Operator API |
+| Parameter        | Type | Required | Description                                              |
+| ---------------- | ---- | -------- | -------------------------------------------------------- |
+| `name`           | str  | Yes      | Name of the group                                        |
+| `api_connection` | dict | Yes      | Connection details for accessing the ALPACA Operator API |
 
 ### Optional Parameters
 
@@ -32,7 +32,7 @@ The `alpaca_group` module allows you to create, rename, or delete ALPACA Operato
 
 ### API Connection Configuration
 
-The `apiConnection` parameter requires a dictionary with the following sub-options:
+The `api_connection` parameter requires a dictionary with the following sub-options:
 
 | Parameter    | Type | Required | Default   | Description                                                 |
 | ------------ | ---- | -------- | --------- | ----------------------------------------------------------- |
@@ -53,7 +53,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -63,10 +63,10 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Create group
-      alpaca_groups:
+      pcg.alpaca_operator.alpaca_group:
         name: testgroup01
         state: present
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ### Delete a Group
@@ -77,7 +77,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -87,10 +87,10 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Delete group
-      alpaca_groups:
+      pcg.alpaca_operator.alpaca_group:
         name: testgroup01
         state: absent
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ### Rename a Group
@@ -101,7 +101,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -111,11 +111,11 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Rename group
-      alpaca_groups:
+      pcg.alpaca_operator.alpaca_group:
         name: testgroup01
         new_name: testgroup_renamed
         state: present
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ## Return Values
@@ -180,7 +180,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 - The module will create a new group if the specified name doesn't exist and `new_name` is provided
 - Groups can be used to organize systems within the ALPACA Operator environment
 - The module uses token-based authentication for API communication
-- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
+- API connection variables should be stored in the inventory file and referenced via `api_connection: "{{ api_connection }}"` in playbooks
 
 ## Author
 

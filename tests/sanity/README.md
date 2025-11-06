@@ -15,6 +15,7 @@ Ansible sanity tests are automated checks that validate code quality, documentat
 - `ignore-2.16.txt` - Ignore rules for Ansible 2.16
 - `ignore-2.17.txt` - Ignore rules for Ansible 2.17
 - `ignore-2.18.txt` - Ignore rules for Ansible 2.18
+- `ignore-2.19.txt` - Ignore rules for Ansible 2.19
 
 ## Content
 

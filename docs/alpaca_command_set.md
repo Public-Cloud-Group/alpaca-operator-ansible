@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `alpaca_command_set` module manages an entire set of ALPACA Operator commands associated with a system using a REST API. It is designed to apply bulk changes, for example, deploying multiple commands at once or cleaning up an existing command set.
+The `pcg.alpaca_operator.alpaca_command_set` module manages an entire set of ALPACA Operator commands associated with a system using a REST API. It is designed to apply bulk changes, for example, deploying multiple commands at once or cleaning up an existing command set.
 
 Use this module when you need to apply or remove multiple commands at once on a given ALPACA system. It simplifies large-scale system updates and is optimal for automation scenarios.
 
@@ -10,12 +10,12 @@ Use this module when you need to apply or remove multiple commands at once on a 
 
 ## Module Information
 
-- **Module Name**: `alpaca_command_set`
+- **Module Name**: `pcg.alpaca_operator.alpaca_command_set`
 - **Short Description**: Manage all ALPACA Operator commands of a specific system via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
   - Python >= 3.8
-  - Ansible >= 2.12
+  - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
 ## Parameters
@@ -24,8 +24,8 @@ Use this module when you need to apply or remove multiple commands at once on a 
 
 | Parameter       | Type | Required | Description                                                                                      |
 | --------------- | ---- | -------- | ------------------------------------------------------------------------------------------------ |
-| `system`        | dict | Yes      | Dictionary containing system identification. Either `systemId` or `systemName` must be provided. |
-| `apiConnection` | dict | Yes      | Connection details for accessing the ALPACA Operator API                                         |
+| `system`        | dict | Yes      | Dictionary containing system identification. Either `system_id` or `system_name` must be provided. |
+| `api_connection` | dict | Yes      | Connection details for accessing the ALPACA Operator API                                         |
 
 ### Optional Parameters
 
@@ -39,10 +39,10 @@ The `system` parameter accepts a dictionary with the following sub-options:
 
 | Parameter    | Type | Required | Description                                                            |
 | ------------ | ---- | -------- | ---------------------------------------------------------------------- |
-| `systemId`   | int  | No*      | Numeric ID of the target system. Optional if `systemName` is provided. |
-| `systemName` | str  | No*      | Name of the target system. Optional if `systemId` is provided.         |
+| `system_id`   | int  | No*      | Numeric ID of the target system. Optional if `system_name` is provided. |
+| `system_name` | str  | No*      | Name of the target system. Optional if `system_id` is provided.         |
 
-*Either `systemId` or `systemName` must be provided.
+*Either `system_id` or `system_name` must be provided.
 
 ### Command Configuration
 
@@ -52,15 +52,15 @@ The `commands` parameter accepts a list of dictionaries, where each dictionary c
 | ------------------ | ---- | -------- | ------- | ------------------------------------------------------------------------------------------ |
 | `name`             | str  | No       | -       | Name or description of the command                                                         |
 | `state`            | str  | No       | present | Desired state of the command (present, absent)                                             |
-| `agentId`          | int  | No       | -       | Numeric ID of the agent. Optional if `agentName` is provided.                              |
-| `agentName`        | str  | No       | -       | Name of the agent. Optional if `agentId` is provided.                                      |
-| `processId`        | int  | No       | -       | ID of the process to be executed. Optional if `processCentralId` is provided.              |
-| `processCentralId` | int  | No       | -       | Central ID / Global ID of the process to be executed. Optional if `processId` is provided. |
+| `agent_id`          | int  | No       | -       | Numeric ID of the agent. Optional if `agent_name` is provided.                              |
+| `agent_name`        | str  | No       | -       | Name of the agent. Optional if `agent_id` is provided.                                      |
+| `process_id`        | int  | No       | -       | ID of the process to be executed. Optional if `process_central_id` is provided.              |
+| `process_central_id` | int  | No       | -       | Central ID / Global ID of the process to be executed. Optional if `process_id` is provided. |
 | `parameters`       | str  | No       | -       | Parameters for the process                                                                 |
-| `parametersNeeded` | bool | No       | -       | Whether the execution of the command requires additional parameters                        |
+| `parameters_needed` | bool | No       | -       | Whether the execution of the command requires additional parameters                        |
 | `disabled`         | bool | No       | -       | Whether the command is currently disabled                                                  |
 | `critical`         | bool | No       | -       | Whether the command is marked as critical                                                  |
-| `autoDeploy`       | bool | No       | -       | Whether to automatically deploy the command                                                |
+| `auto_deploy`       | bool | No       | -       | Whether to automatically deploy the command                                                |
 
 ### Schedule Configuration
 
@@ -70,8 +70,8 @@ The `schedule` parameter accepts a dictionary with the following sub-options:
 | ---------------- | ---- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `period`         | str  | No       | Scheduling period                                                                                                       |
 | `time`           | str  | No       | Execution time in HH:mm:ss. Required when period is 'fixed_time', 'fixed_time_once' or 'start_fixed_time_and_hourly_mn' |
-| `cronExpression` | str  | No       | Quartz-compatible cron expression. Required when period is 'cron_expression'                                            |
-| `daysOfWeek`     | list | No       | List of weekdays for execution                                                                                          |
+| `cron_expression` | str  | No       | Quartz-compatible cron expression. Required when period is 'cron_expression'                                            |
+| `days_of_week`     | list | No       | List of weekdays for execution                                                                                          |
 
 **Period Choices**: every_5min, one_per_day, hourly, manually, fixed_time, hourly_with_mn, every_minute, even_hours_with_mn, odd_hours_with_mn, even_hours, odd_hours, fixed_time_once, fixed_time_immediate, cron_expression, disabled, start_fixed_time_and_hourly_mn
 
@@ -81,10 +81,10 @@ The `schedule` parameter accepts a dictionary with the following sub-options:
 
 The `history` parameter accepts a dictionary with the following sub-options:
 
-| Parameter         | Type | Required | Description                        |
-| ----------------- | ---- | -------- | ---------------------------------- |
-| `documentAllRuns` | bool | No       | Whether to document all executions |
-| `retention`       | int  | No       | Retention time in seconds          |
+| Parameter           | Type | Required | Description                        |
+| ------------------- | ---- | -------- | ---------------------------------- |
+| `document_all_runs` | bool | No       | Whether to document all executions |
+| `retention`         | int  | No       | Retention time in seconds          |
 
 ### Timeout Configuration
 
@@ -101,29 +101,29 @@ The `timeout` parameter accepts a dictionary with the following sub-options:
 
 The `escalation` parameter accepts a dictionary with the following sub-options:
 
-| Parameter         | Type | Required | Description                                  |
-| ----------------- | ---- | -------- | -------------------------------------------- |
-| `mailEnabled`     | bool | No       | Whether email alerts are enabled             |
-| `smsEnabled`      | bool | No       | Whether SMS alerts are enabled               |
-| `mailAddress`     | str  | No       | Email address for alerts                     |
-| `smsAddress`      | str  | No       | SMS number for alerts                        |
-| `minFailureCount` | int  | No       | Minimum number of failures before escalation |
-| `triggers`        | dict | No       | Trigger types for escalation                 |
+| Parameter           | Type | Required | Description                                  |
+| ------------------- | ---- | -------- | -------------------------------------------- |
+| `mail_enabled`      | bool | No       | Whether email alerts are enabled             |
+| `sms_enabled`       | bool | No       | Whether SMS alerts are enabled               |
+| `mail_address`      | str  | No       | Email address for alerts                     |
+| `sms_address`       | str  | No       | SMS number for alerts                        |
+| `min_failure_count` | int  | No       | Minimum number of failures before escalation |
+| `triggers`          | dict | No       | Trigger types for escalation                 |
 
 ### Escalation Triggers
 
 The `triggers` parameter accepts a dictionary with the following sub-options:
 
-| Parameter     | Type | Required | Description                        |
-| ------------- | ---- | -------- | ---------------------------------- |
-| `everyChange` | bool | No       | Currently no description available |
-| `toRed`       | bool | No       | Currently no description available |
-| `toYellow`    | bool | No       | Currently no description available |
-| `toGreen`     | bool | No       | Currently no description available |
+| Parameter      | Type | Required | Description                        |
+| -------------- | ---- | -------- | ---------------------------------- |
+| `every_change` | bool | No       | Currently no description available |
+| `to_red`       | bool | No       | Currently no description available |
+| `to_yellow`    | bool | No       | Currently no description available |
+| `to_green`     | bool | No       | Currently no description available |
 
 ### API Connection Configuration
 
-The `apiConnection` parameter requires a dictionary with the following sub-options:
+The `api_connection` parameter requires a dictionary with the following sub-options:
 
 | Parameter    | Type | Required | Default   | Description                                                 |
 | ------------ | ---- | -------- | --------- | ----------------------------------------------------------- |
@@ -144,7 +144,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -154,72 +154,72 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Configure commands
-      alpaca_command_set:
+      pcg.alpaca_operator.alpaca_command_set:
         system:
-          systemName: system01
+          system_name: system01
         commands:
           - name: "BKP: DB log sync"
             state: present
-            agentName: agent01
+            agent_name: agent01
             parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-            processCentralId: 8990048
+            process_central_id: 8990048
             schedule:
               period: manually
               time: "01:00:00"
-              daysOfWeek:
+              days_of_week:
                 - monday
                 - sunday
-            parametersNeeded: false
+            parameters_needed: false
             disabled: false
             critical: true
             history:
-              documentAllRuns: true
+              document_all_runs: true
               retention: 900
-            autoDeploy: false
+            auto_deploy: false
             timeout:
               type: default
               value: 30
             escalation:
-              mailEnabled: true
-              smsEnabled: true
-              mailAddress: "monitoring@pcg.io"
-              smsAddress: "0123456789"
-              minFailureCount: 1
+              mail_enabled: true
+              sms_enabled: true
+              mail_address: "monitoring@pcg.io"
+              sms_address: "0123456789"
+              min_failure_count: 1
               triggers:
-                everyChange: true
-                toRed: false
-                toYellow: false
-                toGreen: true
+                every_change: true
+                to_red: false
+                to_yellow: false
+                to_green: true
           - name: "BKP: DB log sync 2"
             state: present
-            agentName: agent02
+            agent_name: agent02
             parameters: "-p GLTarch -s <BKP_LOG_SRC> -l 4 -d <BKP_LOG_DEST1> -r <BKP_LOG_DEST2> -b <BKP_LOG_CLEANUP_INT> -t <BKP_LOG_CLEANUP_INT2> -h DB_HOST"
-            processCentralId: 8990048
+            process_central_id: 8990048
             schedule:
               period: cron_expression
-              cronExpression: '0 */5 * * * ?'
-            parametersNeeded: false
+              cron_expression: '0 */5 * * * ?'
+            parameters_needed: false
             disabled: false
             critical: true
             history:
-              documentAllRuns: true
+              document_all_runs: true
               retention: 900
-            autoDeploy: false
+            auto_deploy: false
             timeout:
               type: default
               value: 30
             escalation:
-              mailEnabled: true
-              smsEnabled: true
-              mailAddress: "monitoring@pcg.io"
-              smsAddress: "0123456789"
-              minFailureCount: 1
+              mail_enabled: true
+              sms_enabled: true
+              mail_address: "monitoring@pcg.io"
+              sms_address: "0123456789"
+              min_failure_count: 1
               triggers:
-                everyChange: true
-                toRed: false
-                toYellow: false
-                toGreen: true
-        apiConnection: "{{ apiConnection }}"
+                every_change: true
+                to_red: false
+                to_yellow: false
+                to_green: true
+        api_connection: "{{ api_connection }}"
 ```
 
 ### Remove All Commands
@@ -230,7 +230,7 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
   gather_facts: false
 
   vars:
-    apiConnection:
+    api_connection:
       host: "{{ ALPACA_Operator_API_Host }}"
       protocol: "{{ ALPACA_Operator_API_Protocol }}"
       port: "{{ ALPACA_Operator_API_Port }}"
@@ -240,11 +240,11 @@ The `apiConnection` parameter requires a dictionary with the following sub-optio
 
   tasks:
     - name: Remove all commands
-      alpaca_command_set:
+      pcg.alpaca_operator.alpaca_command_set:
         system:
-          systemName: system01
+          system_name: system01
         commands: []
-        apiConnection: "{{ apiConnection }}"
+        api_connection: "{{ api_connection }}"
 ```
 
 ## Return Values
@@ -277,7 +277,7 @@ The `changes` dictionary typically follows the format `commandIndex_XXX`, repres
   },
   "commandIndex_001": {
     "escalation": {
-      "minFailureCount": {
+      "min_failure_count": {
         "current": 0,
         "desired": 1
       }
@@ -301,7 +301,7 @@ The `changes` dictionary typically follows the format `commandIndex_XXX`, repres
 - Escalation settings can be configured for both email and SMS notifications
 - Use this module for bulk operations rather than individual command management
 - Empty commands list will remove all commands from the system
-- API connection variables should be stored in the inventory file and referenced via `apiConnection: "{{ apiConnection }}"` in playbooks
+- API connection variables should be stored in the inventory file and referenced via `api_connection: "{{ api_connection }}"` in playbooks
 
 ## Author
 

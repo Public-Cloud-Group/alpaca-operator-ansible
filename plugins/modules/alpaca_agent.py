@@ -21,130 +21,133 @@ description: This module allows you to create, update or delete ALPACA Operator 
 
 options:
     name:
-        description: Unique name (hostname) of the agent
+        description: Unique name (hostname) of the agent.
         version_added: '1.0.0'
         required: true
         type: str
     new_name:
         description: >
-            Optional new name for the agent. If the agent specified in `name` exists,
+            Optional new name for the agent. If the agent specified in O(name) exists,
             it will be renamed to this value. If the agent does not exist, a new agent will
             be created using this value.
         version_added: '1.0.0'
         required: false
         type: str
     description:
-        description: Unique description of the agent
+        description: Unique description of the agent.
         version_added: '1.0.0'
         required: false
         type: str
     escalation:
-        description: Escalation configuration
+        description: Escalation configuration.
         version_added: '1.0.0'
         required: false
         type: dict
         suboptions:
-            failuresBeforeReport:
-                description: Number of failures before reporting
+            failures_before_report:
+                description: Number of failures before reporting.
                 version_added: '1.0.0'
                 required: false
                 type: int
                 default: 0
-            mailEnabled:
-                description: Whether mail notification is enabled
+            mail_enabled:
+                description: Whether mail notification is enabled.
                 version_added: '1.0.0'
                 required: false
                 type: bool
                 default: false
-            mailAddress:
-                description: Mail address for notifications
+            mail_address:
+                description: Mail address for notifications.
                 version_added: '1.0.0'
                 required: false
                 type: str
                 default: ""
-            smsEnabled:
-                description: Whether SMS notification is enabled
+            sms_enabled:
+                description: Whether SMS notification is enabled.
                 version_added: '1.0.0'
                 required: false
                 type: bool
                 default: false
-            smsAddress:
-                description: SMS address for notifications
+            sms_address:
+                description: SMS address for notifications.
                 version_added: '1.0.0'
                 required: false
                 type: str
                 default: ""
-    ipAddress:
-        description: IP address of the agent
+    ip_address:
+        description: IP address of the agent.
         version_added: '1.0.0'
         required: false
         type: str
     location:
-        description: Location of the agent (virtual, local1, local2, remote)
+        description: Location of the agent. Can be V(virtual), V(local1), V(local2), or V(remote).
         version_added: '1.0.0'
         required: false
         type: str
         choices: [virtual, local1, local2, remote]
         default: virtual
-    scriptGroupId:
-        description: Script Group ID
+    script_group_id:
+        description: Script Group ID.
         version_added: '1.0.0'
         required: false
         type: int
         default: -1
     state:
-        description: Desired state of the agent
+        description: Desired state of the agent.
         version_added: '1.0.0'
         required: false
         default: present
         choices: [present, absent]
         type: str
-    apiConnection:
-        description: Connection details for accessing the ALPACA Operator API
+    api_connection:
+        description: Connection details for accessing the ALPACA Operator API.
         version_added: '1.0.0'
         required: true
         type: dict
         suboptions:
             username:
-                description: Username for authentication against the ALPACA Operator API
+                description: Username for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             password:
-                description: Password for authentication against the ALPACA Operator API
+                description: Password for authentication against the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: true
                 type: str
             protocol:
-                description: Protocol to use (http or https)
+                description: Protocol to use. Can be V(http) or V(https).
                 version_added: '1.0.0'
                 required: false
                 default: https
                 choices: [http, https]
                 type: str
             host:
-                description: Hostname of the ALPACA Operator server
+                description: Hostname of the ALPACA Operator server.
                 version_added: '1.0.0'
                 required: false
                 default: localhost
                 type: str
             port:
-                description: Port of the ALPACA Operator API
+                description: Port of the ALPACA Operator API.
                 version_added: '1.0.0'
                 required: false
                 default: 8443
                 type: int
             tls_verify:
-                description: Validate SSL certificates
+                description: Validate SSL certificates.
                 version_added: '1.0.0'
                 required: false
                 default: true
                 type: bool
 
 requirements:
-    - Python >= 3.6
-    - Ansible >= 2.11, < 2.17
-    - ALPACA Operator >= 5.5.1 instance reachable via API
+    - ALPACA Operator >= 5.6.0
+
+attributes:
+    check_mode:
+        description: Can run in check_mode and return changed status prediction without modifying target.
+        support: full
 
 author:
     - Jan-Karsten Hansmeyer (@pcg)
@@ -152,20 +155,20 @@ author:
 
 EXAMPLES = r'''
 - name: Ensure agent exists
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: agent01
-    ipAddress: 192.168.1.100
+    ip_address: 192.168.1.100
     location: virtual
     description: Test agent
     escalation:
-      failuresBeforeReport: 3
-      mailEnabled: true
-      mailAddress: my.mail@pcg.io
-      smsEnabled: true
-      smsAddress: 0123456789
-    scriptGroupId: 0
+      failures_before_report: 3
+      mail_enabled: true
+      mail_address: my.mail@pcg.io
+      sms_enabled: true
+      sms_address: 0123456789
+    script_group_id: 0
     state: present
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -174,10 +177,10 @@ EXAMPLES = r'''
       tls_verify: False
 
 - name: Ensure agent is absent
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: agent01
     state: absent
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -186,11 +189,11 @@ EXAMPLES = r'''
       tls_verify: False
 
 - name: Rename an existing agent
-  alpaca_agent:
+  pcg.alpaca_operator.alpaca_agent:
     name: agent01
     new_name: agent_renamed
     state: present
-    apiConnection:
+    api_connection:
       host: localhost
       port: 8443
       protocol: https
@@ -201,21 +204,21 @@ EXAMPLES = r'''
 
 RETURN = r'''
 msg:
-    description: Status message indicating the result of the operation.
+    description: Status message indicating the result of the operation
     returned: always
     type: str
     version_added: '1.0.0'
     sample: Agent created
 
 changed:
-    description: Indicates whether any change was made.
+    description: Indicates whether any change was made
     returned: always
     type: bool
     version_added: '1.0.0'
     sample: true
 
 agent_config:
-    description: Details of the created, updated, or deleted agent configuration.
+    description: Details of the created, updated, or deleted agent configuration
     returned: when state is present or absent
     type: dict
     version_added: '1.0.0'
@@ -223,27 +226,27 @@ agent_config:
         id: 7
         hostname: "testagent"
         description: "Test agent"
-        ipAddress: "10.1.1.1"
+        ip_address: "10.1.1.1"
         location: "virtual"
-        scriptGroupId: 2
+        script_group_id: 2
         escalation:
-            failuresBeforeReport: 3
-            mailEnabled: true
-            mailAddress: "monitoring@pcg.io"
-            smsEnabled: false
-            smsAddress: ""
+            failures_before_report: 3
+            mail_enabled: true
+            mail_address: "monitoring@pcg.io"
+            sms_enabled: false
+            sms_address: ""
 
 changes:
-    description: Dictionary showing differences between the current and desired configuration.
+    description: Dictionary showing differences between the current and desired configuration
     returned: when state is present and a change occurred
     type: dict
     version_added: '1.0.0'
     sample:
-        ipAddress:
+        ip_address:
             current: "10.1.1.1"
             desired: "10.1.1.2"
         escalation:
-            mailEnabled:
+            mail_enabled:
                 current: false
                 desired: true
 '''
@@ -269,16 +272,16 @@ def build_payload(desired_agent_config, current_agent_config):
     payload = {
         "description":              desired_agent_config.get('description', None)                                           if desired_agent_config.get('description', None)                                            is not None else current_agent_config.get('description', ''),
         "escalation": {
-            "failuresBeforeReport": desired_agent_config.get('escalation', {}).get('failuresBeforeReport', None)            if desired_agent_config.get('escalation', {}).get('failuresBeforeReport', None)             is not None else current_agent_config.get('escalation', {}).get('failuresBeforeReport', 0),
-            "mailAddress":          desired_agent_config.get('escalation', {}).get('mailAddress', None)                     if desired_agent_config.get('escalation', {}).get('mailAddress', None)                      is not None else current_agent_config.get('escalation', {}).get('mailAddress', ''),
-            "mailEnabled":          desired_agent_config.get('escalation', {}).get('mailEnabled', None)                     if desired_agent_config.get('escalation', {}).get('mailEnabled', None)                      is not None else current_agent_config.get('escalation', {}).get('mailEnabled', False),
-            "smsAddress":           desired_agent_config.get('escalation', {}).get('smsAddress', None)                      if desired_agent_config.get('escalation', {}).get('smsAddress', None)                       is not None else current_agent_config.get('escalation', {}).get('smsAddress', ''),
-            "smsEnabled":           desired_agent_config.get('escalation', {}).get('smsEnabled', None)                      if desired_agent_config.get('escalation', {}).get('smsEnabled', None)                       is not None else current_agent_config.get('escalation', {}).get('smsEnabled', False),
+            "failuresBeforeReport": (desired_agent_config.get('escalation') or {}).get('failures_before_report', None)     if (desired_agent_config.get('escalation') or {}).get('failures_before_report', None)      is not None else current_agent_config.get('escalation', {}).get('failuresBeforeReport', 0),
+            "mailAddress":          (desired_agent_config.get('escalation') or {}).get('mail_address', None)                if (desired_agent_config.get('escalation') or {}).get('mail_address', None)                 is not None else current_agent_config.get('escalation', {}).get('mailAddress', ''),
+            "mailEnabled":          (desired_agent_config.get('escalation') or {}).get('mail_enabled', None)                if (desired_agent_config.get('escalation') or {}).get('mail_enabled', None)                 is not None else current_agent_config.get('escalation', {}).get('mailEnabled', False),
+            "smsAddress":           (desired_agent_config.get('escalation') or {}).get('sms_address', None)                 if (desired_agent_config.get('escalation') or {}).get('sms_address', None)                  is not None else current_agent_config.get('escalation', {}).get('smsAddress', ''),
+            "smsEnabled":           (desired_agent_config.get('escalation') or {}).get('sms_enabled', None)                 if (desired_agent_config.get('escalation') or {}).get('sms_enabled', None)                  is not None else current_agent_config.get('escalation', {}).get('smsEnabled', False),
         },
         "hostname":                 desired_agent_config.get('new_name', None) or desired_agent_config.get('name', None)    if desired_agent_config.get('new_name', None) or desired_agent_config.get('name', None)     is not None else current_agent_config.get('hostname', ''),
-        "ipAddress":                desired_agent_config.get('ipAddress', None)                                             if desired_agent_config.get('ipAddress', None)                                              is not None else current_agent_config.get('ipAddress', ''),
+        "ipAddress":                desired_agent_config.get('ip_address', None)                                            if desired_agent_config.get('ip_address', None)                                             is not None else current_agent_config.get('ipAddress', ''),
         "location":                 desired_agent_config.get('location', None)                                              if desired_agent_config.get('location', None)                                               is not None else current_agent_config.get('location', 'virtual'),
-        "scriptGroupId":            desired_agent_config.get('scriptGroupId', None)                                         if desired_agent_config.get('scriptGroupId', None)                                          is not None else current_agent_config.get('scriptGroupId', -1),
+        "scriptGroupId":            desired_agent_config.get('script_group_id', None)                                       if desired_agent_config.get('script_group_id', None)                                        is not None else current_agent_config.get('scriptGroupId', -1),
     }
 
     return payload
@@ -290,12 +293,12 @@ def main():
             name=dict(type='str', required=True),       # = hostname
             new_name=dict(type='str', required=False),  # = hostname
             description=dict(type='str', required=False),
-            escalation=dict(type='dict', required=False, default={}),
-            ipAddress=dict(type='str', required=False),
-            location=dict(type='str', required=False, choices=['virtual', 'local1', 'local2', 'remote']),
-            scriptGroupId=dict(type='int', required=False),
+            escalation=dict(type='dict', required=False),
+            ip_address=dict(type='str', required=False),
+            location=dict(type='str', required=False, default='virtual', choices=['virtual', 'local1', 'local2', 'remote']),
+            script_group_id=dict(type='int', required=False, default=-1),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-            apiConnection=dict(
+            api_connection=dict(
                 type='dict',
                 required=True,
                 options=dict(
@@ -311,11 +314,11 @@ def main():
         supports_check_mode=True,
     )
 
-    api_url = "{0}://{1}:{2}/api".format(module.params['apiConnection']['protocol'], module.params['apiConnection']['host'], module.params['apiConnection']['port'])
-    token = get_token(api_url, module.params['apiConnection']['username'], module.params['apiConnection']['password'], module.params['apiConnection']['tls_verify'])
+    api_url = "{0}://{1}:{2}/api".format(module.params['api_connection']['protocol'], module.params['api_connection']['host'], module.params['api_connection']['port'])
+    token = get_token(api_url, module.params['api_connection']['username'], module.params['api_connection']['password'], module.params['api_connection']['tls_verify'])
     headers = {"Authorization": "Bearer {0}".format(token)}
-    current_agent = lookup_resource(api_url, headers, "agents", "hostname", module.params['name'], module.params['apiConnection']['tls_verify']) or lookup_resource(api_url, headers, "agents", "hostname", module.params['new_name'], module.params['apiConnection']['tls_verify'])
-    current_agent_config = api_call(method="GET", url="{0}/agents/{1}".format(api_url, current_agent.get('id', None)), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to get current agent configuration").json() if current_agent else {}
+    current_agent = lookup_resource(api_url, headers, "agents", "hostname", module.params['name'], module.params['api_connection']['tls_verify']) or lookup_resource(api_url, headers, "agents", "hostname", module.params['new_name'], module.params['api_connection']['tls_verify'])
+    current_agent_config = api_call(method="GET", url="{0}/agents/{1}".format(api_url, current_agent.get('id', None)), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to get current agent configuration").json() if current_agent else {}
     agent_payload = build_payload(module.params, current_agent_config)
     diff = {}
 
@@ -344,7 +347,7 @@ def main():
                     module.exit_json(changed=True, msg="Agent would be updated", changes=diff)
 
                 # Update agent
-                current_agent_config = api_call("PUT", "{0}/agents/{1}".format(api_url, current_agent['id']), headers=headers, json=agent_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to update agent").json()
+                current_agent_config = api_call("PUT", "{0}/agents/{1}".format(api_url, current_agent['id']), headers=headers, json=agent_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to update agent").json()
                 module.exit_json(changed=True, msg="Agent updated", agent_config=current_agent_config, changes=diff)
 
         elif not current_agent:
@@ -352,7 +355,7 @@ def main():
                 module.exit_json(changed=True, msg="Agent would be created", agent_config=agent_payload)
 
             # Create the agent if it doesn't exist
-            current_agent_config = api_call("POST", "{0}/agents".format(api_url), headers=headers, json=agent_payload, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to create agent").json()
+            current_agent_config = api_call("POST", "{0}/agents".format(api_url), headers=headers, json=agent_payload, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to create agent").json()
             module.exit_json(changed=True, msg="Agent created", agent_config=current_agent_config)
 
         module.exit_json(changed=False, msg="Agent already exists with the desired configuration", agent_config=current_agent_config)
@@ -364,7 +367,7 @@ def main():
         if module.check_mode:
             module.exit_json(changed=True, msg="Agent would be deleted", agent_config=current_agent_config)
 
-        api_call("DELETE", "{0}/agents/{1}".format(api_url, current_agent['id']), headers=headers, verify=module.params['apiConnection']['tls_verify'], module=module, fail_msg="Failed to delete agent")
+        api_call("DELETE", "{0}/agents/{1}".format(api_url, current_agent['id']), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to delete agent")
         module.exit_json(changed=True, msg="Agent deleted", agent_config=current_agent_config)
 
     module.exit_json(changed=True, msg="Agent state processed")
