@@ -36,4 +36,3 @@ trivial:
   - "Move templates folder into .dev directory as the example playbooks are only for testing purposes."
   - "Add GitHub workflow to automatically generate CHANGELOG.rst when fragments are merged to main branch."
   - "Add GitHub workflow to check for changelog fragments in pull requests and provide helpful guidance to contributors."
-
