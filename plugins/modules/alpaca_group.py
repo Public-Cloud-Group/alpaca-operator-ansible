@@ -125,21 +125,16 @@ name:
     sample: testgroup01
 '''
 
-from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token, get_api_connection_argument_spec
+from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token, get_api_connection_argument_spec, api_call
 from ansible.module_utils.basic import AnsibleModule
 
 
 def find_group(api_url, headers, name, verify):
     """Find group by name"""
-    try:
-        import requests
-        response = requests.get("{0}/groups".format(api_url), headers=headers, verify=verify)
-        response.raise_for_status()
-        for group in response.json():
-            if group["name"] == name:
-                return group
-    except ImportError:
-        raise
+    response = api_call("GET", "{0}/groups".format(api_url), headers=headers, verify=verify)
+    for group in response.json():
+        if group["name"] == name:
+            return group
     return None
 
 
@@ -169,11 +164,6 @@ def main():
     headers = {"Authorization": "Bearer {0}".format(api_token)}
     group = find_group(api_url, headers, name, api_tls_verify)
 
-    try:
-        import requests
-    except ImportError:
-        module.fail_json(msg="Python module 'requests' could not be found")
-
     if state == 'present':
         if group:
             # If renaming is requested and name differs, perform update
@@ -182,7 +172,7 @@ def main():
                     module.exit_json(changed=True, msg="Group would be renamed", id=group["id"], name=new_name)
 
                 if not find_group(api_url, headers, new_name, api_tls_verify):
-                    response = requests.put("{0}/groups/{1}".format(api_url, group["id"]), headers=headers, verify=api_tls_verify, json={"name": new_name})
+                    response = api_call("PUT", "{0}/groups/{1}".format(api_url, group["id"]), headers=headers, verify=api_tls_verify, json={"name": new_name}, module=module, fail_msg="Failed to rename group")
 
                     if response.status_code not in [200]:
                         module.fail_json(msg="Failed to rename group: {0}".format(response.text))
@@ -200,8 +190,7 @@ def main():
             if module.check_mode:
                 module.exit_json(changed=True, msg="Group would be created", name=name)
 
-            response = requests.post("{0}/groups".format(api_url), headers=headers, verify=api_tls_verify, json={"name": name})
-            response.raise_for_status()
+            response = api_call("POST", "{0}/groups".format(api_url), headers=headers, verify=api_tls_verify, json={"name": name}, module=module, fail_msg="Failed to create group")
             module.exit_json(changed=True, msg="Group created", id=response.json()["id"], name=name)
 
         module.exit_json(changed=False, msg="Group already exists", name=name)
@@ -213,7 +202,7 @@ def main():
             module.exit_json(changed=True, msg="Group would be deleted", id=group["id"], name=name)
 
         group_id = group["id"]
-        response = requests.delete("{0}/groups/{1}".format(api_url, group_id), headers=headers, verify=api_tls_verify)
+        response = api_call("DELETE", "{0}/groups/{1}".format(api_url, group_id), headers=headers, verify=api_tls_verify, module=module, fail_msg="Failed to delete group")
 
         if response.status_code not in [204]:
             module.fail_json(msg="Failed to delete group: {0}".format(response.text))

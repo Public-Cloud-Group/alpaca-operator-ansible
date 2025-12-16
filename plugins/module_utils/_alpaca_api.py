@@ -11,24 +11,81 @@ from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
 
+import json as json_module
+
+from ansible.module_utils.urls import open_url
+
 
 def api_call(method, url, headers=None, json=None, verify=True, module=None, fail_msg=None):
-    """Make API call and handle errors"""
+    """Make API call and return response data"""
     try:
-        import requests
-        response = requests.request(method, url, headers=headers, json=json, verify=verify)
-        if response.status_code >= 400:
+        data = None
+        if json is not None:
+            data = json_module.dumps(json).encode('utf-8')
+            if headers is None:
+                headers = {}
+            else:
+                headers = dict(headers)  # Create a copy to avoid modifying the original
+            headers['Content-Type'] = 'application/json'
+
+        response = open_url(
+            url,
+            method=method,
+            headers=headers,
+            data=data,
+            validate_certs=verify,
+            http_agent='ansible-alpaca-operator'
+        )
+
+        status_code = response.getcode()
+        content = response.read()
+        text = content.decode('utf-8') if isinstance(content, bytes) else content
+
+        if status_code >= 400:
             if module and fail_msg:
-                module.fail_json(msg="{0}: {1}".format(fail_msg, response.text))
-            response.raise_for_status()
-        return response
-    except ImportError:
+                module.fail_json(msg="{0}: {1}".format(fail_msg, text))
+            raise Exception("HTTP {0}: {1}".format(status_code, text))
+
+        # Parse JSON if content exists, otherwise return empty dict
+        try:
+            json_result = json_module.loads(text) if text else {}
+        except ValueError:
+            json_result = {}
+
+        class ResponseDict(dict):
+            """Dictionary-like object with json() method and attribute access for compatibility"""
+            def __init__(self, status_code, text, json_data):
+                # Only initialize dict with json_data if it's a dict, otherwise store as attribute
+                if isinstance(json_data, dict):
+                    super(ResponseDict, self).__init__(json_data)
+                else:
+                    super(ResponseDict, self).__init__()
+                self._status_code = status_code
+                self._text = text
+                self._json_data = json_data
+
+            def json(self):
+                """Return the parsed JSON data (can be dict, list, or other types)"""
+                return self._json_data
+
+            def __getattr__(self, name):
+                """Allow attribute access to status_code, text, and dictionary keys"""
+                if name == 'status_code':
+                    return self._status_code
+                elif name == 'text':
+                    return self._text
+                try:
+                    return self[name]
+                except KeyError:
+                    raise AttributeError("'{0}' object has no attribute '{1}'".format(self.__class__.__name__, name))
+
+        result = ResponseDict(status_code, text, json_result)
+        return result
+
+    except Exception as e:
         if module:
-            module.fail_json(msg="Python module 'requests' could not be found")
-        raise
-    except requests.RequestException as e:
-        if module:
-            module.fail_json(msg="{0}: {1}".format(fail_msg or 'API request failed.', e))
+            error_msg = "{0}: {1}".format(fail_msg or 'API request failed.', str(e))
+            module.fail_json(msg=error_msg)
         raise
 
 
