@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `pcg.alpaca_operator.alpaca_agent` module allows you to create, update, or delete ALPACA Operator agents using the REST API. This module provides comprehensive management capabilities for ALPACA Operator agents, including configuration of escalation settings, location settings, and other agent-specific properties.
+The `pcg.alpaca_operator.alpaca_agent` module allows you to create, update, or delete [ALPACA Operator](https://alpaca.pcg.io/) agents using the REST API. This module provides comprehensive management capabilities for ALPACA Operator agents, including configuration of escalation settings, location settings, and other agent-specific properties.
 
 ## Module Information
 
