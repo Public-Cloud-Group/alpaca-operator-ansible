@@ -14,6 +14,7 @@ minor_changes:
 bugfixes:
   - "Fix incorrect version_added values for parameters that were renamed from camelCase to snake_case in version 2.0.0. All renamed parameters now correctly show version_added: '2.0.0' instead of '1.0.0'."
   - "Refactor api_connection parameter documentation to use doc fragment and move argument spec to module utils to eliminate duplication across all modules."
+  - "Fix inconsistent Python version requirement in module utils comment. Updated comment in _alpaca_api.py from Python 2.7+ to Python 3.8+ to match README.md and other documentation."
 
 trivial:
   - ...

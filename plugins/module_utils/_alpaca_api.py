@@ -5,7 +5,7 @@
 
 
 # This module is for internal use only within the pcg.alpaca_operator collection.
-# Python versions supported: 2.7+
+# Python versions supported: 3.8+
 
 from __future__ import (absolute_import, division, print_function)
 
