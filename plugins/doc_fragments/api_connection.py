@@ -6,7 +6,9 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-DOCUMENTATION = r'''
+
+class ModuleDocFragment(object):
+    DOCUMENTATION = r'''
 ---
 options:
     api_connection:
@@ -51,7 +53,3 @@ options:
                 default: true
                 type: bool
 '''
-
-
-class ModuleDocFragment(object):
-    pass
