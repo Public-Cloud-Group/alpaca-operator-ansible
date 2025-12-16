@@ -44,7 +44,7 @@ options:
     magic_number:
         description: >
             Custom numeric field between 0 and 59. Can be used for arbitrary logic in your setup.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: int
         choices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -52,22 +52,22 @@ options:
             40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
     checks_disabled:
         description: Disable automatic system health checks.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: bool
     group_name:
         description: Name of the group to which the system should belong.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: str
     group_id:
         description: ID of the group (used if O(group_name) is not provided).
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: int
     rfc_connection:
         description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: dict
         suboptions:
@@ -84,7 +84,7 @@ options:
                 type: str
             instance_number:
                 description: Instance number of the RFC connection.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
                 choices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -99,7 +99,7 @@ options:
                 type: str
             logon_group:
                 description: Logon group (used with V(messageServer) type).
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
             username:
@@ -128,12 +128,12 @@ options:
                 type: str
             sap_router_string:
                 description: SAProuter string used to establish the RFC connection.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
             snc_enabled:
                 description: Enable or disable SNC.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
     agents:
@@ -197,7 +197,7 @@ options:
         type: str
     api_connection:
         description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: true
         type: dict
         suboptions:

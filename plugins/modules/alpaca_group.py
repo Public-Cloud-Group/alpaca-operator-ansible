@@ -42,7 +42,7 @@ options:
         type: str
     api_connection:
         description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: true
         type: dict
         suboptions:

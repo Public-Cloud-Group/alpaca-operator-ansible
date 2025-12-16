@@ -46,37 +46,37 @@ options:
         suboptions:
             failures_before_report:
                 description: Number of failures before reporting.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
                 default: 0
             mail_enabled:
                 description: Whether mail notification is enabled.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
                 default: false
             mail_address:
                 description: Mail address for notifications.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
                 default: ""
             sms_enabled:
                 description: Whether SMS notification is enabled.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
                 default: false
             sms_address:
                 description: SMS address for notifications.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
                 default: ""
     ip_address:
         description: IP address of the agent.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: str
     location:
@@ -88,7 +88,7 @@ options:
         default: virtual
     script_group_id:
         description: Script Group ID.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: int
         default: -1
@@ -101,7 +101,7 @@ options:
         type: str
     api_connection:
         description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: true
         type: dict
         suboptions:

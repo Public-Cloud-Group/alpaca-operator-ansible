@@ -36,12 +36,12 @@ options:
         suboptions:
             system_id:
                 description: Numeric ID of the target system. Optional if O(system.system_name) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             system_name:
                 description: Name of the target system. Optional if O(system.system_id) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
     command:
@@ -66,26 +66,26 @@ options:
                 description: >
                     Numeric ID of the agent. Optional if O(command.agent_name) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             agent_name:
                 description: >
                     Name of the agent. Optional if O(command.agent_id) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
             process_id:
                 description: >
                     ID of the process to be executed. Optional if O(command.process_central_id) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             process_central_id:
                 description: >
                     Central ID / Global ID of the process to be executed. Optional if O(command.process_id) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             parameters:
@@ -95,7 +95,7 @@ options:
                 type: str
             parameters_needed:
                 description: Whether the execution of the command requires additional parameters.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
             disabled:
@@ -127,12 +127,12 @@ options:
                         required: false
                     cron_expression:
                         description: Quartz-compatible cron expression. Required when O(command.schedule.period) is V(cron_expression).
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: str
                         required: false
                     days_of_week:
                         description: List of weekdays for execution.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: list
                         elements: str
                         required: false
@@ -145,7 +145,7 @@ options:
                 suboptions:
                     document_all_runs:
                         description: Whether to document all executions.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: bool
                         required: false
                     retention:
@@ -155,7 +155,7 @@ options:
                         required: false
             auto_deploy:
                 description: Whether to automatically deploy the command.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
             timeout:
@@ -183,27 +183,27 @@ options:
                 suboptions:
                     mail_enabled:
                         description: Whether email alerts are enabled.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: bool
                         required: false
                     sms_enabled:
                         description: Whether SMS alerts are enabled.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: bool
                         required: false
                     mail_address:
                         description: Email address for alerts.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: str
                         required: false
                     sms_address:
                         description: SMS number for alerts.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: str
                         required: false
                     min_failure_count:
                         description: Minimum number of failures before escalation.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: int
                         required: false
                     triggers:
@@ -214,27 +214,27 @@ options:
                         suboptions:
                             every_change:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
                             to_red:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
                             to_yellow:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
                             to_green:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
     api_connection:
         description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: true
         type: dict
         suboptions:
