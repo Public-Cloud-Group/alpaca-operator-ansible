@@ -1,0 +1,19 @@
+---
+release_summary: |
+  Release 2.0.1 of the pcg.alpaca_operator collection fixes documentation issues related to parameter version information.
+
+breaking_changes:
+  - ...
+
+major_changes:
+  - ...
+
+minor_changes:
+  - ...
+
+bugfixes:
+  - "Fix incorrect version_added values for parameters that were renamed from camelCase to snake_case in version 2.0.0. All renamed parameters now correctly show version_added: '2.0.0' instead of '1.0.0'."
+  - "Refactor api_connection parameter documentation to use doc fragment and move argument spec to module utils to eliminate duplication across all modules."
+
+trivial:
+  - ...

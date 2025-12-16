@@ -56,3 +56,19 @@ def lookup_processId(api_url, headers, key, value, verify):
             if str(process.get(key)) == str(value):
                 return process.get('id')
     return None
+
+
+def get_api_connection_argument_spec():
+    """Return the argument spec for api_connection parameter"""
+    return dict(
+        type='dict',
+        required=True,
+        options=dict(
+            host=dict(type='str', required=False, default='localhost'),
+            port=dict(type='int', required=False, default='8443'),
+            protocol=dict(type='str', required=False, default='https', choices=['http', 'https']),
+            username=dict(type='str', required=True, no_log=True),
+            password=dict(type='str', required=True, no_log=True),
+            tls_verify=dict(type='bool', required=False, default=True)
+        )
+    )

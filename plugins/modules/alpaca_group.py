@@ -17,6 +17,9 @@ short_description: Manage ALPACA Operator groups via REST API
 
 version_added: '1.0.0'
 
+extends_documentation_fragment:
+    - pcg.alpaca_operator.api_connection
+
 description: This module allows you to create, rename or delete ALPACA Operator groups using the REST API.
 
 options:
@@ -40,47 +43,6 @@ options:
         default: present
         choices: [present, absent]
         type: str
-    api_connection:
-        description: Connection details for accessing the ALPACA Operator API.
-        version_added: '2.0.0'
-        required: true
-        type: dict
-        suboptions:
-            username:
-                description: Username for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            password:
-                description: Password for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            protocol:
-                description: Protocol to use. Can be V(http) or V(https).
-                version_added: '1.0.0'
-                required: false
-                default: https
-                choices: [http, https]
-                type: str
-            host:
-                description: Hostname of the ALPACA Operator server.
-                version_added: '1.0.0'
-                required: false
-                default: localhost
-                type: str
-            port:
-                description: Port of the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: false
-                default: 8443
-                type: int
-            tls_verify:
-                description: Validate SSL certificates.
-                version_added: '1.0.0'
-                required: false
-                default: true
-                type: bool
 
 requirements:
     - ALPACA Operator >= 5.6.0
@@ -163,7 +125,7 @@ name:
     sample: testgroup01
 '''
 
-from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token
+from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token, get_api_connection_argument_spec
 from ansible.module_utils.basic import AnsibleModule
 
 
@@ -187,18 +149,7 @@ def main():
             name=dict(type='str', required=True),
             new_name=dict(type='str', required=False),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-            api_connection=dict(
-                type='dict',
-                required=True,
-                options=dict(
-                    host=dict(type='str', required=False, default='localhost'),
-                    port=dict(type='int', required=False, default='8443'),
-                    protocol=dict(type='str', required=False, default='https', choices=['http', 'https']),
-                    username=dict(type='str', required=True, no_log=True),
-                    password=dict(type='str', required=True, no_log=True),
-                    tls_verify=dict(type='bool', required=False, default=True)
-                )
-            )
+            api_connection=get_api_connection_argument_spec()
         ),
         supports_check_mode=True,
     )
