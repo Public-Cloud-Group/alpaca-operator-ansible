@@ -40,7 +40,7 @@ name: CI/CD Pipeline
 on:
   push:
     paths-ignore:
-      - '*.md'
+      - '**/*.md'
   schedule:
     # Run every Sunday at 2:00 AM UTC (weekly)
     - cron: '0 2 * * 0'
