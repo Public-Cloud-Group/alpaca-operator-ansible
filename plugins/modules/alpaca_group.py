@@ -172,7 +172,15 @@ def main():
                     module.exit_json(changed=True, msg="Group would be renamed", id=group["id"], name=new_name)
 
                 if not find_group(api_url, headers, new_name, api_tls_verify):
-                    response = api_call("PUT", "{0}/groups/{1}".format(api_url, group["id"]), headers=headers, verify=api_tls_verify, json={"name": new_name}, module=module, fail_msg="Failed to rename group")
+                    response = api_call(
+                        "PUT",
+                        "{0}/groups/{1}".format(api_url, group["id"]),
+                        headers=headers,
+                        verify=api_tls_verify,
+                        json={"name": new_name},
+                        module=module,
+                        fail_msg="Failed to rename group"
+                    )
 
                     if response.status_code not in [200]:
                         module.fail_json(msg="Failed to rename group: {0}".format(response.text))
@@ -190,7 +198,15 @@ def main():
             if module.check_mode:
                 module.exit_json(changed=True, msg="Group would be created", name=name)
 
-            response = api_call("POST", "{0}/groups".format(api_url), headers=headers, verify=api_tls_verify, json={"name": name}, module=module, fail_msg="Failed to create group")
+            response = api_call(
+                "POST",
+                "{0}/groups".format(api_url),
+                headers=headers,
+                verify=api_tls_verify,
+                json={"name": name},
+                module=module,
+                fail_msg="Failed to create group"
+            )
             module.exit_json(changed=True, msg="Group created", id=response.json()["id"], name=name)
 
         module.exit_json(changed=False, msg="Group already exists", name=name)
@@ -202,7 +218,14 @@ def main():
             module.exit_json(changed=True, msg="Group would be deleted", id=group["id"], name=name)
 
         group_id = group["id"]
-        response = api_call("DELETE", "{0}/groups/{1}".format(api_url, group_id), headers=headers, verify=api_tls_verify, module=module, fail_msg="Failed to delete group")
+        response = api_call(
+            "DELETE",
+            "{0}/groups/{1}".format(api_url, group_id),
+            headers=headers,
+            verify=api_tls_verify,
+            module=module,
+            fail_msg="Failed to delete group"
+        )
 
         if response.status_code not in [204]:
             module.fail_json(msg="Failed to delete group: {0}".format(response.text))

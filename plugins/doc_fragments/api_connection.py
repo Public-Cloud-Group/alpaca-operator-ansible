@@ -3,6 +3,9 @@
 # Copyright: Contributors to the Ansible project
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0)
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 DOCUMENTATION = r'''
 ---
 options:
@@ -49,3 +52,6 @@ options:
                 type: bool
 '''
 
+
+class ModuleDocFragment(object):
+    pass
