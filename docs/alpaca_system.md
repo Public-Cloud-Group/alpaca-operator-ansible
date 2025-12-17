@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `pcg.alpaca_operator.alpaca_system` module allows you to create, update, or delete ALPACA Operator systems using the REST API. In addition to general system properties, it supports assigning agents and variables. Communication is handled using token-based authentication.
+The `pcg.alpaca_operator.alpaca_system` module allows you to create, update, or delete [ALPACA Operator](https://alpaca.pcg.io/) systems using the REST API. In addition to general system properties, it supports assigning agents and variables. Communication is handled using token-based authentication.
 
 ## Module Information
 

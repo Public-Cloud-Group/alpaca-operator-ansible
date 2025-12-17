@@ -17,6 +17,9 @@ short_description: Manage ALPACA Operator groups via REST API
 
 version_added: '1.0.0'
 
+extends_documentation_fragment:
+    - pcg.alpaca_operator.api_connection
+
 description: This module allows you to create, rename or delete ALPACA Operator groups using the REST API.
 
 options:
@@ -40,47 +43,6 @@ options:
         default: present
         choices: [present, absent]
         type: str
-    api_connection:
-        description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
-        required: true
-        type: dict
-        suboptions:
-            username:
-                description: Username for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            password:
-                description: Password for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            protocol:
-                description: Protocol to use. Can be V(http) or V(https).
-                version_added: '1.0.0'
-                required: false
-                default: https
-                choices: [http, https]
-                type: str
-            host:
-                description: Hostname of the ALPACA Operator server.
-                version_added: '1.0.0'
-                required: false
-                default: localhost
-                type: str
-            port:
-                description: Port of the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: false
-                default: 8443
-                type: int
-            tls_verify:
-                description: Validate SSL certificates.
-                version_added: '1.0.0'
-                required: false
-                default: true
-                type: bool
 
 requirements:
     - ALPACA Operator >= 5.6.0
@@ -163,21 +125,16 @@ name:
     sample: testgroup01
 '''
 
-from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token
+from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token, get_api_connection_argument_spec, api_call
 from ansible.module_utils.basic import AnsibleModule
 
 
 def find_group(api_url, headers, name, verify):
     """Find group by name"""
-    try:
-        import requests
-        response = requests.get("{0}/groups".format(api_url), headers=headers, verify=verify)
-        response.raise_for_status()
-        for group in response.json():
-            if group["name"] == name:
-                return group
-    except ImportError:
-        raise
+    response = api_call("GET", "{0}/groups".format(api_url), headers=headers, verify=verify)
+    for group in response.json():
+        if group["name"] == name:
+            return group
     return None
 
 
@@ -187,18 +144,7 @@ def main():
             name=dict(type='str', required=True),
             new_name=dict(type='str', required=False),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-            api_connection=dict(
-                type='dict',
-                required=True,
-                options=dict(
-                    host=dict(type='str', required=False, default='localhost'),
-                    port=dict(type='int', required=False, default='8443'),
-                    protocol=dict(type='str', required=False, default='https', choices=['http', 'https']),
-                    username=dict(type='str', required=True, no_log=True),
-                    password=dict(type='str', required=True, no_log=True),
-                    tls_verify=dict(type='bool', required=False, default=True)
-                )
-            )
+            api_connection=get_api_connection_argument_spec()
         ),
         supports_check_mode=True,
     )
@@ -218,11 +164,6 @@ def main():
     headers = {"Authorization": "Bearer {0}".format(api_token)}
     group = find_group(api_url, headers, name, api_tls_verify)
 
-    try:
-        import requests
-    except ImportError:
-        module.fail_json(msg="Python module 'requests' could not be found")
-
     if state == 'present':
         if group:
             # If renaming is requested and name differs, perform update
@@ -231,7 +172,15 @@ def main():
                     module.exit_json(changed=True, msg="Group would be renamed", id=group["id"], name=new_name)
 
                 if not find_group(api_url, headers, new_name, api_tls_verify):
-                    response = requests.put("{0}/groups/{1}".format(api_url, group["id"]), headers=headers, verify=api_tls_verify, json={"name": new_name})
+                    response = api_call(
+                        "PUT",
+                        "{0}/groups/{1}".format(api_url, group["id"]),
+                        headers=headers,
+                        verify=api_tls_verify,
+                        json={"name": new_name},
+                        module=module,
+                        fail_msg="Failed to rename group"
+                    )
 
                     if response.status_code not in [200]:
                         module.fail_json(msg="Failed to rename group: {0}".format(response.text))
@@ -249,8 +198,15 @@ def main():
             if module.check_mode:
                 module.exit_json(changed=True, msg="Group would be created", name=name)
 
-            response = requests.post("{0}/groups".format(api_url), headers=headers, verify=api_tls_verify, json={"name": name})
-            response.raise_for_status()
+            response = api_call(
+                "POST",
+                "{0}/groups".format(api_url),
+                headers=headers,
+                verify=api_tls_verify,
+                json={"name": name},
+                module=module,
+                fail_msg="Failed to create group"
+            )
             module.exit_json(changed=True, msg="Group created", id=response.json()["id"], name=name)
 
         module.exit_json(changed=False, msg="Group already exists", name=name)
@@ -262,7 +218,14 @@ def main():
             module.exit_json(changed=True, msg="Group would be deleted", id=group["id"], name=name)
 
         group_id = group["id"]
-        response = requests.delete("{0}/groups/{1}".format(api_url, group_id), headers=headers, verify=api_tls_verify)
+        response = api_call(
+            "DELETE",
+            "{0}/groups/{1}".format(api_url, group_id),
+            headers=headers,
+            verify=api_tls_verify,
+            module=module,
+            fail_msg="Failed to delete group"
+        )
 
         if response.status_code not in [204]:
             module.fail_json(msg="Failed to delete group: {0}".format(response.text))

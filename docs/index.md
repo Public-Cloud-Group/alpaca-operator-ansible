@@ -2,7 +2,7 @@
 
 ## Overview
 
-The ALPACA Operator Ansible Collection provides a comprehensive set of modules for managing ALPACA Operator environments through Ansible automation. This collection enables you to manage agents, systems, groups, commands, and command sets using the ALPACA Operator REST API.
+The ALPACA Operator Ansible Collection provides a comprehensive set of modules for managing [ALPACA Operator](https://alpaca.pcg.io/) environments through Ansible automation. This collection enables you to manage agents, systems, groups, commands, and command sets using the ALPACA Operator REST API.
 
 ## Modules
 

@@ -17,6 +17,9 @@ short_description: Manage all ALPACA Operator commands of a specific system via 
 
 version_added: '1.0.0'
 
+extends_documentation_fragment:
+    - pcg.alpaca_operator.api_connection
+
 description: >
     This Ansible module manages an entire set of ALPACA Operator commands associated with a system using a REST API. It is designed to apply bulk changes, for example, deploying multiple commands at once or cleaning up an existing command set.
     Use this module when you need to apply or remove multiple commands at once on a given ALPACA system. It simplifies large-scale system updates and is optimal for automation scenarios.
@@ -31,12 +34,12 @@ options:
         suboptions:
             system_id:
                 description: Numeric ID of the target system. Optional if O(system.system_name) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             system_name:
                 description: Name of the target system. Optional if O(system.system_id) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
     commands:
@@ -65,26 +68,26 @@ options:
                 description: >
                     Numeric ID of the agent. Optional if O(commands.agent_name) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             agent_name:
                 description: >
                     Name of the agent. Optional if O(commands.agent_id) is provided.
                     Note: This agent must also be assigned to the corresponding system if the system is managed via Ansible.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
             process_id:
                 description: >
                     ID of the process to be executed. Optional if O(commands.process_central_id) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             process_central_id:
                 description: >
                     Central ID / Global ID of the process to be executed. Optional if O(commands.process_id) is provided.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
             parameters:
@@ -94,7 +97,7 @@ options:
                 type: str
             parameters_needed:
                 description: Whether the execution of the command requires additional parameters.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
             disabled:
@@ -126,12 +129,12 @@ options:
                         required: false
                     cron_expression:
                         description: Quartz-compatible cron expression. Required when O(commands.schedule.period) is V(cron_expression).
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: str
                         required: false
                     days_of_week:
                         description: List of weekdays for execution.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: list
                         elements: str
                         required: false
@@ -144,7 +147,7 @@ options:
                 suboptions:
                     document_all_runs:
                         description: Whether to document all executions.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: bool
                         required: false
                     retention:
@@ -154,7 +157,7 @@ options:
                         required: false
             auto_deploy:
                 description: Whether to automatically deploy the command.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
             timeout:
@@ -182,27 +185,27 @@ options:
                 suboptions:
                     mail_enabled:
                         description: Whether email alerts are enabled.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: bool
                         required: false
                     sms_enabled:
                         description: Whether SMS alerts are enabled.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: bool
                         required: false
                     mail_address:
                         description: Email address for alerts.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: str
                         required: false
                     sms_address:
                         description: SMS number for alerts.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: str
                         required: false
                     min_failure_count:
                         description: Minimum number of failures before escalation.
-                        version_added: '1.0.0'
+                        version_added: '2.0.0'
                         type: int
                         required: false
                     triggers:
@@ -213,65 +216,24 @@ options:
                         suboptions:
                             every_change:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
                             to_red:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
                             to_yellow:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
                             to_green:
                                 description: Currently no description available
-                                version_added: '1.0.0'
+                                version_added: '2.0.0'
                                 type: bool
                                 required: false
-    api_connection:
-        description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
-        required: true
-        type: dict
-        suboptions:
-            username:
-                description: Username for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            password:
-                description: Password for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            protocol:
-                description: Protocol to use. Can be V(http) or V(https).
-                version_added: '1.0.0'
-                required: false
-                default: https
-                choices: [http, https]
-                type: str
-            host:
-                description: Hostname of the ALPACA Operator server.
-                version_added: '1.0.0'
-                required: false
-                default: localhost
-                type: str
-            port:
-                description: Port of the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: false
-                default: 8443
-                type: int
-            tls_verify:
-                description: Validate SSL certificates.
-                version_added: '1.0.0'
-                required: false
-                default: true
-                type: bool
 
 requirements:
     - ALPACA Operator >= 5.6.0
@@ -426,7 +388,7 @@ changes:
                 agentHostname: "my-agent-01"
 '''
 
-from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import api_call, get_token, lookup_resource, lookup_processId
+from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import api_call, get_token, lookup_resource, lookup_processId, get_api_connection_argument_spec
 from ansible.module_utils.basic import AnsibleModule
 
 
@@ -577,18 +539,7 @@ def main():
                     )
                 )
             ),
-            api_connection=dict(
-                type='dict',
-                required=True,
-                options=dict(
-                    host=dict(type='str', required=False, default='localhost'),
-                    port=dict(type='int', required=False, default='8443'),
-                    protocol=dict(type='str', required=False, default='https', choices=['http', 'https']),
-                    username=dict(type='str', required=True, no_log=True),
-                    password=dict(type='str', required=True, no_log=True),
-                    tls_verify=dict(type='bool', required=False, default=True)
-                )
-            )
+            api_connection=get_api_connection_argument_spec()
         ),
         supports_check_mode=True,
     )

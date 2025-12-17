@@ -17,6 +17,9 @@ short_description: Manage ALPACA Operator systems via REST API
 
 version_added: "1.0.0"
 
+extends_documentation_fragment:
+    - pcg.alpaca_operator.api_connection
+
 description: >
     This module allows you to create, update or delete ALPACA Operator systems using the REST API.
     In addition to general system properties, it supports assigning agents and variables.
@@ -44,7 +47,7 @@ options:
     magic_number:
         description: >
             Custom numeric field between 0 and 59. Can be used for arbitrary logic in your setup.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: int
         choices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -52,22 +55,22 @@ options:
             40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
     checks_disabled:
         description: Disable automatic system health checks.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: bool
     group_name:
         description: Name of the group to which the system should belong.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: str
     group_id:
         description: ID of the group (used if O(group_name) is not provided).
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: int
     rfc_connection:
         description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
+        version_added: '2.0.0'
         required: false
         type: dict
         suboptions:
@@ -84,7 +87,7 @@ options:
                 type: str
             instance_number:
                 description: Instance number of the RFC connection.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: int
                 choices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -99,7 +102,7 @@ options:
                 type: str
             logon_group:
                 description: Logon group (used with V(messageServer) type).
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
             username:
@@ -128,12 +131,12 @@ options:
                 type: str
             sap_router_string:
                 description: SAProuter string used to establish the RFC connection.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: str
             snc_enabled:
                 description: Enable or disable SNC.
-                version_added: '1.0.0'
+                version_added: '2.0.0'
                 required: false
                 type: bool
     agents:
@@ -195,47 +198,6 @@ options:
         default: present
         choices: [present, absent]
         type: str
-    api_connection:
-        description: Connection details for accessing the ALPACA Operator API.
-        version_added: '1.0.0'
-        required: true
-        type: dict
-        suboptions:
-            username:
-                description: Username for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            password:
-                description: Password for authentication against the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: true
-                type: str
-            protocol:
-                description: Protocol to use. Can be V(http) or V(https).
-                version_added: '1.0.0'
-                required: false
-                default: https
-                choices: [http, https]
-                type: str
-            host:
-                description: Hostname of the ALPACA Operator server.
-                version_added: '1.0.0'
-                required: false
-                default: localhost
-                type: str
-            port:
-                description: Port of the ALPACA Operator API.
-                version_added: '1.0.0'
-                required: false
-                default: 8443
-                type: int
-            tls_verify:
-                description: Validate SSL certificates.
-                version_added: '1.0.0'
-                required: false
-                default: true
-                type: bool
 
 requirements:
     - ALPACA Operator >= 5.6.0
@@ -333,7 +295,7 @@ changed:
     returned: always
 '''
 
-from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token, api_call, lookup_resource
+from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import get_token, api_call, lookup_resource, get_api_connection_argument_spec
 from ansible.module_utils.basic import AnsibleModule
 import re
 
@@ -364,20 +326,20 @@ def build_system_payload(params, current_system_details):
 
     payload = {
         "name":                 params.get('new_name', None) or params.get('name', None),
-        "description":          params.get('description', '').strip()                           if params.get('description', None)                              is not None else current_system_details.get('general', {}).get('description', '').strip()                           if current_system_details else None, #0001
-        "magicNumber":          params.get('magic_number', None)                                if params.get('magic_number', None)                             is not None else current_system_details.get('general', {}).get('magicNumber', None)                                 if current_system_details else None,
-        "schedulingDisabled":   params.get('checks_disabled', None)                             if params.get('checks_disabled', None)                          is not None else current_system_details.get('general', {}).get('schedulingDisabled', None)                          if current_system_details else None,
-        "groupId":              params.get('group_id', None)                                    if params.get('group_id', None)                                 is not None else current_system_details.get('general', {}).get('groupId', None)                                     if current_system_details else None,
+        "description":          params.get('description', '').strip()                           if params.get('description', None)                                  is not None else current_system_details.get('general', {}).get('description', '').strip()                           if current_system_details else None, #0001
+        "magicNumber":          params.get('magic_number', None)                                if params.get('magic_number', None)                                 is not None else current_system_details.get('general', {}).get('magicNumber', None)                                 if current_system_details else None,
+        "schedulingDisabled":   params.get('checks_disabled', None)                             if params.get('checks_disabled', None)                              is not None else current_system_details.get('general', {}).get('schedulingDisabled', None)                          if current_system_details else None,
+        "groupId":              params.get('group_id', None)                                    if params.get('group_id', None)                                     is not None else current_system_details.get('general', {}).get('groupId', None)                                     if current_system_details else None,
         "rfcConnection": {
-            "type":             params.get('rfc_connection', {}).get('type', None)              if params.get('rfc_connection', {}).get('type', None)           is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('type', None)               if current_system_details else None,
-            "host":             params.get('rfc_connection', {}).get('host', None)              if params.get('rfc_connection', {}).get('host', None)           is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('host', None)               if current_system_details else None,
-            "instanceNumber":   params.get('rfc_connection', {}).get('instance_number', None)   if params.get('rfc_connection', {}).get('instance_number', None) is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('instanceNumber', None)     if current_system_details else None,
-            "sid":              params.get('rfc_connection', {}).get('sid', None)               if params.get('rfc_connection', {}).get('sid', None)            is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sid', None)                if current_system_details else None,
-            "logonGroup":       params.get('rfc_connection', {}).get('logon_group', None)       if params.get('rfc_connection', {}).get('logon_group', None)    is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('logonGroup', None)         if current_system_details else None,
-            "username":         params.get('rfc_connection', {}).get('username', None)          if params.get('rfc_connection', {}).get('username', None)       is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('username', None)           if current_system_details else None,
-            "client":           params.get('rfc_connection', {}).get('client', None)            if params.get('rfc_connection', {}).get('client', None)         is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('client', None)             if current_system_details else None,
-            "sapRouterString":  params.get('rfc_connection', {}).get('sap_router_string', None) if params.get('rfc_connection', {}).get('sap_router_string', None) is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sapRouterString', None)    if current_system_details else None,
-            "sncEnabled":       params.get('rfc_connection', {}).get('snc_enabled', None)       if params.get('rfc_connection', {}).get('snc_enabled', None)    is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sncEnabled', None)         if current_system_details else None
+            "type":             params.get('rfc_connection', {}).get('type', None)              if params.get('rfc_connection', {}).get('type', None)               is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('type', None)               if current_system_details else None,
+            "host":             params.get('rfc_connection', {}).get('host', None)              if params.get('rfc_connection', {}).get('host', None)               is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('host', None)               if current_system_details else None,
+            "instanceNumber":   params.get('rfc_connection', {}).get('instance_number', None)   if params.get('rfc_connection', {}).get('instance_number', None)    is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('instanceNumber', None)     if current_system_details else None,
+            "sid":              params.get('rfc_connection', {}).get('sid', None)               if params.get('rfc_connection', {}).get('sid', None)                is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sid', None)                if current_system_details else None,
+            "logonGroup":       params.get('rfc_connection', {}).get('logon_group', None)       if params.get('rfc_connection', {}).get('logon_group', None)        is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('logonGroup', None)         if current_system_details else None,
+            "username":         params.get('rfc_connection', {}).get('username', None)          if params.get('rfc_connection', {}).get('username', None)           is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('username', None)           if current_system_details else None,
+            "client":           params.get('rfc_connection', {}).get('client', None)            if params.get('rfc_connection', {}).get('client', None)             is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('client', None)             if current_system_details else None,
+            "sapRouterString":  params.get('rfc_connection', {}).get('sap_router_string', None) if params.get('rfc_connection', {}).get('sap_router_string', None)  is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sapRouterString', None)    if current_system_details else None,
+            "sncEnabled":       params.get('rfc_connection', {}).get('snc_enabled', None)       if params.get('rfc_connection', {}).get('snc_enabled', None)        is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sncEnabled', None)         if current_system_details else None
         }
     }
 
@@ -447,18 +409,7 @@ def main():
             ),
             variables_mode=dict(type='str', required=False, default='update', choices=['update', 'replace']),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
-            api_connection=dict(
-                type='dict',
-                required=True,
-                options=dict(
-                    host=dict(type='str', required=False, default='localhost'),
-                    port=dict(type='int', required=False, default='8443'),
-                    protocol=dict(type='str', required=False, default='https', choices=['http', 'https']),
-                    username=dict(type='str', required=True, no_log=True),
-                    password=dict(type='str', required=True, no_log=True),
-                    tls_verify=dict(type='bool', required=False, default=True)
-                )
-            )
+            api_connection=get_api_connection_argument_spec()
         ),
         supports_check_mode=True,
     )
