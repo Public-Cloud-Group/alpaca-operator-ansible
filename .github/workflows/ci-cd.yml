@@ -33,14 +33,12 @@
 #      - Publishes to Ansible Galaxy using GALAXY_API_KEY
 #      - Verifies the publication was successful
 #
-#   Triggers: Push to any branch (excluding .md files), weekly scheduled runs on Sundays at 2:00 AM UTC
+#   Triggers: Push to any branch (jobs check if only .md files were changed and skip accordingly), weekly scheduled runs on Sundays at 2:00 AM UTC
 #
 name: CI/CD Pipeline
 
 on:
   push:
-    paths-ignore:
-      - '**/*.md'
   schedule:
     # Run every Sunday at 2:00 AM UTC (weekly)
     - cron: '0 2 * * 0'
@@ -53,13 +51,44 @@ jobs:
     permissions:
       contents: write
     outputs:
-      has_fragments: ${{ steps.check_fragments.outputs.has_fragments }}
+      has_fragments: ${{ steps.check_fragments.outputs.has_fragments || 'false' }}
+      only_markdown: ${{ steps.check_files.outputs.only_markdown }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if only markdown files were changed
+        id: check_files
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # Get list of changed files
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} 2>/dev/null || git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+            if [ -z "$CHANGED_FILES" ]; then
+              # Fallback: check all files in the commit
+              CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null || echo "")
+            fi
+            
+            if [ -z "$CHANGED_FILES" ]; then
+              echo "only_markdown=false" >> $GITHUB_OUTPUT
+              echo "ℹ️  Could not determine changed files, proceeding with changelog check"
+            else
+              # Check if all changed files are markdown files (including various markdown file patterns)
+              NON_MD_FILES=$(echo "$CHANGED_FILES" | grep -vE '\.(md|MD)$|^docs/.*\.(md|MD)$|^README\.(md|MD)$|^CHANGELOG\.(md|MD)$|^CONTRIBUTING\.(md|MD)$' || true)
+              if [ -z "$NON_MD_FILES" ]; then
+                echo "only_markdown=true" >> $GITHUB_OUTPUT
+                echo "ℹ️  Only markdown files were changed, skipping changelog generation"
+              else
+                echo "only_markdown=false" >> $GITHUB_OUTPUT
+                echo "✅ Non-markdown files were changed, proceeding with changelog check"
+              fi
+            fi
+          else
+            # For scheduled runs, always proceed (don't skip)
+            echo "only_markdown=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -79,6 +108,7 @@ jobs:
           echo "📦 Using version: $VERSION"
 
       - name: Check if fragments exist
+        if: steps.check_files.outputs.only_markdown != 'true'
         id: check_fragments
         run: |
           if [ -d "changelogs/fragments" ] && [ -n "$(ls -A changelogs/fragments/*.yml changelogs/fragments/*.yaml 2>/dev/null)" ]; then
@@ -89,6 +119,11 @@ jobs:
             echo "has_fragments=false" >> $GITHUB_OUTPUT
             echo "ℹ️  No changelog fragments found."
           fi
+
+      - name: Set default has_fragments if skipped
+        if: steps.check_files.outputs.only_markdown == 'true'
+        run: |
+          echo "has_fragments=false" >> $GITHUB_OUTPUT
 
       - name: Generate changelog
         if: steps.check_fragments.outputs.has_fragments == 'true'
@@ -127,7 +162,9 @@ jobs:
 
       - name: Summary
         run: |
-          if [ "${{ steps.check_fragments.outputs.has_fragments }}" == "true" ]; then
+          if [ "${{ steps.check_files.outputs.only_markdown }}" == "true" ]; then
+            echo "ℹ️  Only markdown files were changed - skipped changelog generation"
+          elif [ "${{ steps.check_fragments.outputs.has_fragments }}" == "true" ]; then
             echo "✅ Changelog generation completed for version ${{ steps.get_version.outputs.version }}"
           else
             echo "ℹ️  No changelog fragments found - skipped generation"
@@ -138,6 +175,8 @@ jobs:
     if: always()
     needs: [changelog]
     runs-on: ubuntu-latest
+    outputs:
+      only_markdown: ${{ steps.check_files.outputs.only_markdown }}
     strategy:
       fail-fast: false
       matrix:
@@ -203,46 +242,90 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if only markdown files were changed
+        id: check_files
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # Get list of changed files
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} 2>/dev/null || git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+            if [ -z "$CHANGED_FILES" ]; then
+              # Fallback: check all files in the commit
+              CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null || echo "")
+            fi
+            
+            if [ -z "$CHANGED_FILES" ]; then
+              echo "only_markdown=false" >> $GITHUB_OUTPUT
+              echo "ℹ️  Could not determine changed files, proceeding with tests"
+            else
+              # Check if all changed files are markdown files (including various markdown file patterns)
+              NON_MD_FILES=$(echo "$CHANGED_FILES" | grep -vE '\.(md|MD)$|^docs/.*\.(md|MD)$|^README\.(md|MD)$|^CHANGELOG\.(md|MD)$|^CONTRIBUTING\.(md|MD)$' || true)
+              if [ -z "$NON_MD_FILES" ]; then
+                echo "only_markdown=true" >> $GITHUB_OUTPUT
+                echo "ℹ️  Only markdown files were changed, skipping tests"
+              else
+                echo "only_markdown=false" >> $GITHUB_OUTPUT
+                echo "✅ Non-markdown files were changed, proceeding with tests"
+              fi
+            fi
+          else
+            # For scheduled runs, always proceed (don't skip)
+            echo "only_markdown=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip tests if only markdown files changed
+        if: steps.check_files.outputs.only_markdown == 'true'
+        run: |
+          echo "ℹ️  Skipping tests - only markdown files were changed"
 
       - name: Install Python ${{ matrix.python-version }}
+        if: steps.check_files.outputs.only_markdown != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Ansible sanity dependencies
+        if: steps.check_files.outputs.only_markdown != 'true'
         run: |
           sudo apt update
           sudo apt install -y shellcheck
           python -m pip install --upgrade pip setuptools wheel
 
       - name: Install Ansible Core ${{ matrix.ansible-version }}
+        if: steps.check_files.outputs.only_markdown != 'true'
         run: |
           pip install "ansible-core==${{ matrix.ansible-version }}.*" || echo "unsupported" > unsupported.flag
 
       - name: Install test requirements
+        if: steps.check_files.outputs.only_markdown != 'true'
         run: |
           pip install -r requirements.txt || true
           pip install yamllint flake8
 
       - name: Build Ansible Collection
+        if: steps.check_files.outputs.only_markdown != 'true'
         run: |
           ansible-galaxy collection build
 
       - name: List built archive
+        if: steps.check_files.outputs.only_markdown != 'true'
         run: ls -lh *.tar.gz
 
       - name: Install Ansible Collection
+        if: steps.check_files.outputs.only_markdown != 'true'
         run: |
           ansible-galaxy collection install pcg-alpaca_operator-*.tar.gz --force --collections-path ~/.ansible/collections
 
       - name: Run ansible-test (sanity only)
+        if: steps.check_files.outputs.only_markdown != 'true'
         working-directory: ${{ env.HOME }}/.ansible/collections/ansible_collections/pcg/alpaca_operator
         run: |
           ansible-test sanity --python ${{ matrix.python-version }} --color --docker || echo "failed" > failed.flag
 
-
       - name: Write result
-        if: always()
+        if: always() && steps.check_files.outputs.only_markdown != 'true'
         run: |
           STATUS="failed"
           if [ -f ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/failed.flag ]; then
@@ -256,14 +339,14 @@ jobs:
         shell: bash
 
       - name: Upload test result
-        if: always()
+        if: always() && steps.check_files.outputs.only_markdown != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: result-${{ matrix.python-version }}-${{ matrix.ansible-version }}
           path: results.csv
 
       - name: Fail if Ansible sanity failed
-        if: always()
+        if: always() && steps.check_files.outputs.only_markdown != 'true'
         run: |
           if [ -f ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/failed.flag ]; then
             echo "::error file=ansible-test::Sanity tests failed"
@@ -276,7 +359,7 @@ jobs:
   summarize:
     if: always() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test]
     permissions:
       contents: write
     steps:
@@ -286,30 +369,59 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: results
+          continue-on-error: true
+
+      - name: Check if test artifacts exist
+        id: check_artifacts
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # For scheduled runs, always check for artifacts (tests should have run)
+            if [ -d "results" ] && [ -n "$(find results -name '*.csv' -type f 2>/dev/null)" ]; then
+              echo "artifacts_exist=true" >> $GITHUB_OUTPUT
+              echo "✅ Found test artifacts"
+            else
+              echo "artifacts_exist=false" >> $GITHUB_OUTPUT
+              echo "ℹ️  No test artifacts found - skipping support matrix update"
+            fi
+          else
+            # For push events, check for artifacts
+            if [ -d "results" ] && [ -n "$(find results -name '*.csv' -type f 2>/dev/null)" ]; then
+              echo "artifacts_exist=true" >> $GITHUB_OUTPUT
+              echo "✅ Found test artifacts"
+            else
+              echo "artifacts_exist=false" >> $GITHUB_OUTPUT
+              echo "ℹ️  No test artifacts found - skipping support matrix update"
+            fi
+          fi
 
       - name: Combine CSVs
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         run: |
           cat results/**/*.csv > combined.csv
 
       - name: Install Python dependencies
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         run: pip install pandas
 
       - name: Generate support matrix
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         run: |
           python3 .github/scripts/generate-support-matrix.py combined.csv > support_matrix.md
 
       - name: Upload support matrix
-        if: always()
+        if: always() && steps.check_artifacts.outputs.artifacts_exist == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: support-matrix
           path: support_matrix.md
 
       - name: Update README.md with latest support matrix
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         run: |
           python3 .github/scripts/update-readme.py
 
       - name: Commit updated README.md
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
@@ -337,7 +449,7 @@ jobs:
           echo "✅ README.md successfully updated and pushed!"
 
   release:
-    if: needs.summarize.result == 'success'
+    if: (needs.summarize.result == 'success' || needs.summarize.result == 'skipped') && (needs.test.result == 'success' || needs.test.result == 'skipped')
     runs-on: ubuntu-latest
     needs: [test, summarize]
     permissions:
