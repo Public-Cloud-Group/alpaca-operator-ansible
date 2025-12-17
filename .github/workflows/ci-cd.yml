@@ -364,6 +364,19 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # We may need to move to the latest origin/main before committing back
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync working tree to latest main
+        run: |
+          # Ensure we are on a local main branch based on the current remote tip.
+          # This prevents committing on a detached HEAD and avoids push rejections
+          # if main moved (e.g., due to changelog auto-commit).
+          git fetch --no-tags origin main
+          git checkout -B main origin/main
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -425,11 +438,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-
-          # Pull latest changes before checking (in case changelog was committed)
-          echo "📥 Pulling latest changes from remote..."
-          git fetch origin main
-          git reset --hard origin/main
 
           # Check if there are changes before staging
           if git diff --quiet README.md; then
