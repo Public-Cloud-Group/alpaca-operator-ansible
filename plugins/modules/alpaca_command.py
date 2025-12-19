@@ -418,11 +418,11 @@ def build_payload(desired_command, system_command):
             "value":            (desired_command.get('timeout') or {}).get('value', None)                                                                                                       if (desired_command.get('timeout') or {}).get('value', None)                                                                                                                is not None else (system_command.get('timeout') or {}).get('value', 0)
         },
         "escalation": {
-            "mailEnabled":      (desired_command.get('escalation') or {}).get('mail_enabled', None)                                                                                              if (desired_command.get('escalation') or {}).get('mail_enabled', None)                                                                                                       is not None else (system_command.get('escalation') or {}).get('mailEnabled', False),
-            "smsEnabled":       (desired_command.get('escalation') or {}).get('sms_enabled', None)                                                                                               if (desired_command.get('escalation') or {}).get('sms_enabled', None)                                                                                                        is not None else (system_command.get('escalation') or {}).get('smsEnabled', False),
-            "mailAddress":      (desired_command.get('escalation') or {}).get('mail_address', None)                                                                                              if (desired_command.get('escalation') or {}).get('mail_address', None)                                                                                                       is not None else (system_command.get('escalation') or {}).get('mailAddress', None),
-            "smsAddress":       (desired_command.get('escalation') or {}).get('sms_address', None)                                                                                               if (desired_command.get('escalation') or {}).get('sms_address', None)                                                                                                        is not None else (system_command.get('escalation') or {}).get('smsAddress', None),
-            "minFailureCount":  (desired_command.get('escalation') or {}).get('min_failure_count', None)                                                                                         if (desired_command.get('escalation') or {}).get('min_failure_count', None)                                                                                                  is not None else (system_command.get('escalation') or {}).get('minFailureCount', 0),
+            "mailEnabled":      (desired_command.get('escalation') or {}).get('mail_enabled', None)                                                                                             if (desired_command.get('escalation') or {}).get('mail_enabled', None)                                                                                                      is not None else (system_command.get('escalation') or {}).get('mailEnabled', False),
+            "smsEnabled":       (desired_command.get('escalation') or {}).get('sms_enabled', None)                                                                                              if (desired_command.get('escalation') or {}).get('sms_enabled', None)                                                                                                       is not None else (system_command.get('escalation') or {}).get('smsEnabled', False),
+            "mailAddress":      (desired_command.get('escalation') or {}).get('mail_address', None)                                                                                             if (desired_command.get('escalation') or {}).get('mail_address', None)                                                                                                      is not None else (system_command.get('escalation') or {}).get('mailAddress', None),
+            "smsAddress":       (desired_command.get('escalation') or {}).get('sms_address', None)                                                                                              if (desired_command.get('escalation') or {}).get('sms_address', None)                                                                                                       is not None else (system_command.get('escalation') or {}).get('smsAddress', None),
+            "minFailureCount":  (desired_command.get('escalation') or {}).get('min_failure_count', None)                                                                                        if (desired_command.get('escalation') or {}).get('min_failure_count', None)                                                                                                 is not None else (system_command.get('escalation') or {}).get('minFailureCount', 0),
             "triggers": {
                 "everyChange":  (desired_command.get('escalation') or {}).get('triggers', {}).get('every_change', None)                                                                         if (desired_command.get('escalation') or {}).get('triggers', {}).get('every_change', None)                                                                                  is not None else (system_command.get('escalation') or {}).get('triggers', {}).get('everyChange', True),
                 "toRed":        (desired_command.get('escalation') or {}).get('triggers', {}).get('to_red', None)                                                                               if (desired_command.get('escalation') or {}).get('triggers', {}).get('to_red', None)                                                                                        is not None else (system_command.get('escalation') or {}).get('triggers', {}).get('toRed', True),
@@ -432,7 +432,7 @@ def build_payload(desired_command, system_command):
         }
     }
 
-    if payload.get('timeout', {}).get('type') == 'NONE' or payload.get('timeout', {}).get('type') == 'DEFAULT':
+    if (payload.get('timeout') or {}).get('type') == 'NONE' or (payload.get('timeout') or {}).get('type') == 'DEFAULT':
         payload['timeout']['value'] = None
 
     return payload
@@ -617,23 +617,23 @@ def main():
                 if key in ['schedule', 'history', 'escalation', 'timeout']:
                     for sub_key in command_payload.get(key, {}):
                         if sub_key not in ['triggers']:
-                            if command_payload.get(key, {}).get(sub_key, None) != system_command.get(key, {}).get(sub_key, None):
+                            if (command_payload.get(key) or {}).get(sub_key, None) != (system_command.get(key) or {}).get(sub_key, None):
                                 if key not in diff:
                                     diff[key] = {}
                                 diff[key][sub_key] = {
-                                    'current': system_command.get(key, {}).get(sub_key, None),
-                                    'desired': command_payload.get(key, {}).get(sub_key, None)
+                                    'current': (system_command.get(key) or {}).get(sub_key, None),
+                                    'desired': (command_payload.get(key) or {}).get(sub_key, None)
                                 }
                         if sub_key in ['triggers']:
-                            for sub_sub_key in command_payload.get(key, {}).get(sub_key, {}):
-                                if command_payload.get(key, {}).get(sub_key, None).get(sub_sub_key, {}) != system_command.get(key, {}).get(sub_key, {}).get(sub_sub_key, None):
+                            for sub_sub_key in (command_payload.get(key) or {}).get(sub_key, {}):
+                                if ((command_payload.get(key) or {}).get(sub_key) or {}).get(sub_sub_key, {}) != ((system_command.get(key) or {}).get(sub_key) or {}).get(sub_sub_key, None):
                                     if key not in diff:
                                         diff[key] = {}
                                     if sub_key not in diff.get(key, {}):
                                         diff[key][sub_key] = {}
                                     diff[key][sub_key][sub_sub_key] = {
-                                        'current': system_command.get(key, {}).get(sub_key, {}).get(sub_sub_key, None),
-                                        'desired': command_payload.get(key, {}).get(sub_key, {}).get(sub_sub_key, None)
+                                        'current': ((system_command.get(key) or {}).get(sub_key) or {}).get(sub_sub_key, None),
+                                        'desired': ((command_payload.get(key) or {}).get(sub_key) or {}).get(sub_sub_key, None)
                                     }
 
             if diff:
