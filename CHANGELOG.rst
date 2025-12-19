@@ -4,25 +4,6 @@ ALPACA Operator Collection for Ansible Release Notes
 
 .. contents:: Topics
 
-v2.1.1
-======
-
-Release Summary
----------------
-
-Release 2.1.1 fixes critical bugs including an AttributeError that occurred when updating commands or systems without providing all nested dictionary fields, and a check mode violation where excess commands were deleted even in check mode. Additionally, it enhances the output when commands are deleted to include their full configuration.
-
-Minor Changes
--------------
-
-- Enhance alpaca_command_set module to fetch and display complete command configuration in removed_commands output when commands are deleted, providing full details.
-
-Bugfixes
---------
-
-- Fix critical AttributeError bug where 'NoneType' object has no attribute 'get' occurred when API returned None for nested dictionary fields. Applied safe pattern (.get('key') or {}) in modules alpaca_command_set.py, alpaca_command.py, and alpaca_system.py to prevent crashes during payload building and diff calculation.
-- Fix critical check mode violation in alpaca_command_set.py where excess commands were deleted even in check mode.
-
 v2.1.0
 ======
 
