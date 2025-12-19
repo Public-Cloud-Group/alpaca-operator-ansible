@@ -76,6 +76,19 @@ Or directly from the Git repository:
 ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator-ansible.git
 ```
 
+Alternatively, you can install manually from a release:
+
+1. Download the latest release from [GitHub Releases](https://github.com/pcg-sap/alpaca-operator-ansible/releases)
+2. Copy the release archive to your server
+3. Extract the archive
+4. Change to the extracted directory
+5. Install the collection:
+
+```bash
+cd alpaca-operator-ansible-*
+ansible-galaxy collection install ./ --force
+```
+
 ### Quick Start Guide
 
 For a complete setup guide including Ansible installation, collection setup, and first playbook execution, see the [Quick Start Guide](docs/index.md).

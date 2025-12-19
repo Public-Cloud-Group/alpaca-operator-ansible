@@ -379,13 +379,41 @@ changes:
         removed_commands:
             description: >
                 List of commands that were removed because they were not included in the desired state.
+                Contains the complete configuration of each command before deletion.
             type: list
             elements: dict
             sample:
               - id: 123
                 name: "Old Command"
-                process_id: 456
+                processId: 456
+                agentId: 789
                 agentHostname: "my-agent-01"
+                parameters: "-p foo -s A -d B"
+                schedule:
+                  period: "manually"
+                  time: "01:00:00"
+                  daysOfWeek: []
+                parametersNeeded: false
+                disabled: false
+                critical: true
+                history:
+                  documentAllRuns: true
+                  retention: 900
+                autoDeploy: false
+                timeout:
+                  type: "DEFAULT"
+                  value: null
+                escalation:
+                  mailEnabled: false
+                  smsEnabled: false
+                  mailAddress: null
+                  smsAddress: null
+                  minFailureCount: 0
+                  triggers:
+                    everyChange: true
+                    toRed: true
+                    toYellow: true
+                    toGreen: true
 '''
 
 from ansible_collections.pcg.alpaca_operator.plugins.module_utils._alpaca_api import api_call, get_token, lookup_resource, lookup_processId, get_api_connection_argument_spec
@@ -407,47 +435,47 @@ def build_payload(desired_command, system_command):
     """
 
     payload = {
-        "name":                 desired_command.get('name', None)                                                                                                                               if desired_command.get('name')                                                                                                                                              is not None else system_command.get('name', None),
-        "agentId":              desired_command.get('agent_id', None)                                                                                                                           if desired_command.get('agent_id')                                                                                                                                          is not None else system_command.get('agentId', 0),
-        "processId":            desired_command.get('process_id', None)                                                                                                                         if desired_command.get('process_id')                                                                                                                                        is not None else system_command.get('processId', 0),
-        "parameters":           desired_command.get('parameters', None)                                                                                                                         if desired_command.get('parameters')                                                                                                                                        is not None else system_command.get('parameters', None),
+        "name":                 desired_command.get('name', None)                                                                                                                                   if desired_command.get('name')                                                                                                                                              is not None else system_command.get('name', None),
+        "agentId":              desired_command.get('agent_id', None)                                                                                                                               if desired_command.get('agent_id')                                                                                                                                          is not None else system_command.get('agentId', 0),
+        "processId":            desired_command.get('process_id', None)                                                                                                                             if desired_command.get('process_id')                                                                                                                                        is not None else system_command.get('processId', 0),
+        "parameters":           desired_command.get('parameters', None)                                                                                                                             if desired_command.get('parameters')                                                                                                                                        is not None else system_command.get('parameters', None),
         "schedule": {
-            "period":           desired_command.get('schedule', {}).get('period', None)                                                                                                         if desired_command.get('schedule', {}).get('period', None)                                                                                                                  is not None else system_command.get('schedule', {}).get('period', 'undefined'),
-            "time":             desired_command.get('schedule', {}).get('time', None)                                                                                                           if desired_command.get('schedule', {}).get('time', None)                                                                                                                    is not None else system_command.get('schedule', {}).get('time', None),
-            "cronExpression":   desired_command.get('schedule', {}).get('cron_expression', None)                                                                                                if desired_command.get('schedule', {}).get('cron_expression', None) and desired_command.get('schedule', {}).get('period', None) == 'cron_expression'                                  else system_command.get('schedule', {}).get('cronExpression', ''),
+            "period":           (desired_command.get('schedule') or {}).get('period', None)                                                                                                         if (desired_command.get('schedule') or {}).get('period', None)                                                                                                              is not None else (system_command.get('schedule') or {}).get('period', 'undefined'),
+            "time":             (desired_command.get('schedule') or {}).get('time', None)                                                                                                           if (desired_command.get('schedule') or {}).get('time', None)                                                                                                                is not None else (system_command.get('schedule') or {}).get('time', None),
+            "cronExpression":   (desired_command.get('schedule') or {}).get('cron_expression', None)                                                                                                if (desired_command.get('schedule') or {}).get('cron_expression', None) and (desired_command.get('schedule') or {}).get('period', None) == 'cron_expression'                            else (system_command.get('schedule') or {}).get('cronExpression', ''),
             "daysOfWeek":       sorted(
-                                    desired_command.get('schedule', {}).get('days_of_week', [])                                                                                                 if desired_command.get('schedule', {}).get('days_of_week', None)                                                                                                            is not None else system_command.get('schedule', {}).get('daysOfWeek', []),
+                                    (desired_command.get('schedule') or {}).get('days_of_week', [])                                                                                                 if (desired_command.get('schedule') or {}).get('days_of_week', None)                                                                                                        is not None else (system_command.get('schedule') or {}).get('daysOfWeek', []),
                                     key=lambda x: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].index(x.lower())
                                 )
         },
-        "parametersNeeded":     desired_command.get('parameters_needed', None)                                                                                                                  if desired_command.get('parameters_needed')                                                                                                                                 is not None else system_command.get('parametersNeeded', True),
-        "disabled":             desired_command.get('disabled', None)                                                                                                                           if desired_command.get('disabled')                                                                                                                                          is not None else system_command.get('disabled', True),
-        "critical":             desired_command.get('critical', None)                                                                                                                           if desired_command.get('critical')                                                                                                                                          is not None else system_command.get('critical', True),
+        "parametersNeeded":     desired_command.get('parameters_needed', None)                                                                                                                      if desired_command.get('parameters_needed')                                                                                                                                 is not None else system_command.get('parametersNeeded', True),
+        "disabled":             desired_command.get('disabled', None)                                                                                                                               if desired_command.get('disabled')                                                                                                                                          is not None else system_command.get('disabled', True),
+        "critical":             desired_command.get('critical', None)                                                                                                                               if desired_command.get('critical')                                                                                                                                          is not None else system_command.get('critical', True),
         "history": {
-            "documentAllRuns":  desired_command.get('history', {}).get('document_all_runs', None)                                                                                               if desired_command.get('history', {}).get('document_all_runs', None)                                                                                                        is not None else system_command.get('history', {}).get('documentAllRuns', True),
-            "retention":        desired_command.get('history', {}).get('retention', None)                                                                                                       if desired_command.get('history', {}).get('retention', None)                                                                                                                is not None else system_command.get('history', {}).get('retention', 0)
+            "documentAllRuns":  (desired_command.get('history') or {}).get('document_all_runs', None)                                                                                               if (desired_command.get('history') or {}).get('document_all_runs', None)                                                                                                    is not None else (system_command.get('history') or {}).get('documentAllRuns', True),
+            "retention":        (desired_command.get('history') or {}).get('retention', None)                                                                                                       if (desired_command.get('history') or {}).get('retention', None)                                                                                                            is not None else (system_command.get('history') or {}).get('retention', 0)
         },
-        "autoDeploy":           desired_command.get('auto_deploy', None)                                                                                                                        if desired_command.get('auto_deploy')                                                                                                                                       is not None else system_command.get('autoDeploy', True),
+        "autoDeploy":           desired_command.get('auto_deploy', None)                                                                                                                            if desired_command.get('auto_deploy')                                                                                                                                       is not None else system_command.get('autoDeploy', True),
         "timeout": {
-            "type":             desired_command.get('timeout', {}).get('type', None).upper()                                                                                                    if desired_command.get('timeout', {}).get('type', None)                                                                                                                     is not None else system_command.get('timeout', {}).get('type', 'None').upper(),
-            "value":            desired_command.get('timeout', {}).get('value', None)                                                                                                           if desired_command.get('timeout', {}).get('value', None)                                                                                                                    is not None else system_command.get('timeout', {}).get('value', 0)
+            "type":             (desired_command.get('timeout') or {}).get('type', None).upper()                                                                                                    if (desired_command.get('timeout') or {}).get('type', None)                                                                                                                 is not None else (system_command.get('timeout') or {}).get('type', 'None').upper(),
+            "value":            (desired_command.get('timeout') or {}).get('value', None)                                                                                                           if (desired_command.get('timeout') or {}).get('value', None)                                                                                                                is not None else (system_command.get('timeout') or {}).get('value', 0)
         },
         "escalation": {
-            "mailEnabled":      desired_command.get('escalation', {}).get('mail_enabled', None)                                                                                                  if desired_command.get('escalation', {}).get('mail_enabled', None)                                                                                                           is not None else system_command.get('escalation', {}).get('mailEnabled', False),
-            "smsEnabled":       desired_command.get('escalation', {}).get('sms_enabled', None)                                                                                                   if desired_command.get('escalation', {}).get('sms_enabled', None)                                                                                                            is not None else system_command.get('escalation', {}).get('smsEnabled', False),
-            "mailAddress":      desired_command.get('escalation', {}).get('mail_address', None)                                                                                                  if desired_command.get('escalation', {}).get('mail_address', None)                                                                                                           is not None else system_command.get('escalation', {}).get('mailAddress', None),
-            "smsAddress":       desired_command.get('escalation', {}).get('sms_address', None)                                                                                                   if desired_command.get('escalation', {}).get('sms_address', None)                                                                                                            is not None else system_command.get('escalation', {}).get('smsAddress', None),
-            "minFailureCount":  desired_command.get('escalation', {}).get('min_failure_count', None)                                                                                             if desired_command.get('escalation', {}).get('min_failure_count', None)                                                                                                      is not None else system_command.get('escalation', {}).get('minFailureCount', 0),
+            "mailEnabled":      (desired_command.get('escalation') or {}).get('mail_enabled', None)                                                                                                 if (desired_command.get('escalation') or {}).get('mail_enabled', None)                                                                                                      is not None else (system_command.get('escalation') or {}).get('mailEnabled', False),
+            "smsEnabled":       (desired_command.get('escalation') or {}).get('sms_enabled', None)                                                                                                  if (desired_command.get('escalation') or {}).get('sms_enabled', None)                                                                                                       is not None else (system_command.get('escalation') or {}).get('smsEnabled', False),
+            "mailAddress":      (desired_command.get('escalation') or {}).get('mail_address', None)                                                                                                 if (desired_command.get('escalation') or {}).get('mail_address', None)                                                                                                      is not None else (system_command.get('escalation') or {}).get('mailAddress', None),
+            "smsAddress":       (desired_command.get('escalation') or {}).get('sms_address', None)                                                                                                  if (desired_command.get('escalation') or {}).get('sms_address', None)                                                                                                       is not None else (system_command.get('escalation') or {}).get('smsAddress', None),
+            "minFailureCount":  (desired_command.get('escalation') or {}).get('min_failure_count', None)                                                                                            if (desired_command.get('escalation') or {}).get('min_failure_count', None)                                                                                                 is not None else (system_command.get('escalation') or {}).get('minFailureCount', 0),
             "triggers": {
-                "everyChange":  desired_command.get('escalation', {}).get('triggers', {}).get('every_change', None)                                                                             if desired_command.get('escalation', {}).get('triggers', {}).get('every_change', None)                                                                                      is not None else system_command.get('escalation', {}).get('triggers', {}).get('everyChange', True),
-                "toRed":        desired_command.get('escalation', {}).get('triggers', {}).get('to_red', None)                                                                                   if desired_command.get('escalation', {}).get('triggers', {}).get('to_red', None)                                                                                            is not None else system_command.get('escalation', {}).get('triggers', {}).get('toRed', True),
-                "toYellow":     desired_command.get('escalation', {}).get('triggers', {}).get('to_yellow', None)                                                                                if desired_command.get('escalation', {}).get('triggers', {}).get('to_yellow', None)                                                                                         is not None else system_command.get('escalation', {}).get('triggers', {}).get('toYellow', True),
-                "toGreen":      desired_command.get('escalation', {}).get('triggers', {}).get('to_green', None)                                                                                 if desired_command.get('escalation', {}).get('triggers', {}).get('to_green', None)                                                                                          is not None else system_command.get('escalation', {}).get('triggers', {}).get('toGreen', True)
+                "everyChange":  ((desired_command.get('escalation') or {}).get('triggers') or {}).get('every_change', None)                                                                         if ((desired_command.get('escalation') or {}).get('triggers') or {}).get('every_change', None)                                                                              is not None else ((system_command.get('escalation') or {}).get('triggers') or {}).get('everyChange', True),
+                "toRed":        ((desired_command.get('escalation') or {}).get('triggers') or {}).get('to_red', None)                                                                               if ((desired_command.get('escalation') or {}).get('triggers') or {}).get('to_red', None)                                                                                    is not None else ((system_command.get('escalation') or {}).get('triggers') or {}).get('toRed', True),
+                "toYellow":     ((desired_command.get('escalation') or {}).get('triggers') or {}).get('to_yellow', None)                                                                            if ((desired_command.get('escalation') or {}).get('triggers') or {}).get('to_yellow', None)                                                                                 is not None else ((system_command.get('escalation') or {}).get('triggers') or {}).get('toYellow', True),
+                "toGreen":      ((desired_command.get('escalation') or {}).get('triggers') or {}).get('to_green', None)                                                                             if ((desired_command.get('escalation') or {}).get('triggers') or {}).get('to_green', None)                                                                                  is not None else ((system_command.get('escalation') or {}).get('triggers') or {}).get('toGreen', True)
             }
         }
     }
 
-    if payload.get('timeout', {}).get('type') == 'NONE' or payload.get('timeout', {}).get('type') == 'DEFAULT':
+    if (payload.get('timeout') or {}).get('type') == 'NONE' or (payload.get('timeout') or {}).get('type') == 'DEFAULT':
         payload['timeout']['value'] = None
 
     return payload
@@ -582,8 +610,15 @@ def main():
             command = system_commands[index]
             command_id = command.get('id')
             if command_id is not None:
-                api_call("DELETE", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['system_id'], command_id), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to delete excess command with id {0}".format(command_id))
-                removed.append({"id": command_id, "name": command.get("name"), "processId": command.get("processId"), "agentHostname": command.get("agentHostname")})
+                # Fetch full command configuration before deletion
+                try:
+                    full_command = api_call("GET", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['system_id'], command_id), headers=headers, verify=module.params['api_connection']['tls_verify']).json()
+                    removed.append(full_command)
+                except Exception:
+                    # Fallback to limited info if full fetch fails
+                    removed.append({"id": command_id, "name": command.get("name"), "processId": command.get("processId"), "agentHostname": command.get("agentHostname")})
+                if not module.check_mode:
+                    api_call("DELETE", "{0}/systems/{1}/commands/{2}".format(api_url, module.params['system']['system_id'], command_id), headers=headers, verify=module.params['api_connection']['tls_verify'], module=module, fail_msg="Failed to delete excess command with id {0}".format(command_id))
 
     # Add removed commands to diffs for logging
     if removed:

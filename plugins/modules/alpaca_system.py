@@ -326,20 +326,20 @@ def build_system_payload(params, current_system_details):
 
     payload = {
         "name":                 params.get('new_name', None) or params.get('name', None),
-        "description":          params.get('description', '').strip()                           if params.get('description', None)                                  is not None else current_system_details.get('general', {}).get('description', '').strip()                           if current_system_details else None, #0001
-        "magicNumber":          params.get('magic_number', None)                                if params.get('magic_number', None)                                 is not None else current_system_details.get('general', {}).get('magicNumber', None)                                 if current_system_details else None,
-        "schedulingDisabled":   params.get('checks_disabled', None)                             if params.get('checks_disabled', None)                              is not None else current_system_details.get('general', {}).get('schedulingDisabled', None)                          if current_system_details else None,
-        "groupId":              params.get('group_id', None)                                    if params.get('group_id', None)                                     is not None else current_system_details.get('general', {}).get('groupId', None)                                     if current_system_details else None,
+        "description":          params.get('description', '').strip()                           if params.get('description', None)                                  is not None else (current_system_details.get('general') or {}).get('description', '').strip()                               if current_system_details else None, #0001
+        "magicNumber":          params.get('magic_number', None)                                if params.get('magic_number', None)                                 is not None else (current_system_details.get('general') or {}).get('magicNumber', None)                                     if current_system_details else None,
+        "schedulingDisabled":   params.get('checks_disabled', None)                             if params.get('checks_disabled', None)                              is not None else (current_system_details.get('general') or {}).get('schedulingDisabled', None)                              if current_system_details else None,
+        "groupId":              params.get('group_id', None)                                    if params.get('group_id', None)                                     is not None else (current_system_details.get('general') or {}).get('groupId', None)                                         if current_system_details else None,
         "rfcConnection": {
-            "type":             params.get('rfc_connection', {}).get('type', None)              if params.get('rfc_connection', {}).get('type', None)               is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('type', None)               if current_system_details else None,
-            "host":             params.get('rfc_connection', {}).get('host', None)              if params.get('rfc_connection', {}).get('host', None)               is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('host', None)               if current_system_details else None,
-            "instanceNumber":   params.get('rfc_connection', {}).get('instance_number', None)   if params.get('rfc_connection', {}).get('instance_number', None)    is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('instanceNumber', None)     if current_system_details else None,
-            "sid":              params.get('rfc_connection', {}).get('sid', None)               if params.get('rfc_connection', {}).get('sid', None)                is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sid', None)                if current_system_details else None,
-            "logonGroup":       params.get('rfc_connection', {}).get('logon_group', None)       if params.get('rfc_connection', {}).get('logon_group', None)        is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('logonGroup', None)         if current_system_details else None,
-            "username":         params.get('rfc_connection', {}).get('username', None)          if params.get('rfc_connection', {}).get('username', None)           is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('username', None)           if current_system_details else None,
-            "client":           params.get('rfc_connection', {}).get('client', None)            if params.get('rfc_connection', {}).get('client', None)             is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('client', None)             if current_system_details else None,
-            "sapRouterString":  params.get('rfc_connection', {}).get('sap_router_string', None) if params.get('rfc_connection', {}).get('sap_router_string', None)  is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sapRouterString', None)    if current_system_details else None,
-            "sncEnabled":       params.get('rfc_connection', {}).get('snc_enabled', None)       if params.get('rfc_connection', {}).get('snc_enabled', None)        is not None else current_system_details.get('general', {}).get('rfcConnection', {}).get('sncEnabled', None)         if current_system_details else None
+            "type":             params.get('rfc_connection', {}).get('type', None)              if params.get('rfc_connection', {}).get('type', None)               is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('type', None)               if current_system_details else None,
+            "host":             params.get('rfc_connection', {}).get('host', None)              if params.get('rfc_connection', {}).get('host', None)               is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('host', None)               if current_system_details else None,
+            "instanceNumber":   params.get('rfc_connection', {}).get('instance_number', None)   if params.get('rfc_connection', {}).get('instance_number', None)    is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('instanceNumber', None)     if current_system_details else None,
+            "sid":              params.get('rfc_connection', {}).get('sid', None)               if params.get('rfc_connection', {}).get('sid', None)                is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('sid', None)                if current_system_details else None,
+            "logonGroup":       params.get('rfc_connection', {}).get('logon_group', None)       if params.get('rfc_connection', {}).get('logon_group', None)        is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('logonGroup', None)         if current_system_details else None,
+            "username":         params.get('rfc_connection', {}).get('username', None)          if params.get('rfc_connection', {}).get('username', None)           is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('username', None)           if current_system_details else None,
+            "client":           params.get('rfc_connection', {}).get('client', None)            if params.get('rfc_connection', {}).get('client', None)             is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('client', None)             if current_system_details else None,
+            "sapRouterString":  params.get('rfc_connection', {}).get('sap_router_string', None) if params.get('rfc_connection', {}).get('sap_router_string', None)  is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('sapRouterString', None)    if current_system_details else None,
+            "sncEnabled":       params.get('rfc_connection', {}).get('snc_enabled', None)       if params.get('rfc_connection', {}).get('snc_enabled', None)        is not None else ((current_system_details.get('general') or {}).get('rfcConnection') or {}).get('sncEnabled', None)         if current_system_details else None
         }
     }
 
@@ -461,23 +461,23 @@ def main():
             diff = {}
             for key in system_payload:
                 if key not in ['rfc_connection']:
-                    if system_payload.get(key, None) != system_details.get('general', {}).get(key, None):
+                    if system_payload.get(key, None) != (system_details.get('general') or {}).get(key, None):
                         if 'general' not in diff:
                             diff['general'] = {}
                         diff['general'][key] = {
-                            'current': system_details.get('general', {}).get(key, None),
+                            'current': (system_details.get('general') or {}).get(key, None),
                             'desired': system_payload.get(key, None)
                         }
                 if key in ['rfc_connection']:
                     for sub_key in system_payload.get(key, {}):
                         if sub_key not in ['password']: #0002
-                            if system_payload.get(key, {}).get(sub_key, None) != system_details.get('general', {}).get(key, {}).get(sub_key, None):
+                            if system_payload.get(key, {}).get(sub_key, None) != ((system_details.get('general') or {}).get(key) or {}).get(sub_key, None):
                                 if 'general' not in diff:
                                     diff['general'] = {}
                                 if key not in diff['general']:
                                     diff['general'][key] = {}
                                 diff['general'][key][sub_key] = {
-                                    'current': system_details.get('general', {}).get(key, {}).get(sub_key, None),
+                                    'current': ((system_details.get('general') or {}).get(key) or {}).get(sub_key, None),
                                     'desired': system_payload.get(key, {}).get(sub_key, None)
                                 }
 

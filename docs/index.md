@@ -91,15 +91,17 @@ ansible-galaxy collection install git+https://github.com/pcg-sap/alpaca-operator
 #### Option C: Manual Installation from Release
 
 1. Download the latest release from [GitHub Releases](https://github.com/pcg-sap/alpaca-operator-ansible/releases)
-2. Extract the archive
-3. Install manually:
+2. Copy the release archive to your server
+3. Extract the archive
+4. Change to the extracted directory
+5. Install the collection:
 
 ```bash
 # Navigate to the extracted directory
 cd alpaca-operator-ansible-*
 
-# Install the collection
-ansible-galaxy collection install .
+# Install the collection (optional use --force to overwrite existing installation)
+ansible-galaxy collection install ./ --force
 
 # Verify collection was installed
 ansible-galaxy collection list
