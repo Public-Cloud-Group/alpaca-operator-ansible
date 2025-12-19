@@ -510,6 +510,96 @@ jobs:
           echo "release_notes=$RELEASE_NOTES" >> $GITHUB_OUTPUT
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
+      - name: Parse changelog fragment and generate release notes
+        id: parse_changelog
+        if: steps.version.outputs.branch_name == 'main'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          FRAGMENT_FILE="changelogs/fragments/release-${VERSION}.yml"
+
+          if [ -f "$FRAGMENT_FILE" ]; then
+            echo "✅ Found changelog fragment: $FRAGMENT_FILE"
+
+            # Parse YAML and generate Markdown release notes
+            python3 << EOF
+          import yaml
+
+          fragment_file = "$FRAGMENT_FILE"
+
+          with open(fragment_file, 'r') as f:
+              data = yaml.safe_load(f)
+
+          notes = []
+
+          # Release Summary
+          if 'release_summary' in data and data['release_summary']:
+              notes.append("## Release Summary")
+              notes.append("")
+              # Remove leading/trailing whitespace and normalize newlines
+              summary = data['release_summary'].strip()
+              notes.append(summary)
+              notes.append("")
+
+          # Major Changes
+          if 'major_changes' in data and data['major_changes']:
+              notes.append("## Major Changes")
+              notes.append("")
+              for item in data['major_changes']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Minor Changes
+          if 'minor_changes' in data and data['minor_changes']:
+              notes.append("## Minor Changes")
+              notes.append("")
+              for item in data['minor_changes']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Bugfixes
+          if 'bugfixes' in data and data['bugfixes']:
+              notes.append("## Bugfixes")
+              notes.append("")
+              for item in data['bugfixes']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Trivial
+          if 'trivial' in data and data['trivial']:
+              notes.append("## Trivial")
+              notes.append("")
+              for item in data['trivial']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Join all notes
+          release_notes = "\n".join(notes)
+
+          # Write to output file
+          with open('release_notes.md', 'w') as f:
+              f.write(release_notes)
+
+          print("✅ Generated release notes from changelog fragment")
+          EOF
+
+            echo "✅ Release notes generated successfully"
+            echo ""
+            echo "📄 Generated Release Notes:"
+            echo "---"
+            cat release_notes.md
+            echo "---"
+          else
+            echo "ℹ️  No changelog fragment found for version $VERSION, using default release notes"
+          fi
+
       - name: Check if release already exists
         id: check_release
         run: |
@@ -527,10 +617,20 @@ jobs:
 
       - name: Create or Recreate Release
         run: |
-          gh release create ${{ steps.version.outputs.tag }} \
-            --title "${{ steps.version.outputs.release_title }}" \
-            --notes "${{ steps.version.outputs.release_notes }}" \
-            pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+          # Use parsed changelog if available, otherwise use default release notes
+          if [ -f release_notes.md ]; then
+            echo "📝 Using release notes from changelog fragment"
+            gh release create ${{ steps.version.outputs.tag }} \
+              --title "${{ steps.version.outputs.release_title }}" \
+              --notes-file release_notes.md \
+              pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+          else
+            echo "📝 Using default release notes"
+            gh release create ${{ steps.version.outputs.tag }} \
+              --title "${{ steps.version.outputs.release_title }}" \
+              --notes "${{ steps.version.outputs.release_notes }}" \
+              pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+          fi
 
       - name: Upload collection to GitHub Packages
         run: |
@@ -559,25 +659,25 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install ansible-core PyYAML
 
-      - name: Get latest release info
-        id: release
+      - name: Get version from galaxy.yml
+        id: version
         run: |
-          # Get the latest release tag
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          # Read version directly from galaxy.yml (source of truth)
+          VERSION=$(python -c "import yaml; print(yaml.safe_load(open('galaxy.yml'))['version'])")
+          TAG="v$VERSION"
 
-          # Extract version from tag (remove 'v' prefix if present)
-          VERSION=${LATEST_TAG#v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-          echo "📦 Publishing version: $VERSION (tag: $LATEST_TAG)"
+          echo "📦 Publishing version: $VERSION (tag: $TAG)"
+          echo "✅ Using version from galaxy.yml to ensure consistency with release job"
 
       - name: Download collection artifact from release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "📥 Downloading collection artifact from GitHub release..."
-          gh release download ${{ steps.release.outputs.tag }} --pattern "pcg-alpaca_operator-*.tar.gz"
+          gh release download ${{ steps.version.outputs.tag }} --pattern "pcg-alpaca_operator-*.tar.gz"
 
           # Verify the artifact was downloaded
           ls -la pcg-alpaca_operator-*.tar.gz
@@ -586,9 +686,9 @@ jobs:
       - name: Publish to Ansible Galaxy
         run: |
           echo "🚀 Publishing to Ansible Galaxy..."
-          ansible-galaxy collection publish pcg-alpaca_operator-${{ steps.release.outputs.version }}.tar.gz --token ${{ secrets.GALAXY_API_KEY }}
+          ansible-galaxy collection publish pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz --token ${{ secrets.GALAXY_API_KEY }}
 
-          echo "✅ Successfully published pcg.alpaca_operator version ${{ steps.release.outputs.version }} to Ansible Galaxy"
+          echo "✅ Successfully published pcg.alpaca_operator version ${{ steps.version.outputs.version }} to Ansible Galaxy"
 
       - name: Verify publication
         run: |
@@ -597,6 +697,6 @@ jobs:
           sleep 10
 
           # Try to install the collection from Galaxy to verify it was published
-          ansible-galaxy collection install pcg.alpaca_operator:${{ steps.release.outputs.version }} --force
+          ansible-galaxy collection install pcg.alpaca_operator:${{ steps.version.outputs.version }} --force
 
           echo "✅ Collection successfully verified on Ansible Galaxy"
