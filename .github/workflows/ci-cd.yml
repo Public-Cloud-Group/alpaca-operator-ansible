@@ -510,6 +510,96 @@ jobs:
           echo "release_notes=$RELEASE_NOTES" >> $GITHUB_OUTPUT
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
+      - name: Parse changelog fragment and generate release notes
+        id: parse_changelog
+        if: steps.version.outputs.branch_name == 'main'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          FRAGMENT_FILE="changelogs/fragments/release-${VERSION}.yml"
+
+          if [ -f "$FRAGMENT_FILE" ]; then
+            echo "✅ Found changelog fragment: $FRAGMENT_FILE"
+
+            # Parse YAML and generate Markdown release notes
+            python3 << EOF
+          import yaml
+
+          fragment_file = "$FRAGMENT_FILE"
+
+          with open(fragment_file, 'r') as f:
+              data = yaml.safe_load(f)
+
+          notes = []
+
+          # Release Summary
+          if 'release_summary' in data and data['release_summary']:
+              notes.append("## Release Summary")
+              notes.append("")
+              # Remove leading/trailing whitespace and normalize newlines
+              summary = data['release_summary'].strip()
+              notes.append(summary)
+              notes.append("")
+
+          # Major Changes
+          if 'major_changes' in data and data['major_changes']:
+              notes.append("## Major Changes")
+              notes.append("")
+              for item in data['major_changes']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Minor Changes
+          if 'minor_changes' in data and data['minor_changes']:
+              notes.append("## Minor Changes")
+              notes.append("")
+              for item in data['minor_changes']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Bugfixes
+          if 'bugfixes' in data and data['bugfixes']:
+              notes.append("## Bugfixes")
+              notes.append("")
+              for item in data['bugfixes']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Trivial
+          if 'trivial' in data and data['trivial']:
+              notes.append("## Trivial")
+              notes.append("")
+              for item in data['trivial']:
+                  # Remove surrounding quotes if present
+                  item_text = str(item).strip('"\'')
+                  notes.append(f"  - {item_text}")
+              notes.append("")
+
+          # Join all notes
+          release_notes = "\n".join(notes)
+
+          # Write to output file
+          with open('release_notes.md', 'w') as f:
+              f.write(release_notes)
+
+          print("✅ Generated release notes from changelog fragment")
+          EOF
+
+            echo "✅ Release notes generated successfully"
+            echo ""
+            echo "📄 Generated Release Notes:"
+            echo "---"
+            cat release_notes.md
+            echo "---"
+          else
+            echo "ℹ️  No changelog fragment found for version $VERSION, using default release notes"
+          fi
+
       - name: Check if release already exists
         id: check_release
         run: |
@@ -527,10 +617,20 @@ jobs:
 
       - name: Create or Recreate Release
         run: |
-          gh release create ${{ steps.version.outputs.tag }} \
-            --title "${{ steps.version.outputs.release_title }}" \
-            --notes "${{ steps.version.outputs.release_notes }}" \
-            pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+          # Use parsed changelog if available, otherwise use default release notes
+          if [ -f release_notes.md ]; then
+            echo "📝 Using release notes from changelog fragment"
+            gh release create ${{ steps.version.outputs.tag }} \
+              --title "${{ steps.version.outputs.release_title }}" \
+              --notes-file release_notes.md \
+              pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+          else
+            echo "📝 Using default release notes"
+            gh release create ${{ steps.version.outputs.tag }} \
+              --title "${{ steps.version.outputs.release_title }}" \
+              --notes "${{ steps.version.outputs.release_notes }}" \
+              pcg-alpaca_operator-${{ steps.version.outputs.version }}.tar.gz
+          fi
 
       - name: Upload collection to GitHub Packages
         run: |
