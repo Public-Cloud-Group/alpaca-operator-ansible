@@ -107,18 +107,6 @@ ansible-galaxy collection install ./ --force
 ansible-galaxy collection list
 ```
 
-### Step 4: Install Python Dependencies
-
-After installing the collection, install the required Python packages:
-
-```bash
-# Install pip if not available (if not already installed)
-sudo zypper install python3-pip
-
-# Install required packages from the collection
-pip3 install -r ~/.ansible/collections/ansible_collections/pcg/alpaca_operator/requirements.txt
-```
-
 **Note**: If you installed the collection manually, the path might be different. Adjust the path to where you extracted the collection.
 
 ## Getting Started
