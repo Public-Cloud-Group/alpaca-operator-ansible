@@ -1,8 +1,8 @@
 # Development Files
 
-⚠️ **WARNING: This folder contains development files only!**
-
-This `.dev` folder is **NOT** intended for normal use or production deployment. It contains files and configurations that are specifically designed for development and testing purposes.
+> [!NOTE]
+> This folder contains development files only!
+> This `.dev` folder is **NOT** intended for normal use or production deployment. It contains files and configurations that are specifically designed for development and testing purposes.
 
 ## Contents
 
