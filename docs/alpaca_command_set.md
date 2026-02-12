@@ -14,7 +14,7 @@ Use this module when you need to apply or remove multiple commands at once on a 
 - **Short Description**: Manage all ALPACA Operator commands of a specific system via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
-  - Python >= 3.8
+  - Python >= 3.9
   - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 

@@ -10,7 +10,7 @@ The `pcg.alpaca_operator.alpaca_system` module allows you to create, update, or 
 - **Short Description**: Manage ALPACA Operator systems via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
-  - Python >= 3.8
+  - Python >= 3.9
   - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
@@ -47,18 +47,18 @@ The `magic_number` parameter accepts values from 0 to 59.
 
 The `rfc_connection` parameter accepts a dictionary with the following sub-options:
 
-| Parameter           | Type | Required | Description                                            |
-| ------------------- | ---- | -------- | ------------------------------------------------------ |
-| `type`              | str  | No       | Type of RFC connection (none, instance, messageServer) |
-| `host`              | str  | No       | Hostname or IP address of the RFC target system        |
-| `instance_number`   | int  | No       | Instance number of the RFC connection (0-99)           |
-| `sid`               | str  | No       | SAP system ID (SID), consisting of 3 uppercase letters |
-| `logon_group`       | str  | No       | Logon group (used with message server type)            |
-| `username`          | str  | No       | Username for RFC connection                            |
-| `password`          | str  | No       | Password for the RFC connection                        |
-| `client`            | str  | No       | Client for RFC connection                              |
-| `sap_router_string` | str  | No       | SAProuter string used to establish the RFC connection  |
-| `snc_enabled`       | bool | No       | Enable or disable SNC                                  |
+| Parameter           | Type | Required | Description                                                                       |
+| ------------------- | ---- | -------- | --------------------------------------------------------------------------------- |
+| `type`              | str  | No       | Type of RFC connection (none, instance, messageServer)                            |
+| `host`              | str  | No       | Hostname or IP address of the RFC target system                                   |
+| `instance_number`   | int  | No       | Instance number of the RFC connection (0-99)                                      |
+| `sid`               | str  | No       | SAP system ID (SID), consisting of 3 uppercase alphanumeric characters (A-Z, 0-9) |
+| `logon_group`       | str  | No       | Logon group (used with message server type)                                       |
+| `username`          | str  | No       | Username for RFC connection                                                       |
+| `password`          | str  | No       | Password for the RFC connection                                                   |
+| `client`            | str  | No       | Client for RFC connection                                                         |
+| `sap_router_string` | str  | No       | SAProuter string used to establish the RFC connection                             |
+| `snc_enabled`       | bool | No       | Enable or disable SNC                                                             |
 
 **Type Choices**: none, instance, messageServer
 

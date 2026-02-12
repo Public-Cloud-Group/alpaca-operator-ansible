@@ -10,7 +10,7 @@ The `pcg.alpaca_operator.alpaca_group` module allows you to create, rename, or d
 - **Short Description**: Manage ALPACA Operator groups via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
-  - Python >= 3.8
+  - Python >= 3.9
   - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
