@@ -1,6 +1,6 @@
 ---
 release_summary: |
-  Release 2.1.2 updates the alpaca_system module to align RFC SID validation with SAP specifications by allowing digits in the SID while keeping the length and uppercase requirements.
+  Release 2.2.0 updates the alpaca_system module to align RFC SID validation with SAP specifications by allowing digits in the SID while keeping the length and uppercase requirements.
   Increased the minimum supported Python version to 3.9.
 
 bugfixes:
