@@ -1,19 +1,15 @@
 # Development Files
 
-⚠️ **WARNING: This folder contains development files only!**
-
-This `.dev` folder is **NOT** intended for normal use or production deployment. It contains files and configurations that are specifically designed for development and testing purposes.
+> [!NOTE]
+> This folder contains development files only!
+> This `.dev` folder is **NOT** intended for normal use or production deployment. It contains files and configurations that are specifically designed for development and testing purposes.
 
 ## Contents
 
-- `scripts/` - Development and testing scripts
+- `test/scripts/` - Development and testing scripts
   - `local-test.sh` - Run CI/CD tests locally using Docker
-  - `test-matrix.sh` - Test multiple Python/Ansible version combinations
-  - `generate_changelog.sh` - Generate changelog from fragments
-- `test/` - Local test results and artifacts (see `test/README.md` for details)
-- `ansible.cfg` - Development-specific Ansible configuration
-- `playbooks/` - Test playbooks for development and debugging
-- `inventories/` - Development inventory files
+  - `local-test-matrix.sh` - Test multiple Python/Ansible version combinations
+- `test/` - Local test results and artifacts (created by the local test scripts, see `test/results/`)
 
 ## Usage
 
@@ -27,30 +23,35 @@ These files should only be used by developers working on the alpaca-operator-ans
 
 ## Local CI/CD Testing
 
-The `.dev/scripts/local-test.sh` script allows you to run parts of the CI/CD workflow locally:
+For testing multiple version combinations, use `local-test-matrix.sh`:
+
+```bash
+./.dev/test/scripts/local-test-matrix.sh
+```
+
+The `.dev/test/scripts/local-test.sh` script allows you to run specific version combinations:
 
 ```bash
 # Test with default versions (Python 3.11, Ansible 2.18)
-./.dev/scripts/local-test.sh
+./.dev/test/scripts/local-test.sh
 
 # Test with custom versions
-PYTHON_VERSION=3.12 ANSIBLE_VERSION=2.19 ./.dev/scripts/local-test.sh
+PYTHON_VERSION=3.12 ANSIBLE_VERSION=2.19 ./.dev/test/scripts/local-test.sh
 ```
 
 The script will:
 1. Build the Ansible collection in a Docker container
-2. Save the built collection to `.dev/test/release-<VERSION>/collection/`
+2. Save the built collection to `.dev/test/results/release-<VERSION>/collection/`
 3. Install the collection in the container
 4. Run ansible-test sanity tests
-5. Save logs and results to `.dev/test/release-<VERSION>/`
+5. Save logs and results to `.dev/test/results/release-<VERSION>/`
 
-For testing multiple version combinations, use `test-matrix.sh`:
+> [!TIP]
+> The test scripts store all artifacts and logs under `.dev/test/results/` in subdirectories per collection version.
 
-```bash
-./.dev/scripts/test-matrix.sh
-```
+## Release Workflow
 
-See `test/README.md` for more details about the test results structure.
+For the end-to-end release process (Version-Bump, Changelog-Fragmente, PR-Workflow) siehe `.dev/RELEASE_WORKFLOW.md`.
 
 ## For Production Use
 

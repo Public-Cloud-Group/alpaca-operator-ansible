@@ -34,7 +34,7 @@ Additionally, a shared utility (`_alpaca_api.py`) is available under `module_uti
 
 ## Requirements
 
-- Python >= 3.8
+- Python >= 3.9
 - ansible-core >= 2.12
 - ALPACA Operator >= 5.6.0
 
@@ -217,9 +217,8 @@ For a complete setup guide including Ansible installation, collection setup, and
 
 ### System Command Management
 
-**Warning**
-
-⚠️ When using the `pcg.alpaca_operator.alpaca_command_set` module, all existing commands on the target system that are not included in your playbook will be deleted. Use this module with care!
+> [!WARNING]
+> When using the `pcg.alpaca_operator.alpaca_command_set` module, all existing commands on the target system that are not included in your playbook will be deleted. Use this module with care!
 
 ```yaml
 - name: Ensure that exactly these system commands exist — no more, no fewer

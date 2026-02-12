@@ -26,7 +26,7 @@ The ALPACA Operator Ansible Collection provides a comprehensive set of modules f
 ### Prerequisites
 
 - SLES 15 SP4 or later (or compatible Linux distribution)
-- Python >= 3.8
+- Python >= 3.9
 - ansible-core >= 2.12
 - ALPACA Operator >= 5.6.0
 - Root or sudo access for system-level installation

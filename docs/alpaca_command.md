@@ -12,7 +12,7 @@ Each command is uniquely identified by the combination of its name (description)
 - **Short Description**: Manage a single ALPACA Operator command via REST API
 - **Version Added**: 1.0.0
 - **Requirements**:
-  - Python >= 3.8
+  - Python >= 3.9
   - ansible-core >= 2.12
   - ALPACA Operator >= 5.6.0
 
